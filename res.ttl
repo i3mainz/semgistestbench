@@ -1,0 +1,97 @@
+@prefix wd: <http://www.wikidata.org/entity/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix geo: <http://www.opengis.net/ont/geosparql#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<http://stolpersteine.i3mainz.de> rdf:type owl:Ontology . 
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://stolpersteine.i3mainz.de/stolperStein#hasStolperstein> <http://stolpersteine.i3mainz.de/stolperStein#Berta_Erlanger_Stolperstein> .
+<http://stolpersteine.i3mainz.de/stolperStein#Berta_Erlanger_Stolperstein> <http://www.opengis.net/ont/geosparql#hasGeometry> <http://stolpersteine.i3mainz.de/stolperStein#Berta_Erlanger_Stolperstein_geom> .
+<http://stolpersteine.i3mainz.de/stolperStein#Berta_Erlanger_Stolperstein_geom> <http://www.opengis.net/ont/geosparql#asWKT> "POINT(49.988458 8.226914)"^^geo:wktLiteral .
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://www.wikidata.org/wiki/Property:P551> "Große_Bleiche_12,_Mainz" . 
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://www.wikidata.org/wiki/Property:P512> <http://www.wikidata.org/wiki/Q849697> . 
+<http://www.wikidata.org/wiki/Q849697> rdfs:label "doctoral degree"@en .
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://www.wikidata.org/wiki/Property:P22> <http://stolpersteine.i3mainz.de/person#Jakob_Erlanger> . 
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://www.wikidata.org/wiki/Property:P25> <http://stolpersteine.i3mainz.de/person#Emilie_Erlanger> . 
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://www.wikidata.org/wiki/Property:P19> <http://www.wikidata.org/wiki/Q2749> . 
+<http://www.wikidata.org/wiki/Q2749> rdfs:label "Augsburg"@en .
+<http://stolpersteine.i3mainz.de/person#Jakob_Erlanger> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+<http://stolpersteine.i3mainz.de/person#Jakob_Erlanger> <http://stolpersteine.i3mainz.de/stolperStein#hasStolperstein> <http://stolpersteine.i3mainz.de/stolperStein#Jakob_Erlanger_Stolperstein> .
+<http://stolpersteine.i3mainz.de/stolperStein#Jakob_Erlanger_Stolperstein> <http://www.opengis.net/ont/geosparql#hasGeometry> <http://stolpersteine.i3mainz.de/stolperStein#Jakob_Erlanger_Stolperstein_geom> .
+<http://stolpersteine.i3mainz.de/stolperStein#Jakob_Erlanger_Stolperstein_geom> <http://www.opengis.net/ont/geosparql#asWKT> "POINT(49.97 8.22123)"^^geo:wktLiteral .
+<http://stolpersteine.i3mainz.de/person#Jakob_Erlanger> <http://www.wikidata.org/wiki/Property:P569> "1852-12-04"^^xsd:date . 
+<http://stolpersteine.i3mainz.de/person#Jakob_Erlanger> <http://www.wikidata.org/wiki/Property:P19> <http://www.wikidata.org/wiki/Q496489> . 
+<http://www.wikidata.org/wiki/Q496489> rdfs:label "Bad Buchau"@en .
+<http://stolpersteine.i3mainz.de/person#Pauline_Einstein> <http://www.wikidata.org/wiki/Property:P1038> <http://www.wikidata.org/wiki/Q937> . 
+<http://www.wikidata.org/wiki/Q937> rdfs:label "Albert Einstein"@en .
+<http://stolpersteine.i3mainz.de/person#Jakob_Erlanger> <http://www.wikidata.org/wiki/Property:P66> <http://www.wikidata.org/wiki/Q496489> . 
+<http://www.wikidata.org/wiki/Q496489> rdfs:label "Bad Buchau"@en .
+<http://stolpersteine.i3mainz.de/person#Pauline_Einstein> <http://www.wikidata.org/wiki/Property:P66> <http://www.wikidata.org/wiki/Q496489> . 
+<http://www.wikidata.org/wiki/Q496489> rdfs:label "Bad Buchau"@en .
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://www.wikidata.org/wiki/Property:P551> <http://www.wikidata.org/wiki/Q875929> . 
+<http://www.wikidata.org/wiki/Q875929> rdfs:label "Maximilianstraße"@en .
+<http://stolpersteine.i3mainz.de/person#Hugo_Erlanger> <http://www.wikidata.org/wiki/Property:P40> <http://stolpersteine.i3mainz.de/person#Emilie_Erlanger> . 
+<http://stolpersteine.i3mainz.de/person#Hugo_Erlanger> <http://www.wikidata.org/wiki/Property:P569> "1881-01-01"^^xsd:date . 
+<http://stolpersteine.i3mainz.de/person#Ida_Erlanger> <http://www.wikidata.org/wiki/Property:P40> <http://stolpersteine.i3mainz.de/person#Emilie_Erlanger> . 
+<http://stolpersteine.i3mainz.de/person#Ida_Erlanger> <http://www.wikidata.org/wiki/Property:P569> "1883-01-01"^^xsd:date . 
+<http://stolpersteine.i3mainz.de/person#Adele_Erlanger> <http://www.wikidata.org/wiki/Property:P40> <http://stolpersteine.i3mainz.de/person#Emilie_Erlanger> . 
+<http://stolpersteine.i3mainz.de/person#Adele_Erlanger> <http://www.wikidata.org/wiki/Property:P569> "1891-01-01"^^xsd:date . 
+<http://stolpersteine.i3mainz.de/person#Jakob_Erlanger> <http://www.wikidata.org/wiki/Property:P21> <http://www.wikidata.org/wiki/Q6581097> . 
+<http://www.wikidata.org/wiki/Q6581097> rdfs:label "male"@en .
+<http://stolpersteine.i3mainz.de/person#Pauline_Einstein> <http://www.wikidata.org/wiki/Property:P21> <http://www.wikidata.org/wiki/Q6581097> . 
+<http://www.wikidata.org/wiki/Q6581097> rdfs:label "male"@en .
+<http://stolpersteine.i3mainz.de/person#Ida_Erlanger> <http://www.wikidata.org/wiki/Property:P21> <http://www.wikidata.org/wiki/Q6581072> . 
+<http://www.wikidata.org/wiki/Q6581072> rdfs:label "female"@en .
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://www.wikidata.org/wiki/Property:P21> <http://www.wikidata.org/wiki/Q6581072> . 
+<http://www.wikidata.org/wiki/Q6581072> rdfs:label "female"@en .
+<http://stolpersteine.i3mainz.de/person#Adele_Erlanger> <http://www.wikidata.org/wiki/Property:P21> <http://www.wikidata.org/wiki/Q6581072> . 
+<http://www.wikidata.org/wiki/Q6581072> rdfs:label "female"@en .
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://www.wikidata.org/wiki/Property:P69> <http://www.wikidata.org/wiki/Q1895584> . 
+<http://www.wikidata.org/wiki/Q1895584> rdfs:label "Maria-Theresia-Gymnasium Augsburg"@de .
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://www.wikidata.org/wiki/Property:P69> "Münchener_Privat-Mädchen-Gymnasium" . 
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://www.wikidata.org/wiki/Property:P69> <http://www.wikidata.org/wiki/Q1914194> . 
+<http://www.wikidata.org/wiki/Q1914194> rdfs:label "Maximiliansgymnasium München"@en .
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://www.wikidata.org/wiki/Property:P69> <http://www.wikidata.org/wiki/Q151510> . 
+<http://www.wikidata.org/wiki/Q151510> rdfs:label "Heidelberg University"@en .
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://www.wikidata.org/wiki/Property:P185> <http://www.wikidata.org/wiki/Q151510> . 
+<http://www.wikidata.org/wiki/Q151510> rdfs:label "Heidelberg University"@en .
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://www.wikidata.org/wiki/Property:P1416> <http://www.wikidata.org/wiki/Q2115903> . 
+<http://www.wikidata.org/wiki/Q2115903> rdfs:label "Psychiatrisches Zentrum Nordbaden"@de .
+<http://stolpersteine.i3mainz.de/person#Professor_Fleiner> <http://www.wikidata.org/wiki/Property:P184> <http://stolpersteine.i3mainz.de/person#Berta_Erlanger> . 
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://www.wikidata.org/wiki/Property:P800> <http://www.worldcat.org/title/beitrage-zur-diagnose-des-magencarcinoms-mit-besonderem-hinweis-auf-das-schmerzsymptom/oclc/21508674> . 
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://www.wikidata.org/wiki/Property:P3373> <http://www.wikidata.org/wiki/Q29933448> . 
+<http://www.wikidata.org/wiki/Q29933448> rdfs:label "Hugo Erlanger"@en .
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://www.wikidata.org/wiki/Property:P3373> <http://stolpersteine.i3mainz.de/person#Ida_Erlanger> . 
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://www.wikidata.org/wiki/Property:P3373> <http://stolpersteine.i3mainz.de/person#Adele_Erlanger> . 
+<http://stolpersteine.i3mainz.de/person#Emilie_Erlanger> <http://www.wikidata.org/wiki/Property:P1971> "4" . 
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://www.wikidata.org/wiki/Property:P101> <http://www.wikidata.org/wiki/Q39631> . 
+<http://www.wikidata.org/wiki/Q39631> rdfs:label "physician"@en .
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://www.wikidata.org/wiki/Property:P101> <http://www.wikidata.org/wiki/Q742628> . 
+<http://www.wikidata.org/wiki/Q742628> rdfs:label "Assistenzarzt"@de .
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://www.wikidata.org/wiki/Property:P1416> <http://www.wikidata.org/wiki/Q1283701> . 
+<http://www.wikidata.org/wiki/Q1283701> rdfs:label "Augsburg Hospital"@en .
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://www.wikidata.org/wiki/Property:P1416> <http://www.wikidata.org/wiki/Q1464146> . 
+<http://www.wikidata.org/wiki/Q1464146> rdfs:label "Friedrichs-Waisenhaus Rummelsburg"@de .
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://www.wikidata.org/wiki/Property:P101> <http://www.wikidata.org/wiki/Q123028> . 
+<http://www.wikidata.org/wiki/Q123028> rdfs:label "pediatrics"@en .
+<http://stolpersteine.i3mainz.de/person#Otto_Ebner> <http://www.wikidata.org/wiki/Property:P512> <http://www.wikidata.org/wiki/Q849697>  . 
+<http://www.wikidata.org/wiki/Q849697> rdfs:label "doctoral degree"@en .
+<http://stolpersteine.i3mainz.de/person#Otto_Ebner> <http://www.wikidata.org/wiki/Property:P551> <http://www.wikidata.org/wiki/Q175746>  . 
+<http://www.wikidata.org/wiki/Q175746> rdfs:label "Heidesheim am Rhein"@en .
+<http://stolpersteine.i3mainz.de/person#Adele_Erlanger> <http://www.wikidata.org/wiki/Property:P26> <http://stolpersteine.i3mainz.de/person#Otto_Ebner>  . 
+<http://stolpersteine.i3mainz.de/person#Adele_Erlanger> <http://www.wikidata.org/wiki/Property:P551> <http://www.wikidata.org/wiki/Q175746>  . 
+<http://www.wikidata.org/wiki/Q175746> rdfs:label "Heidesheim am Rhein"@en .
+<http://stolpersteine.i3mainz.de/person#Adele_Erlanger> <http://www.wikidata.org/wiki/Property:P101> <https://www.wikidata.org/wiki/Q186360>  . 
+<http://www.wikidata.org/wiki/Q186360> rdfs:label "nurse"@en .
+<http://stolpersteine.i3mainz.de/person#Jakob_Erlanger> <http://www.wikidata.org/wiki/Property:P1038> <http://stolpersteine.i3mainz.de/person#Berta_Erlanger>  . 
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://www.wikidata.org/wiki/Property:P570> "1933-01-01"^^xsd:date  . 
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://www.wikidata.org/wiki/Property:P20> <https://www.wikidata.org/wiki/Q748094>  . 
+<https://www.wikidata.org/wiki/Q748094> rdfs:label "Universitätsmedizin der Johannes Gutenberg-Universität Mainz"@de .
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://www.wikidata.org/wiki/Property:P1196> <http://www.wikidata.org/wiki/Q10737>  . 
+<http://www.wikidata.org/wiki/Q10737> rdfs:label "suicide"@en .
+<http://stolpersteine.i3mainz.de/person#Berta_Erlanger> <http://www.wikidata.org/wiki/Property:P20> <http://www.wikidata.org/wiki/Q21037180>  .
+<http://www.wikidata.org/wiki/Q21037180> rdfs:label "Mainz new Jewish cemetery"@en .

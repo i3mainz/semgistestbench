@@ -1,0 +1,239 @@
+<html>
+<head><title>XErleben Mapview based on LinkedData</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="wicket.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="rdfstore_min.js"></script>
+  <script src="proj4.js"></script>
+  
+<script>
+var relmap={
+"http://www.wikidata.org/wiki/Property:P512":"academic degree",
+"http://www.wikidata.org/wiki/Property:P1416":"affiliation",
+"http://www.wikidata.org/wiki/Property:P69":"alma mater",
+"http://www.wikidata.org/wiki/Property:P66":"ancestral home",
+"http://www.wikidata.org/wiki/Property:P450":"astronaut mission",
+"http://www.wikidata.org/wiki/Property:P166":"award received",
+"http://www.wikidata.org/wiki/Property:P3150":"birthday",
+"http://www.wikidata.org/wiki/Property:P1477":"birth name",
+"http://www.wikidata.org/wiki/Property:P509":"cause of death",
+"http://www.wikidata.org/wiki/Property:P40":"child",
+"http://www.wikidata.org/wiki/Property:P237":"coat of arms",
+"http://www.wikidata.org/wiki/Property:P1399":"convicted of",
+"http://www.wikidata.org/wiki/Property:P27":"country of citizenship",
+"http://www.wikidata.org/wiki/Property:P569":"date of birth",
+"http://www.wikidata.org/wiki/Property:P570":"date of death",
+"http://xmlns.com/foaf/0.1/depiction":"depiction",
+"http://www.wikidata.org/wiki/Property:P184":"doctoral advisor",
+"http://www.wikidata.org/wiki/Property:P185":"doctoral student",
+"http://www.wikidata.org/wiki/Property:P551":"dwelling",
+"http://www.wikidata.org/wiki/Property:P69":"educated at",
+"http://www.wikidata.org/wiki/Property:P108":"employer",
+"http://www.wikidata.org/wiki/Property:P582":"end time",
+"http://www.wikidata.org/wiki/Property:P172":"ethnic group",
+"http://www.wikidata.org/wiki/Property:P1340":"eye color",
+"http://www.wikidata.org/wiki/Property:P734":"family name",
+"http://www.wikidata.org/wiki/Property:P22":"father",
+"http://www.wikidata.org/wiki/Property:P101":"field of work",
+"http://www.wikidata.org/wiki/Property:P103":"first language",
+"http://www.wikidata.org/wiki/Property:P735":"given name",
+"http://www.wikidata.org/wiki/Property:P1290":"godparent",
+"http://www.wikidata.org/wiki/Property:P119":"grave location",
+"http://www.wikidata.org/wiki/Property:P1429":"has pet",
+"http://xmlns.com/foaf/0.1/homepage":"homepage",
+"http://www.wikidata.org/wiki/Property:P109":"image of persons signature",
+"http://xmlns.com/foaf/0.1/knows":"knows",
+"https://www.wikidata.org/wiki/Property:P1412":"languages written, spoken or signed",
+"http://www.wikidata.org/wiki/Property:P39":"mandate",
+"http://www.wikidata.org/wiki/Property:P1196":"manner of death",
+"http://www.wikidata.org/wiki/Property:P463":"member of",
+"http://www.wikidata.org/wiki/Property:P25":"mother",
+"http://www.wikidata.org/wiki/Property:P157":"murderer",
+"http://www.wikidata.org/wiki/Property:P1559":"name of the person in their native language",
+"http://www.wikidata.org/wiki/Property:P97":"noble title",
+"http://www.wikidata.org/wiki/Property:P1411":"nominated for",
+"http://www.wikidata.org/wiki/Property:P1971":"number of children",
+"http://www.wikidata.org/wiki/Property:P263":"official residence",
+"http://www.wikidata.org/wiki/Property:P106":"occupation",
+"http://www.wikidata.org/wiki/Property:P1344":"participant of",
+"http://www.wikidata.org/wiki/Property:P451":"partner",
+"http://www.wikidata.org/wiki/Property:P1442":"picture of the grave",
+"http://www.wikidata.org/wiki/Property:P19":"place of birth",
+"http://www.wikidata.org/wiki/Property:P20":"place of death",
+"http://www.wikidata.org/wiki/Property:P1303":"plays instrument",
+"http://www.wikidata.org/wiki/Property:P102":"political party",
+"http://www.wikidata.org/wiki/Property:P742":"pseudonym",
+"http://xmlns.com/foaf/0.1/publications":"publication",
+"http://www.wikidata.org/wiki/Property:P1038":"relative",
+"http://www.wikidata.org/wiki/Property:P140":"religion",
+"http://www.wikidata.org/wiki/Property:P551":"residence",
+"http://www.wikidata.org/wiki/Property:P91":"sexual orientation",
+"http://www.wikidata.org/wiki/Property:P21":"sex or gender",
+"http://www.wikidata.org/wiki/Property:P3373":"sibling",
+"http://www.wikidata.org/wiki/Property:P26":"spouse",
+"http://www.wikidata.org/wiki/Property:P580":"start time",
+"http://www.wikidata.org/wiki/Property:P3448":"stepparent",
+"http://www.wikidata.org/wiki/Property:P1066":"student of",
+"http://www.wikidata.org/wiki/Property:P1066":"teacher",
+"http://www.wikidata.org/wiki/Property:P793":"witnessed significant event",
+"http://www.wikidata.org/wiki/Property:P800":"work and magnum opus",
+"http://www.wikidata.org/wiki/Property:P412":"voice type",
+"http://www.wikidata.org/wiki/Property:P553":"website account on"
+}
+var epsg25832='+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs'
+var wgs84="+proj=gnom +lat_0=90 +lon_0=0 +x_0=6300000 +y_0=6300000 +ellps=WGS84 +datum=WGS84 +units=m +no_defs";
+var prefixList="PREFIX owl: <http://www.w3.org/2002/07/owl#>  PREFIX geo: <http://www.opengis.net/ont/geosparql#> PREFIX wd: <http://www.wikidata.org/entity/> PREFIX foaf: <http://xmlns.com/foaf/0.1/>  PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  PREFIX xml: <http://www.w3.org/XML/1998/namespace>  PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX xerl: <http://www.xerleben.de/schema/2.0_1#> "
+var currdfstore=null;
+var wkt = new Wkt.Wkt();
+$( function() {
+	  document.getElementById('file-input')
+	  .addEventListener('change', readRDFFile, false);
+});
+
+function readSingleFile(e) {
+	  var file = e.target.files[0];
+	  if (!file) {
+	    return;
+	  }
+	  var reader = new FileReader();
+	  reader.onload = function(e) {
+	    var contents = e.target.result;
+	    displayContents(contents);
+	  };
+	  reader.readAsText(file);
+}
+
+function readRDFFile(e){
+	var file = e.target.files[0];
+	if (!file) {
+	    return;
+	}
+	var reader = new FileReader();
+	reader.onload = function(e) {
+	    var contents = e.target.result;
+	    rdfstore.create(function(err, store) {
+		currdfstore=store;
+		store.load('text/turtle', contents, function(s,d){
+			console.log(s,d);
+			displayGeometricObjects()
+			});
+		});
+	};	
+	  reader.readAsText(file);
+
+}
+
+function outputSPARQLResults(results) {
+    for (row in results) {
+        printedLine = ''
+        for (column in results[row]) {
+            printedLine = printedLine + results[row][column].value + ' '
+        }
+        console.log(printedLine)
+    }
+}
+
+function findLastNonAlpha(input){
+	if(input.includes("^^")){
+		return input.length
+	}
+	for(i=input.length-2;i>0;i--){
+		if(!input.substring(i,i+1).match("[A-z0-9-,;.^]"))
+			return i+1;
+	}
+}
+
+function displayGeometricObjects(){
+	personToWKT={}
+	currdfstore.execute(prefixList+" SELECT  ?pers ?wkt  WHERE { ?pers xerl:lageAnfasspunkt ?lagep . ?lagep geo:asWKT ?wkt .  }", function(success,results){ 
+				for(res in results){
+					console.log(results[res])
+					console.log(results[res]["wkt"]["value"])
+					wkt.read(results[res]["wkt"]["value"]);
+					//
+					personToWKT[results[res]["pers"]["value"]]=wkt.toJson()["coordinates"];
+				}
+	});
+	console.log(personToWKT)
+	currdfstore.execute(prefixList+" SELECT ?person ?rel ?img ?val ?valLabel WHERE { ?percls rdfs:subClassOf* xerl:XE_OrtVonInteresse . ?percls <http://www.wikidata.org/entity/image> ?img .  ?person rdf:type ?percls . ?person ?rel ?val . OPTIONAL {?val rdfs:label ?valLabel . } }", function(success,results){
+		console.log(success,results)
+		persons={}
+		for(res in results){
+		//console.log(results[res])
+			if(!(results[res]["person"]["value"] in persons)){
+				persons[results[res]["person"]["value"]]={}
+			}
+			if(!(results[res]["rel"]["value"] in persons[results[res]["person"]["value"]])){
+				persons[results[res]["person"]["value"]][results[res]["rel"]["value"]]=[]
+			}
+			app={}
+			app[results[res]["val"]["value"]]=(results[res]["valLabel"]!=null?results[res]["valLabel"]["value"]:results[res]["val"]["value"])
+			//console.log(results[res]["person"]["value"])
+			persons[results[res]["person"]["value"]][results[res]["rel"]["value"]].push(app)
+			persons[results[res]["person"]["value"]]["img"]=results[res]["img"]["value"]
+		}
+		//console.log(JSON.stringify(persons))
+		for(pers in persons){
+			markerIconPath=""
+			console.log(JSON.stringify(persons[pers]))
+			tooltip="<html><b><a href=\""+pers+"\" target=\"_blank\">"+pers.substring(pers.indexOf("#")+1)+"</a></b><ul>"
+			for(rel in persons[pers]){
+				//console.log(rel)		
+					if(rel.includes("img")){
+						markerIconPath=persons[pers][rel]
+						
+						//console.log(rel)
+					}else{
+						for(val in persons[pers][rel]){
+							tooltip+="<li><a href=\""+rel+"\" target=\"_blank\">"+(rel in relmap?relmap[rel]:rel.substring(rel.lastIndexOf("#")+1))+"</a> - "
+							for(vall in persons[pers][rel][val]){
+								tooltip+="<a href=\""+vall+"\" target=\"_blank\">"+(persons[pers][rel][val][vall].includes("#")?persons[pers][rel][val][vall].substring(persons[pers][rel][val][vall].lastIndexOf('#')+1):persons[pers][rel][val][vall])+"</a>"
+							}
+							tooltip+="</li>"
+						}
+					}
+					
+			}
+			tooltip+="</ul></html>"
+			console.log(markerIconPath)
+			var markerIcon = L.icon({
+				iconUrl: markerIconPath,
+				iconSize: [38, 95], // size of the icon
+			});
+			console.log(pers)
+			console.log(personToWKT[pers])
+			var marker = new L.marker(personToWKT[pers],{icon:markerIcon}); //opacity may be set to zero
+			marker.bindPopup(tooltip, {maxWidth : 560});
+			marker.addTo(mymap);
+		}
+		mymap.setView([51.609779421715, 7.67302276870788], 13);
+
+	});
+}
+
+</script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+</head>
+<body>
+<h2 align="center">XErleben Mapview based on LinkedData</h2>
+
+<div id="mapid" style="height:80%">
+<script>
+
+	var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+
+	var layer = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+		maxZoom: 18,
+		attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+			'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+		id: 'mapbox.streets'
+	}).addTo(mymap);
+
+</script>
+</div>
+RDF File Upload:<input type="file"  id="file-input" />
+</body>
+</html>
