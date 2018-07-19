@@ -148,8 +148,8 @@ function displayGeometricObjects(){
 	personToWKT={}
 	currdfstore.execute(prefixList+" SELECT  ?pers ?wkt  WHERE { ?pers xerl:lageAnfasspunkt ?lagep . ?lagep geo:asWKT ?wkt .  }", function(success,results){ 
 				for(res in results){
-					console.log(results[res])
-					console.log(results[res]["wkt"]["value"])
+					//console.log(results[res])
+					//console.log(results[res]["wkt"]["value"])
 					wkt.read(results[res]["wkt"]["value"]);
 					//
 					personToWKT[results[res]["pers"]["value"]]=wkt.toJson()["coordinates"];
@@ -176,7 +176,7 @@ function displayGeometricObjects(){
 		//console.log(JSON.stringify(persons))
 		for(pers in persons){
 			markerIconPath=""
-			console.log(JSON.stringify(persons[pers]))
+			//console.log(JSON.stringify(persons[pers]))
 			tooltip="<html><b><a href=\""+pers+"\" target=\"_blank\">"+pers.substring(pers.indexOf("#")+1)+"</a></b><ul>"
 			for(rel in persons[pers]){
 				//console.log(rel)		
@@ -202,10 +202,12 @@ function displayGeometricObjects(){
 				iconSize: [38, 95], // size of the icon
 			});
 			console.log(pers)
-			console.log(personToWKT[pers])
-			var marker = new L.marker(personToWKT[pers],{icon:markerIcon}); //opacity may be set to zero
-			marker.bindPopup(tooltip, {maxWidth : 560});
-			marker.addTo(mymap);
+			if(pers in personToWKT){
+                            console.log(personToWKT[pers])
+                            var marker = new L.marker(personToWKT[pers],{icon:markerIcon}); //opacity may be set to zero
+                            marker.bindPopup(tooltip, {maxWidth : 560});
+                            marker.addTo(mymap);
+			}
 		}
 		mymap.setView([51.609779421715, 7.67302276870788], 13);
 

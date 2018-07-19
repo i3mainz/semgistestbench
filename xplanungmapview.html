@@ -146,17 +146,20 @@ function findLastNonAlpha(input){
 
 function displayGeometricObjects(){
 	personToWKT={}
-	currdfstore.execute(prefixList+" SELECT  ?pers ?wkt  WHERE { ?pers xplan5:position ?lagep . ?lagep geo:asWKT ?wkt .  }", function(success,results){ 
+	markercollection=[]
+	currdfstore.execute(prefixList+" SELECT  ?pers ?wkt  WHERE { ?pers ?p ?lagep . ?lagep geo:asWKT ?wkt .  }", function(success,results){ 
+                                console.log(success,results)
 				for(res in results){
-					console.log(results[res])
-					console.log(results[res]["wkt"]["value"])
+					//console.log(results[res]["pers"]["value"])
 					wkt.read(results[res]["wkt"]["value"]);
-					//
-					personToWKT[results[res]["pers"]["value"]]=wkt.toJson()["coordinates"];
+					try{
+					personToWKT[results[res]["pers"]["value"]]=wkt.toJson();
+					}catch(err){
+					}
 				}
 	});
 	console.log(personToWKT)
-	currdfstore.execute(prefixList+" SELECT ?person ?rel ?img ?val ?valLabel WHERE { ?percls rdfs:subClassOf* xerl:XE_OrtVonInteresse . ?percls <http://www.wikidata.org/entity/image> ?img .  ?person rdf:type ?percls . ?person ?rel ?val . OPTIONAL {?val rdfs:label ?valLabel . } }", function(success,results){
+	currdfstore.execute(prefixList+" SELECT ?person ?rel ?val ?valLabel WHERE { ?percls rdfs:subClassOf xplan5:BP_Objekt .  ?person rdf:type ?percls . ?person ?rel ?val . OPTIONAL {?val rdfs:label ?valLabel . } }", function(success,results){
 		console.log(success,results)
 		persons={}
 		for(res in results){
@@ -171,12 +174,12 @@ function displayGeometricObjects(){
 			app[results[res]["val"]["value"]]=(results[res]["valLabel"]!=null?results[res]["valLabel"]["value"]:results[res]["val"]["value"])
 			//console.log(results[res]["person"]["value"])
 			persons[results[res]["person"]["value"]][results[res]["rel"]["value"]].push(app)
-			persons[results[res]["person"]["value"]]["img"]=results[res]["img"]["value"]
+			//persons[results[res]["person"]["value"]]["img"]=results[res]["img"]["value"]
 		}
 		//console.log(JSON.stringify(persons))
 		for(pers in persons){
 			markerIconPath=""
-			console.log(JSON.stringify(persons[pers]))
+			//console.log(JSON.stringify(persons))
 			tooltip="<html><b><a href=\""+pers+"\" target=\"_blank\">"+pers.substring(pers.indexOf("#")+1)+"</a></b><ul>"
 			for(rel in persons[pers]){
 				//console.log(rel)		
@@ -196,20 +199,33 @@ function displayGeometricObjects(){
 					
 			}
 			tooltip+="</ul></html>"
-			console.log(markerIconPath)
-			var markerIcon = L.icon({
+			//console.log(markerIconPath)
+			/*var markerIcon = L.icon({
 				iconUrl: markerIconPath,
 				iconSize: [38, 95], // size of the icon
-			});
-			console.log(pers)
-			console.log(personToWKT[pers])
-			var marker = new L.marker(personToWKT[pers],{icon:markerIcon}); //opacity may be set to zero
-			marker.bindPopup(tooltip, {maxWidth : 560});
-			marker.addTo(mymap);
+			});*/
+			//console.log(pers)
+			if(pers in personToWKT && personToWKT[pers]["type"]=="Point"){
+                            
+                            var marker = new L.marker(personToWKT[pers]["coordinates"]/*,{icon:markerIcon}*/); //opacity may be set to zero
+                            marker.bindPopup(tooltip, {maxWidth : 560});
+                            marker.addTo(mymap);
+                            markercollection.push(marker)
+			}else if(pers in personToWKT && personToWKT[pers]["type"]=="LineString"){
+                            L.polyline( personToWKT[pers]["coordinates"]).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap); 
+			}else if(pers in personToWKT ){//&& personToWKT[pers]["type"]=="Polygon"){
+                                L.polygon( personToWKT[pers]["coordinates"]).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap); //This works
+                                console.log(personToWKT[pers])
+			}
 		}
-		mymap.setView([51.609779421715, 7.67302276870788], 13);
+		                var group = new L.featureGroup(markercollection);
+                
+		mymap.setView([53.139779421715, 8.7302276870788], 13);
+		//mymap.fitBounds(group.getBounds());
+
 
 	});
+	
 }
 
 </script>
