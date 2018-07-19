@@ -147,8 +147,8 @@ function findLastNonAlpha(input){
 function displayGeometricObjects(){
 	personToWKT={}
 	markercollection=[]
-	currdfstore.execute(prefixList+" SELECT  ?pers ?wkt  WHERE { ?pers ?p ?lagep . ?lagep geo:asWKT ?wkt .  }", function(success,results){ 
-                                console.log(success,results)
+	currdfstore.execute(prefixList+" SELECT  ?pers ?wkt  WHERE { {?pers ?p ?lagep . ?lagep geo:asWKT ?wkt . }UNION{?pers ?p ?lagep1 . ?lagep1 ?o ?lagep . ?lagep geo:asWKT ?wkt . } }", function(success,results){ 
+                                //console.log(success,results)
 				for(res in results){
 					//console.log(results[res]["pers"]["value"])
 					wkt.read(results[res]["wkt"]["value"]);
@@ -158,9 +158,8 @@ function displayGeometricObjects(){
 					}
 				}
 	});
-	console.log(personToWKT)
 	currdfstore.execute(prefixList+" SELECT ?person ?rel ?val ?valLabel WHERE { ?percls rdfs:subClassOf xplan5:BP_Objekt .  ?person rdf:type ?percls . ?person ?rel ?val . OPTIONAL {?val rdfs:label ?valLabel . } }", function(success,results){
-		console.log(success,results)
+		//console.log(success,results)
 		persons={}
 		for(res in results){
 		//console.log(results[res])
@@ -206,16 +205,16 @@ function displayGeometricObjects(){
 			});*/
 			//console.log(pers)
 			if(pers in personToWKT && personToWKT[pers]["type"]=="Point"){
-                            
                             var marker = new L.marker(personToWKT[pers]["coordinates"]/*,{icon:markerIcon}*/); //opacity may be set to zero
                             marker.bindPopup(tooltip, {maxWidth : 560});
                             marker.addTo(mymap);
                             markercollection.push(marker)
 			}else if(pers in personToWKT && personToWKT[pers]["type"]=="LineString"){
-                            L.polyline( personToWKT[pers]["coordinates"]).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap); 
+			                               // console.log(personToWKT[pers])
+                            L.polyline( personToWKT[pers]["coordinates"],{color: 'blue',}).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap); 
 			}else if(pers in personToWKT ){//&& personToWKT[pers]["type"]=="Polygon"){
-                                L.polygon( personToWKT[pers]["coordinates"]).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap); //This works
-                                console.log(personToWKT[pers])
+                                L.polygon( personToWKT[pers]["coordinates"],{color: 'red',}).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap); //This works
+                                //console.log(personToWKT[pers])
 			}
 		}
 		                var group = new L.featureGroup(markercollection);
