@@ -151,14 +151,15 @@ function displayGeometricObjects(){
                                 //console.log(success,results)
 				for(res in results){
 					//console.log(results[res]["pers"]["value"])
+						try{
 					wkt.read(results[res]["wkt"]["value"]);
-					try{
+				
 					personToWKT[results[res]["pers"]["value"]]=wkt.toJson();
 					}catch(err){
 					}
 				}
 	});
-	currdfstore.execute(prefixList+" SELECT ?person ?rel ?val ?valLabel WHERE { ?percls rdfs:subClassOf xplan5:BP_Objekt .  ?person rdf:type ?percls . ?person ?rel ?val . OPTIONAL {?val rdfs:label ?valLabel . } }", function(success,results){
+	currdfstore.execute(prefixList+" SELECT ?person ?rel ?style ?img ?val ?valLabel WHERE { ?percls rdfs:subClassOf xplan5:BP_Objekt .  OPTIONAL{?percls xplan5:style ?style .} OPTIONAL{?percls xplan5:image ?img .} ?person rdf:type ?percls . ?person ?rel ?val . OPTIONAL {?val rdfs:label ?valLabel . } }", function(success,results){
 		//console.log(success,results)
 		persons={}
 		for(res in results){
@@ -173,7 +174,12 @@ function displayGeometricObjects(){
 			app[results[res]["val"]["value"]]=(results[res]["valLabel"]!=null?results[res]["valLabel"]["value"]:results[res]["val"]["value"])
 			//console.log(results[res]["person"]["value"])
 			persons[results[res]["person"]["value"]][results[res]["rel"]["value"]].push(app)
-			//persons[results[res]["person"]["value"]]["img"]=results[res]["img"]["value"]
+			if(results[res]["style"]!=null){
+                                persons[results[res]["person"]["value"]]["style"]=results[res]["style"]["value"]
+			}
+			if(results[res]["img"]!=null){
+                            persons[results[res]["person"]["value"]]["img"]=results[res]["img"]["value"]
+			}
 		}
 		//console.log(JSON.stringify(persons))
 		for(pers in persons){
@@ -186,6 +192,8 @@ function displayGeometricObjects(){
 						markerIconPath=persons[pers][rel]
 						
 						//console.log(rel)
+					}else if(rel.includes("style")){
+					
 					}else{
 						for(val in persons[pers][rel]){
 							tooltip+="<li><a href=\""+rel+"\" target=\"_blank\">"+(rel in relmap?relmap[rel]:rel.substring(rel.lastIndexOf("#")+1))+"</a> - "
@@ -204,17 +212,57 @@ function displayGeometricObjects(){
 				iconSize: [38, 95], // size of the icon
 			});*/
 			//console.log(pers)
-			if(pers in personToWKT && personToWKT[pers]["type"]=="Point"){
-                            var marker = new L.marker(personToWKT[pers]["coordinates"]/*,{icon:markerIcon}*/); //opacity may be set to zero
+			if(pers in personToWKT && personToWKT[pers]["type"]=="Point" && personToWKT[pers]["coordinates"]!=null && personToWKT[pers]["coordinates"][0]!=null){
+                        console.log(markerIconPath)
+                        if(markerIconPath!=null){
+                        			var markerIcon = L.icon({
+				iconUrl: markerIconPath,
+				iconSize: [38, 95], // size of the icon
+			});
+			                            var marker = new L.marker(personToWKT[pers]["coordinates"],{icon:markerIcon}); //opacity may be set to zero
                             marker.bindPopup(tooltip, {maxWidth : 560});
                             marker.addTo(mymap);
                             markercollection.push(marker)
-			}else if(pers in personToWKT && personToWKT[pers]["type"]=="LineString"){
-			                               // console.log(personToWKT[pers])
-                            L.polyline( personToWKT[pers]["coordinates"],{color: 'blue',}).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap); 
-			}else if(pers in personToWKT ){//&& personToWKT[pers]["type"]=="Polygon"){
-                                L.polygon( personToWKT[pers]["coordinates"],{color: 'red',}).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap); //This works
-                                //console.log(personToWKT[pers])
+                        } else{
+                                                    var marker = new L.marker(personToWKT[pers]["coordinates"]/*,{icon:markerIcon}*/); //opacity may be set to zero
+                            marker.bindPopup(tooltip, {maxWidth : 560});
+                            marker.addTo(mymap);
+                            markercollection.push(marker)
+                        }
+
+
+			}else if(pers in personToWKT && personToWKT[pers]["type"]=="LineString" && personToWKT[pers]["coordinates"]!=null && Array.isArray(personToWKT[pers]["coordinates"])){
+			       if(persons[pers]["style"]!=null){
+                                    			                               try{
+                            L.polyline( personToWKT[pers]["coordinates"],JSON.parse("{"+persons[pers]["style"]+"}")).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap); 
+                            }catch(err){}
+			       }else{
+			       			                               try{
+                            L.polyline( personToWKT[pers]["coordinates"],{color: 'blue'}).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap); 
+                            }catch(err){}
+			       }
+
+			}else if(pers in personToWKT && personToWKT[pers]["coordinates"]!=null &&Array.isArray(personToWKT[pers]["coordinates"])){//&& personToWKT[pers]["type"]=="Polygon"){
+			if(persons[pers]["style"]!=null){
+			//console.log("{"+persons[pers]["style"]+"}")
+                                    			                               try{
+                                    			                               poly=L.polygon( personToWKT[pers]["coordinates"],JSON.parse("{"+persons[pers]["style"]+"}"));
+                                poly.bindPopup(tooltip, {maxWidth : 560}).addTo( mymap);
+                            }catch(err){}
+			       }else{
+			       			                               try{
+                            poly=L.polygon( personToWKT[pers]["coordinates"],{color: 'red',});
+                                poly.bindPopup(tooltip, {maxWidth : 560}).addTo( mymap);
+                            }catch(err){}
+			       }
+				/*		                               try{
+                                poly=L.polygon( personToWKT[pers]["coordinates"],{color: 'red',});
+                                poly.bindPopup(tooltip, {maxWidth : 560}).addTo( mymap);
+                                //poly.bindTooltip("Polygon",{permanent: true, direction:"center",opacity:0.4}).openTooltip();
+                                //This works
+                                }catch(err){
+                                console.log(err)
+                                }*/
 			}
 		}
 		                var group = new L.featureGroup(markercollection);
