@@ -8,79 +8,6 @@
   <script src="proj4.js"></script>
   
 <script>
-var relmap={
-"http://www.wikidata.org/wiki/Property:P512":"academic degree",
-"http://www.wikidata.org/wiki/Property:P1416":"affiliation",
-"http://www.wikidata.org/wiki/Property:P69":"alma mater",
-"http://www.wikidata.org/wiki/Property:P66":"ancestral home",
-"http://www.wikidata.org/wiki/Property:P450":"astronaut mission",
-"http://www.wikidata.org/wiki/Property:P166":"award received",
-"http://www.wikidata.org/wiki/Property:P3150":"birthday",
-"http://www.wikidata.org/wiki/Property:P1477":"birth name",
-"http://www.wikidata.org/wiki/Property:P509":"cause of death",
-"http://www.wikidata.org/wiki/Property:P40":"child",
-"http://www.wikidata.org/wiki/Property:P237":"coat of arms",
-"http://www.wikidata.org/wiki/Property:P1399":"convicted of",
-"http://www.wikidata.org/wiki/Property:P27":"country of citizenship",
-"http://www.wikidata.org/wiki/Property:P569":"date of birth",
-"http://www.wikidata.org/wiki/Property:P570":"date of death",
-"http://xmlns.com/foaf/0.1/depiction":"depiction",
-"http://www.wikidata.org/wiki/Property:P184":"doctoral advisor",
-"http://www.wikidata.org/wiki/Property:P185":"doctoral student",
-"http://www.wikidata.org/wiki/Property:P551":"dwelling",
-"http://www.wikidata.org/wiki/Property:P69":"educated at",
-"http://www.wikidata.org/wiki/Property:P108":"employer",
-"http://www.wikidata.org/wiki/Property:P582":"end time",
-"http://www.wikidata.org/wiki/Property:P172":"ethnic group",
-"http://www.wikidata.org/wiki/Property:P1340":"eye color",
-"http://www.wikidata.org/wiki/Property:P734":"family name",
-"http://www.wikidata.org/wiki/Property:P22":"father",
-"http://www.wikidata.org/wiki/Property:P101":"field of work",
-"http://www.wikidata.org/wiki/Property:P103":"first language",
-"http://www.wikidata.org/wiki/Property:P735":"given name",
-"http://www.wikidata.org/wiki/Property:P1290":"godparent",
-"http://www.wikidata.org/wiki/Property:P119":"grave location",
-"http://www.wikidata.org/wiki/Property:P1429":"has pet",
-"http://xmlns.com/foaf/0.1/homepage":"homepage",
-"http://www.wikidata.org/wiki/Property:P109":"image of persons signature",
-"http://xmlns.com/foaf/0.1/knows":"knows",
-"https://www.wikidata.org/wiki/Property:P1412":"languages written, spoken or signed",
-"http://www.wikidata.org/wiki/Property:P39":"mandate",
-"http://www.wikidata.org/wiki/Property:P1196":"manner of death",
-"http://www.wikidata.org/wiki/Property:P463":"member of",
-"http://www.wikidata.org/wiki/Property:P25":"mother",
-"http://www.wikidata.org/wiki/Property:P157":"murderer",
-"http://www.wikidata.org/wiki/Property:P1559":"name of the person in their native language",
-"http://www.wikidata.org/wiki/Property:P97":"noble title",
-"http://www.wikidata.org/wiki/Property:P1411":"nominated for",
-"http://www.wikidata.org/wiki/Property:P1971":"number of children",
-"http://www.wikidata.org/wiki/Property:P263":"official residence",
-"http://www.wikidata.org/wiki/Property:P106":"occupation",
-"http://www.wikidata.org/wiki/Property:P1344":"participant of",
-"http://www.wikidata.org/wiki/Property:P451":"partner",
-"http://www.wikidata.org/wiki/Property:P1442":"picture of the grave",
-"http://www.wikidata.org/wiki/Property:P19":"place of birth",
-"http://www.wikidata.org/wiki/Property:P20":"place of death",
-"http://www.wikidata.org/wiki/Property:P1303":"plays instrument",
-"http://www.wikidata.org/wiki/Property:P102":"political party",
-"http://www.wikidata.org/wiki/Property:P742":"pseudonym",
-"http://xmlns.com/foaf/0.1/publications":"publication",
-"http://www.wikidata.org/wiki/Property:P1038":"relative",
-"http://www.wikidata.org/wiki/Property:P140":"religion",
-"http://www.wikidata.org/wiki/Property:P551":"residence",
-"http://www.wikidata.org/wiki/Property:P91":"sexual orientation",
-"http://www.wikidata.org/wiki/Property:P21":"sex or gender",
-"http://www.wikidata.org/wiki/Property:P3373":"sibling",
-"http://www.wikidata.org/wiki/Property:P26":"spouse",
-"http://www.wikidata.org/wiki/Property:P580":"start time",
-"http://www.wikidata.org/wiki/Property:P3448":"stepparent",
-"http://www.wikidata.org/wiki/Property:P1066":"student of",
-"http://www.wikidata.org/wiki/Property:P1066":"teacher",
-"http://www.wikidata.org/wiki/Property:P793":"witnessed significant event",
-"http://www.wikidata.org/wiki/Property:P800":"work and magnum opus",
-"http://www.wikidata.org/wiki/Property:P412":"voice type",
-"http://www.wikidata.org/wiki/Property:P553":"website account on"
-}
 var epsg25832='+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs'
 var wgs84="+proj=gnom +lat_0=90 +lon_0=0 +x_0=6300000 +y_0=6300000 +ellps=WGS84 +datum=WGS84 +units=m +no_defs";
 var prefixList="PREFIX owl: <http://www.w3.org/2002/07/owl#>  PREFIX geo: <http://www.opengis.net/ont/geosparql#> PREFIX wd: <http://www.wikidata.org/entity/> PREFIX foaf: <http://xmlns.com/foaf/0.1/>  PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  PREFIX xml: <http://www.w3.org/XML/1998/namespace>  PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX xerl: <http://www.xerleben.de/schema/2.0_1#> PREFIX xplan5: <http://www.xplanung.de/xplangml/5/0#> "
@@ -103,6 +30,38 @@ function readSingleFile(e) {
 	  };
 	  reader.readAsText(file);
 }
+
+function getAllClasses(){
+	currdfstore.execute(prefixList+" SELECT DISTINCT ?cls ?clsLabel  WHERE { {?cls rdf:type owl:Class . OPTIONAL{?cls rdfs:label ?clsLabel. }} } ORDER BY ?cls", function(success,results){ 
+        console.log(success,results)
+		result="";
+				for(res in results){
+					if(!results[res]["cls"]["value"].startsWith("_")){
+					//prefix=results[res]["cls"]["value"].lastIndexOf('#')+1);
+					/*if(prefixList.contains(results[res]["cls"]["value"].lastIndexOf('#')+1)){
+						prefixList..substring(results[res]["cls"]["value"].lastIndexOf('#')+1)-
+					}*/
+						result+="<option value=\""+results[res]["cls"]["value"]+"\">"+((results[res]["clsLabel"]!=null && results[res]["clsLabel"]["value"]!=null)?
+						results[res]["clsLabel"]["value"]:results[res]["cls"]["value"].substring(results[res]["cls"]["value"].lastIndexOf('#')+1))+"</option>"
+					}
+				}
+		$('#classeslist').html(result);
+	});
+}
+
+function getAllProperties(){
+	currdfstore.execute(prefixList+" SELECT DISTINCT ?prop ?proplabel  WHERE { {?cls rdf:type owl:Class . ?ind rdf:type ?cls . ?ind ?prop ?clsLabel. OPTIONAL{?prop rdfs:label ?proplabel .} } }  ORDER BY ?prop ", function(success,results){ 
+        console.log(success,results)
+		result="";
+				for(res in results){
+					result+="<option value=\""+results[res]["prop"]["value"]+"\">"+((results[res]["proplabel"]!=null && results[res]["proplabel"]["value"]!=null)?
+						results[res]["proplabel"]["value"]:results[res]["prop"]["value"].substring(results[res]["prop"]["value"].lastIndexOf('#')+1))+"</option>"
+				}
+		$('#attributelist').html(result);
+	});
+}
+
+
 
 function readRDFFile(e){
 	var file = e.target.files[0];
@@ -182,7 +141,15 @@ function displayGeometricObjects(){
 			}
 		}
 		//console.log(JSON.stringify(persons))
-		for(pers in persons){
+		displayQueryResult(persons)
+
+
+
+	});
+	}
+	
+function displayQueryResult(persons){
+				for(pers in persons){
 			markerIconPath=""
 			//console.log(JSON.stringify(persons))
 			tooltip="<html><b><a href=\""+pers+"\" target=\"_blank\">"+pers.substring(pers.indexOf("#")+1)+"</a></b><ul>"
@@ -196,7 +163,7 @@ function displayGeometricObjects(){
 					
 					}else{
 						for(val in persons[pers][rel]){
-							tooltip+="<li><a href=\""+rel+"\" target=\"_blank\">"+(rel in relmap?relmap[rel]:rel.substring(rel.lastIndexOf("#")+1))+"</a> - "
+							tooltip+="<li><a href=\""+rel+"\" target=\"_blank\">"+rel.substring(rel.lastIndexOf("#")+1)+"</a> - "
 							for(vall in persons[pers][rel][val]){
 								tooltip+="<a href=\""+vall+"\" target=\"_blank\">"+(persons[pers][rel][val][vall].includes("#")?persons[pers][rel][val][vall].substring(persons[pers][rel][val][vall].lastIndexOf('#')+1):persons[pers][rel][val][vall])+"</a>"
 							}
@@ -213,13 +180,22 @@ function displayGeometricObjects(){
 			});*/
 			//console.log(pers)
 			if(pers in personToWKT && personToWKT[pers]["type"]=="Point" && personToWKT[pers]["coordinates"]!=null && personToWKT[pers]["coordinates"][0]!=null){
-                        console.log(markerIconPath)
-                        if(markerIconPath!=null){
-                        			var markerIcon = L.icon({
-				iconUrl: markerIconPath,
-				iconSize: [38, 95], // size of the icon
-			});
-			                            var marker = new L.marker(personToWKT[pers]["coordinates"],{icon:markerIcon}); //opacity may be set to zero
+                        if(markerIconPath!=null && markerIconPath!=""){
+							if(markerIconPath.startsWith("<svg")){
+								markerIconPath = encodeURI("data:image/svg+xml," +
+								"<svg xmlns='http://www.w3.org/2000/svg' width='1000' height='1000'><circle   cx='0' cy='-2.0' r='100'  /></svg>"
+								
+								).replace('#','%23');
+								//<svg xmlns='http://www.w3.org/2000/svg' width='1000' height='1000'><path d='M2,111 h300 l-242.7,176.3 92.7,-285.3 92.7,285.3 z' fill='#000000'/></svg>"
+
+							}
+							console.log(markerIconPath)
+                        	var markerIcon = L.icon({
+									iconUrl: markerIconPath,
+									iconSize: [38, 95], // size of the icon
+							});
+							
+			                var marker = new L.marker(personToWKT[pers]["coordinates"],{icon:markerIcon}); //opacity may be set to zero
                             marker.bindPopup(tooltip, {maxWidth : 560});
                             marker.addTo(mymap);
                             markercollection.push(marker)
@@ -255,24 +231,69 @@ function displayGeometricObjects(){
                                 poly.bindPopup(tooltip, {maxWidth : 560}).addTo( mymap);
                             }catch(err){}
 			       }
-				/*		                               try{
-                                poly=L.polygon( personToWKT[pers]["coordinates"],{color: 'red',});
-                                poly.bindPopup(tooltip, {maxWidth : 560}).addTo( mymap);
-                                //poly.bindTooltip("Polygon",{permanent: true, direction:"center",opacity:0.4}).openTooltip();
-                                //This works
-                                }catch(err){
-                                console.log(err)
-                                }*/
+
 			}
 		}
-		                var group = new L.featureGroup(markercollection);
-                
+		var group = new L.featureGroup(markercollection);
+      
 		mymap.setView([53.139779421715, 8.7302276870788], 13);
+		        getAllClasses();  
+				getAllProperties(); 
 		//mymap.fitBounds(group.getBounds());
-
-
-	});
+	}
 	
+function clearMap() {
+    for(i in mymap._layers) {
+        if(mymap._layers[i]._path != undefined) {
+            try {
+                mymap.removeLayer(mymap._layers[i]);
+            }
+            catch(e) {
+                console.log("problem with " + e + mymap._layers[i]);
+            }
+        }
+    }
+	for(marker in markercollection){
+		mymap.removeLayer(markercollection[marker])
+	}
+}
+
+
+function uiQuery(){
+clearMap();
+	classesToQuery=$('#classeslist').val();
+	console.log(classesToQuery);
+	queryString=prefixList+" SELECT DISTINCT ?person ?rel ?style ?img ?val ?valLabel WHERE { "
+	for(cls in classesToQuery){
+		queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val .  OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> xplan5:style ?style .} OPTIONAL{<"+classesToQuery[cls]+"> xplan5:image ?img .} } UNION "
+	}
+	queryString=queryString.substring(0,queryString.length-6)
+	queryString+="}"
+	console.log(queryString)
+	currdfstore.execute(queryString, function(success,results){ 
+        console.log(success,results)
+		persons={}
+		for(res in results){
+		//console.log(results[res])
+			if(!(results[res]["person"]["value"] in persons)){
+				persons[results[res]["person"]["value"]]={}
+			}
+			if(!(results[res]["rel"]["value"] in persons[results[res]["person"]["value"]])){
+				persons[results[res]["person"]["value"]][results[res]["rel"]["value"]]=[]
+			}
+			app={}
+			app[results[res]["val"]["value"]]=(results[res]["valLabel"]!=null?results[res]["valLabel"]["value"]:results[res]["val"]["value"])
+			//console.log(results[res]["person"]["value"])
+			persons[results[res]["person"]["value"]][results[res]["rel"]["value"]].push(app)
+			if(results[res]["style"]!=null){
+                                persons[results[res]["person"]["value"]]["style"]=results[res]["style"]["value"]
+			}
+			if(results[res]["img"]!=null){
+                            persons[results[res]["person"]["value"]]["img"]=results[res]["img"]["value"]
+			}
+		}
+		displayQueryResult(persons);
+	});
 }
 
 </script>
@@ -281,8 +302,8 @@ function displayGeometricObjects(){
 </head>
 <body>
 <h2 align="center">XPlanung Mapview based on LinkedData</h2>
-
-<div id="mapid" style="height:80%">
+<table height="100%" width="100%" align="top" valign="top"><tr><td width="80%" height="80%" align="top" valign="top" >
+<div id="mapid" style="height:100%" width="80%">
 <script>
 
 	var mymap = L.map('mapid').setView([51.505, -0.09], 13);
@@ -296,7 +317,17 @@ function displayGeometricObjects(){
 	}).addTo(mymap);
 
 </script>
-</div>
-RDF File Upload:<input type="file"  id="file-input" />
+</div></td><td align="top" valign="top"><h3>Searching in the database</h3><table height="100%"><tr height="100%">
+<td>WHAT do you want?</td><td><select id="classeslist" multiple size="30" style="height: 100%;"></select></td></tr>
+<!--<tr><td>WHERE is it?</td><td>Coordinate: <input type="coordinate"/><br/>Boundingboxsize (m):<input type="number" min="1"/></td></tr>-->
+<tr><td>More restrictions?</td><td><select id="attributelist"></select><br/><input type="text"/></td></tr>
+<tr><td>Query: </td><td><button id="querybutton" onclick="uiQuery()">Query</button></td></tr>
+</table>
+</td></tr><tr><td colspan="2">
+RDF File Upload:<input type="file"  id="file-input" /><br/>
+OR:
+Import From GML File: <input type="file"  id="gml-input" />
+<select id="importtype"><option value="aaa">AAA-Data</option><option value="XPlanung">XPlanung</option><option value="XErleben">XErleben</option><option value="gml" selected="selected">GML</option></select>
+</td></tr></table>
 </body>
 </html>
