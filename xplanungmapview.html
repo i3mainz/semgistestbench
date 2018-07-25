@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <script src="rdfstore_min.js"></script>
   <script src="proj4.js"></script>
+    <script src="xml2json.js"></script>
   
 <script>
 var epsg25832='+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs'
@@ -13,10 +14,15 @@ var wgs84="+proj=gnom +lat_0=90 +lon_0=0 +x_0=6300000 +y_0=6300000 +ellps=WGS84 
 var prefixList="PREFIX owl: <http://www.w3.org/2002/07/owl#>  PREFIX geo: <http://www.opengis.net/ont/geosparql#> PREFIX wd: <http://www.wikidata.org/entity/> PREFIX foaf: <http://xmlns.com/foaf/0.1/>  PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  PREFIX xml: <http://www.w3.org/XML/1998/namespace>  PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX xerl: <http://www.xerleben.de/schema/2.0_1#> PREFIX xplan5: <http://www.xplanung.de/xplangml/5/0#> "
 var currdfstore=null;
 var wkt = new Wkt.Wkt();
+var firstcoords=[]
 $( function() {
 	  document.getElementById('file-input')
 	  .addEventListener('change', readRDFFile, false);
+	  document.getElementById('gml-input')
+	  .addEventListener('change', readGMLFile, false);
+
 });
+
 
 function readSingleFile(e) {
 	  var file = e.target.files[0];
@@ -49,6 +55,18 @@ function getAllClasses(){
 	});
 }
 
+function importGML(xml){
+console.log(xml)
+xmlDoc = $.parseXML( xml ),
+    $xml = $( xmlDoc );
+    $($xml).each(function(){
+       alert($(this).find("Page[Name]>controls>name").text());
+     });
+    json = xml2json(xmlDoc);
+	console.log(json);
+	
+}
+
 function getAllProperties(){
 	currdfstore.execute(prefixList+" SELECT DISTINCT ?prop ?proplabel  WHERE { {?cls rdf:type owl:Class . ?ind rdf:type ?cls . ?ind ?prop ?clsLabel. OPTIONAL{?prop rdfs:label ?proplabel .} } }  ORDER BY ?prop ", function(success,results){ 
         console.log(success,results)
@@ -79,7 +97,29 @@ function readRDFFile(e){
 			});
 		});
 	};	
-	  reader.readAsText(file);
+	reader.readAsText(file);
+	 
+
+}
+
+function readGMLFile(e){
+	console.log(e)
+	var file = e.target.files[0];
+	console.log(file)
+	if (!file) {
+	    return;
+	}
+	var reader = new FileReader();
+	
+	reader.onload = function(e) {
+	    var contents = e.target.result;
+		console.log(contents)
+		importGML(contents);
+	};	
+	text=reader.readAsText(file);
+
+	//console.log(text)
+		   
 
 }
 
@@ -106,6 +146,7 @@ function findLastNonAlpha(input){
 function displayGeometricObjects(){
 	personToWKT={}
 	markercollection=[]
+	firstpoint=false;
 	currdfstore.execute(prefixList+" SELECT  ?pers ?wkt  WHERE { {?pers ?p ?lagep . ?lagep geo:asWKT ?wkt . }UNION{?pers ?p ?lagep1 . ?lagep1 ?o ?lagep . ?lagep geo:asWKT ?wkt . } }", function(success,results){ 
                                 //console.log(success,results)
 				for(res in results){
@@ -114,6 +155,11 @@ function displayGeometricObjects(){
 					wkt.read(results[res]["wkt"]["value"]);
 				
 					personToWKT[results[res]["pers"]["value"]]=wkt.toJson();
+					if(!firstpoint /*&& personToWKT[pers]["coordinates"]!=null && personToWKT[pers]["coordinates"][0]!=null*/){
+				firstcoords=personToWKT[results[res]["pers"]["value"]]["coordinates"][0]
+				mymap.setView(firstcoords, 13);
+				firstpoint=true;
+			}
 					}catch(err){
 					}
 				}
@@ -140,18 +186,17 @@ function displayGeometricObjects(){
                             persons[results[res]["person"]["value"]]["img"]=results[res]["img"]["value"]
 			}
 		}
-		//console.log(JSON.stringify(persons))
+
 		displayQueryResult(persons)
-
-
-
 	});
+		        getAllClasses();  
+				getAllProperties();    
 	}
 	
 function displayQueryResult(persons){
+			firstpoint=false;
 				for(pers in persons){
 			markerIconPath=""
-			//console.log(JSON.stringify(persons))
 			tooltip="<html><b><a href=\""+pers+"\" target=\"_blank\">"+pers.substring(pers.indexOf("#")+1)+"</a></b><ul>"
 			for(rel in persons[pers]){
 				//console.log(rel)		
@@ -173,13 +218,8 @@ function displayQueryResult(persons){
 					
 			}
 			tooltip+="</ul></html>"
-			//console.log(markerIconPath)
-			/*var markerIcon = L.icon({
-				iconUrl: markerIconPath,
-				iconSize: [38, 95], // size of the icon
-			});*/
-			//console.log(pers)
 			if(pers in personToWKT && personToWKT[pers]["type"]=="Point" && personToWKT[pers]["coordinates"]!=null && personToWKT[pers]["coordinates"][0]!=null){
+						
                         if(markerIconPath!=null && markerIconPath!=""){
 							if(markerIconPath.startsWith("<svg")){
 								markerIconPath = encodeURI("data:image/svg+xml," +
@@ -235,11 +275,7 @@ function displayQueryResult(persons){
 			}
 		}
 		var group = new L.featureGroup(markercollection);
-      
-		mymap.setView([53.139779421715, 8.7302276870788], 13);
-		        getAllClasses();  
-				getAllProperties(); 
-		//mymap.fitBounds(group.getBounds());
+
 	}
 	
 function clearMap() {
