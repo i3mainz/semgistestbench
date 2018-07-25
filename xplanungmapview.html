@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <script src="rdfstore_min.js"></script>
   <script src="proj4.js"></script>
+  <script src="sax.js"></script>
   
 <script>
 var relmap={
@@ -144,9 +145,18 @@ function findLastNonAlpha(input){
 	}
 }
 
+function importGML(){
+
+graph.add(store.rdf.createTriple( store.rdf.createNamedNode(store.rdf.resolve("ex:Alice")),
+								  store.rdf.createNamedNode(store.rdf.resolve("foaf:name")),
+								  store.rdf.createLiteral("alice") ));
+
+}
+
 function displayGeometricObjects(){
 	personToWKT={}
 	currdfstore.execute(prefixList+" SELECT  ?pers ?wkt  WHERE { ?pers xplan5:position ?lagep . ?lagep geo:asWKT ?wkt .  }", function(success,results){ 
+			console.log(success,results)
 				for(res in results){
 					console.log(results[res])
 					console.log(results[res]["wkt"]["value"])
