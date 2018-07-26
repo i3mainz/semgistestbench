@@ -531,7 +531,7 @@ function clearConstraints(){
 <body>
 <h2 align="center">XPlanung Mapview based on LinkedData</h2>
 <table height="80%" width="100%" align="top" valign="top"><tr><td width="80%" height="80%" align="top" valign="top" >
-<div id="mapid" style="height:80%" width="80%">
+<div id="mapid" style="height:90%" width="80%">
 <script>
 
 	var mymap = L.map('mapid').setView([51.505, -0.09], 13);
@@ -545,15 +545,15 @@ function clearConstraints(){
 	}).addTo(mymap);
 
 </script>
-</div></td><td align="top" valign="top"><h3>Searching in the database</h3><table height="80%"><tr height="60%" valign="top" align="top">
-<td>WHAT?</td><td height="60%"><select id="classeslist" multiple size="30" style="height: 100%;"></select></td></tr>
+</div></td><td align="top" valign="top" width="20%" height="70%" ><h3>Searching in the database</h3><table height="100%"><tr  valign="top" align="top">
+<td>WHAT?</td><td><select id="classeslist" multiple  size=15 style="height: 70%;"></select></td></tr>
 <tr  valign="top" align="top"><td>WHERE?</td><td>Coordinate: <input id="coordinate" disabled="disabled" size="30"/><button onclick="clearCoords()">Clear</button><br/>Boundingboxsize (m):<input type="number" min="1" value="100" id="buffersize"/></td></tr>
 <tr  valign="top" align="top"><td>Which features?</td><td><select id="classeslist2"></select><select id="attributelist"></select><br/><input type="text" id="constrainttext"/><button id="addconstraint" onClick="addConstraint()">Add</button>
 <button id="clearconstraints" onclick="clearConstraints()">Clear</button></td></tr>
 <tr  valign="top" align="top"><td colspan="2"><ul id="constraints"></ul></td></tr>
 <tr  valign="top" align="top"><td>Query: </td><td><button id="querybutton" onclick="uiQuery()">Query</button></td></tr>
 </table>
-</td></tr><tr><td colspan="2">
+</td></tr></table><table><tr><td colspan="2">
 RDF File Upload:<input type="file"  id="file-input" /><br/>
 OR:
 Import From GML File: <input type="file"  id="gml-input" />
