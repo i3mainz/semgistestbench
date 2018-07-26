@@ -32,7 +32,7 @@ $( function() {
 	  .addEventListener('change', readGMLFile, false);
 	  mymap.on('click', function(e) {
 	  if(curposmarker!=null){
-				  map.removeLayer(marker);
+			mymap.removeLayer(curposmarker);
 	  }
 	$('#coordinate').val("["+e.latlng.lat + ", " + e.latlng.lng+"]");
 	 bboxpoint=turf.point(JSON.parse("["+e.latlng.lat + ", " + e.latlng.lng+"]"));
