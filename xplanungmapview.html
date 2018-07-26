@@ -24,14 +24,19 @@ var bboxpoint;
 var bboxbuffer;
 var constraints={}
 var curQueryResultTTL=""
+var curposmarker=null;
 $( function() {
 	  document.getElementById('file-input')
 	  .addEventListener('change', readRDFFile, false);
 	  document.getElementById('gml-input')
 	  .addEventListener('change', readGMLFile, false);
 	  mymap.on('click', function(e) {
+	  if(curposmarker!=null){
+				  map.removeLayer(marker);
+	  }
 	$('#coordinate').val("["+e.latlng.lat + ", " + e.latlng.lng+"]");
 	 bboxpoint=turf.point(JSON.parse("["+e.latlng.lat + ", " + e.latlng.lng+"]"));
+	curposmarker= new L.marker(e.latlng).addTo(mymap);
 	 //bboxbuffer=turf.buffer(bboxpoint, 100, {units: "meters"})
 });
 
@@ -365,11 +370,11 @@ clearMap();
 	for(cls in classesToQuery){
 		console.log(cls)
 		if($('#whichactive').is(':checked') && classesToQuery[cls] in constraints){
-						queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val .  OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> xplan5:style ?style .} OPTIONAL{<"+classesToQuery[cls]+"> xplan5:image ?img .} "
+						queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val .  OPTIONAL{?val ?rel2 ?val2 .} OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> xplan5:style ?style .} OPTIONAL{<"+classesToQuery[cls]+"> xplan5:image ?img .} "
 						queryString+=constraints[classesToQuery[cls]]
 						queryString+="} UNION"
 		}else{
-			queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val .  OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> xplan5:style ?style .} OPTIONAL{<"+classesToQuery[cls]+"> xplan5:image ?img .} } UNION "
+			queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val . OPTIONAL{?val ?rel2 ?val2 .} OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> xplan5:style ?style .} OPTIONAL{<"+classesToQuery[cls]+"> xplan5:image ?img .} } UNION "
 		}
 	}
 	queryString=queryString.substring(0,queryString.length-6)
@@ -533,6 +538,8 @@ function clearMap() {
 
 function clearCoords(){
 	$('#coordinate').val("")
+	mymap.removeLayer(curposmarker);
+	curposmarker=null;
 }
 
 function addConstraint(){
