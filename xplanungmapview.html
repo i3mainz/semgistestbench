@@ -130,6 +130,13 @@ console.log(xml)
 	
 }
 
+function importGeoJSON(geojson){
+console.log(geojson)
+JSON.parse(geojson)
+
+	
+}
+
 function getLiteral(value){
 	if(Number.isInteger(value.toString())){
 		return "\""+value+"\"^^xsd:integer"
@@ -366,7 +373,7 @@ clearMap();
 		}
 	}
 	queryString=queryString.substring(0,queryString.length-6)
-	queryString+="}"
+	queryString+="} ORDER BY ?person "
 	console.log(queryString)
 	currdfstore.execute(queryString, function(success,results){ 
         console.log(success,results)
@@ -551,26 +558,47 @@ function exportQueryResult(){
 		saveTextAsFile(curQueryResultTTL,"ttl")
 	}
 	if($( "#queryexportformat option:selected" ).val()=="gml"){
-		gml="<?xml version=\"1.0\"?><gml:FeatureCollection>\n"
+		gml="<?xml version=\"1.0\"  encoding=\"utf-8\" standalone=\"yes\" ?><gml:FeatureCollection xmlns:gml=\"http://www.opengis.net/gml/3.2\">\n"
 		remembersub1=""
+		curgmlid="";
+		towrite=[]
+		wrotetype=false;
 		splitt=curQueryResultTTL.split("\n")
 		for(spl in splitt){
 			console.log(splitt[spl])
 			subsplit=splitt[spl].split(" ")
-								console.log(subsplit)
+			console.log(subsplit)
 			//if(remembersub1="" || rememberremembersub1=subsplit[1]){
 			try{
-				if(splitt[spl].includes("type")){
+			if(splitt[spl].includes("NamedIndividual") || splitt[spl].includes("label") || splitt[spl].includes("gml:id")){
+				continue;
+			}
+			gmlid=subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","");
+			if(curgmlid!=gmlid){
+				wrotetype=false;
+				curgmlid=gmlid;
+			}
+			if(curgmlid==gmlid && !wrotetype && !splitt[spl].includes("type")){
+				towrite.push(splitt[spl])
+			}else if(!splitt[spl].includes("type")){
+					gml+="<"+subsplit[1].replace("<","").replace(">","")+">"+(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))+"</"+subsplit[1].replace("<","").replace(">","")+">\n"
+			}
+			if(splitt[spl].includes("type")){
 					console.log("IN TYPE CLAUSE")
 					if(!remembersub1==""){
 						gml+="</"+remembersub1.replace("<","").replace(">","")+">\n"
 					}
 
 					gml+="<"+subsplit[2].replace("<","").replace(">","")+" gml:id=\""+subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")+"\">\n"
-					remembersub1=subsplit[0]
-				}else{
-					gml+="<"+subsplit[1].replace("<","").replace(">","")+">"+(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))+"</"+subsplit[1].replace("<","").replace(">","")+">\n"
-				}
+					remembersub1=subsplit[2]
+					wrotetype=true;
+					for(item in towrite){
+						subsplit=towrite[item].split(" ")
+						gml+="<"+subsplit[1].replace("<","").replace(">","")+">"+(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))+"</"+subsplit[1].replace("<","").replace(">","")+">\n"
+					}
+					towrite=[]
+			}
+
 			}catch(err){}
 		}
 		gml+="</gml:FeatureCollection>"
@@ -587,12 +615,31 @@ function exportQueryResult(){
         // Create GeoJSON object from marker
 		try{
         var geojson = layer.toGeoJSON();
+		splitt=curQueryResultTTL.split("\n")
+		for(spl in splitt){
+			console.log(splitt[spl])
+			subsplit=splitt[spl].split(" ")
+								console.log(subsplit)
+			//if(remembersub1="" || rememberremembersub1=subsplit[1]){
+			try{
+				if(splitt[spl].includes("type")){
+					console.log("IN TYPE CLAUSE")
+					geojson["properties"]["id"]=subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")
+				}else if(splitt[spl].includes("label")){
+					continue;
+				}else{
+					geojson["properties"][subsplit[1].replace("<","").replace(">","")]=(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))
+					//gml+="<"+subsplit[1].replace("<","").replace(">","")+">"+(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))+"</"+subsplit[1].replace("<","").replace(">","")+">\n"
+				}
+			}catch(err){}
+		}
+
         // Push GeoJSON object to collection
         collection.features.push(geojson);
 		}catch(err){}
 		});
 		console.log(collection)
-		saveTextAsFile(JSON.stringify(collection),"geojson")
+		saveTextAsFile(JSON.stringify(collection, null, 2),"geojson")
 	}
 }
 
