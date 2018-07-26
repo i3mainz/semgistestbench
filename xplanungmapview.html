@@ -7,21 +7,35 @@
   <script src="rdfstore_min.js"></script>
   <script src="proj4.js"></script>
     <script src="xml2json.js"></script>
+	    <script src="turf.min.js"></script>
   
 <script>
 var epsg25832='+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs'
 var wgs84="+proj=gnom +lat_0=90 +lon_0=0 +x_0=6300000 +y_0=6300000 +ellps=WGS84 +datum=WGS84 +units=m +no_defs";
 var prefixList="PREFIX owl: <http://www.w3.org/2002/07/owl#>  PREFIX geo: <http://www.opengis.net/ont/geosparql#> PREFIX wd: <http://www.wikidata.org/entity/> PREFIX foaf: <http://xmlns.com/foaf/0.1/>  PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  PREFIX xml: <http://www.w3.org/XML/1998/namespace>  PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX xerl: <http://www.xerleben.de/schema/2.0_1#> PREFIX xplan5: <http://www.xplanung.de/xplangml/5/0#> "
+var prefixMap={"http://www.w3.org/2002/07/owl#":"owl", "http://www.opengis.net/ont/geosparql#":"geo" 
+, "http://www.wikidata.org/entity/":"wd", "http://xmlns.com/foaf/0.1/":"foaf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#":"rdf", 
+"http://www.w3.org/XML/1998/namespace":"xml", "http://www.w3.org/2001/XMLSchema#":"xsd", "http://www.w3.org/2000/01/rdf-schema#":"rdfs" ,
+ "http://www.xerleben.de/schema/2.0_1#":"xerl", "http://www.xplanung.de/xplangml/5/0#":"xplan5", "http://www.opengis.net/gml/3.2":"gml" }; 
 var currdfstore=null;
 var wkt = new Wkt.Wkt();
 var firstcoords=[]
+var bboxpoint;
+var bboxbuffer;
+var constraints=[]
 $( function() {
 	  document.getElementById('file-input')
 	  .addEventListener('change', readRDFFile, false);
 	  document.getElementById('gml-input')
 	  .addEventListener('change', readGMLFile, false);
+	  mymap.on('click', function(e) {
+	$('#coordinate').val("["+e.latlng.lat + ", " + e.latlng.lng+"]");
+	 bboxpoint=turf.point(JSON.parse("["+e.latlng.lat + ", " + e.latlng.lng+"]"));
+	 //bboxbuffer=turf.buffer(bboxpoint, 100, {units: "meters"})
+});
 
 });
+
 
 
 function readSingleFile(e) {
@@ -43,16 +57,66 @@ function getAllClasses(){
 		result="";
 				for(res in results){
 					if(!results[res]["cls"]["value"].startsWith("_")){
-					//prefix=results[res]["cls"]["value"].lastIndexOf('#')+1);
-					/*if(prefixList.contains(results[res]["cls"]["value"].lastIndexOf('#')+1)){
-						prefixList..substring(results[res]["cls"]["value"].lastIndexOf('#')+1)-
-					}*/
+					prefix=results[res]["cls"]["value"].substring(0,results[res]["cls"]["value"].lastIndexOf('#')+1);
+					addpref=""
+					if(prefix in prefixMap){
+						addpref=prefixMap[prefix]+":"
+					}
 						result+="<option value=\""+results[res]["cls"]["value"]+"\">"+((results[res]["clsLabel"]!=null && results[res]["clsLabel"]["value"]!=null)?
-						results[res]["clsLabel"]["value"]:results[res]["cls"]["value"].substring(results[res]["cls"]["value"].lastIndexOf('#')+1))+"</option>"
+						addpref+results[res]["clsLabel"]["value"]:addpref+results[res]["cls"]["value"].substring(results[res]["cls"]["value"].lastIndexOf('#')+1))+"</option>"
 					}
 				}
 		$('#classeslist').html(result);
+		$('#classeslist2').html(result);
 	});
+}
+
+function exportAsTTL(){
+	currdfstore.execute(prefixList+" SELECT DISTINCT ?sub ?pred ?obj  WHERE { ?sub ?pred ?obj . } ", function(success,results){ 
+        console.log(success,results)
+		result="";
+		tosave=""
+				for(res in results){
+					//console.log(results[res]["obj"])
+					if(results[res]["sub"]["value"]!=undefined && results[res]["pred"]["value"]!=undefined && results[res]["obj"]["value"]!=undefined){
+					tosave+="<"+results[res]["sub"]["value"]+"> <"+results[res]["pred"]["value"]+"> ";
+					if(!results[res]["obj"]["value"].includes("http") || results[res]["pred"]["value"].includes("asGML")){
+						tosave+="\""+results[res]["obj"]["value"].replace(new RegExp("\"", 'g'),"\\\"")+"\"^^<"+(results[res]["obj"]["type"]!=undefined?results[res]["obj"]["type"]:"http://www.w3.org/2001/XMLSchema#string")+"> . \n";
+					}else{
+						tosave+="<"+results[res]["obj"]["value"]+"> . \n";
+					}
+					}
+					
+				}
+		saveTextAsFile(tosave);
+	});
+}
+
+function saveTextAsFile(tosave)
+{
+    var textFileAsBlob = new Blob([tosave], {type:'text/plain'});
+    var fileNameToSaveAs = "res.ttl";
+
+    var downloadLink = document.createElement("a");
+    downloadLink.download = fileNameToSaveAs;
+    downloadLink.innerHTML = "Download File";
+    if (window.webkitURL != null)
+    {
+        // Chrome allows the link to be clicked
+        // without actually adding it to the DOM.
+        downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+    }
+    else
+    {
+        // Firefox requires the link to be added to the DOM
+        // before it can be clicked.
+        downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+        downloadLink.onclick = destroyClickedElement;
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+    }
+
+    downloadLink.click();
 }
 
 function importGML(xml){
@@ -60,20 +124,104 @@ console.log(xml)
 xmlDoc = $.parseXML( xml ),
     $xml = $( xmlDoc );
     $($xml).each(function(){
-       alert($(this).find("Page[Name]>controls>name").text());
+	console.log($(this));
+       console.log($(this).text());
      });
     json = xml2json(xmlDoc);
 	console.log(json);
+	$(xml).find('person')
+	 parser = new DOMParser();
+    xmlDoc = parser.parseFromString(xml, "text/xml");
+	walkDOM(xmlDoc)
 	
 }
+
+function getLiteral(value){
+	if(Number.isInteger(value)){
+		return "\""+value+"\"^^xsd:integer"
+	}
+	if (!isNaN(value) && value.toString().indexOf('.') != -1){
+		return "\""+value+"\"^^xsd:double"
+	}
+	return "\""+value+"\"^^xsd:string"
+}
+
+
+function walkDOM(main) {
+    var arr = [];
+	var result=[]
+	depth=0
+	parentNodeName=""
+	strconvertmode=false;
+    var loop = function(main,depth,parentNodeName,strconvertmode,toadd) {
+        do {
+			console.log(main+" - "+depth)
+			try{
+							console.log(main.getNamespaceURI())
+							}catch(err){}
+            arr.push(main);
+			end=false;
+			if(depth==3){
+				try{
+				if(main.getAttribute("gml:id")==null){
+								uuid=generateUUID()
+								result+="<"+uuid+"> rdf:type <"+main.nodeName+"> . \n"
+								parentNodeName=main.getAttribute("gml:id")
+				}else{
+								result+="<"+main.getAttribute("gml:id")+"> rdf:type <"+main.nodeName+"> . \n"
+								parentNodeName=uuid
+				}
+
+				}catch(err){}
+			}
+			if(depth>3){				
+				if(main.hasChildNodes()==1){
+					result+="<"+parentNodeName+"> <"+main.nodeName+"> "+getLiteral(main.firstChild.nodeValue)+" . \n"
+					end=true;
+				}else if(main.nodeName.startsWith("gml:")){
+					strconvertmode=true;
+					toadd=""
+				}else{
+					//result+="<"+main.getAttribute("gml:id")+"> rdf:type <"+main.nodeName+"> . \n"
+					//parentNodeName=main.getAttribute("gml:id")
+				}
+			}
+			if(strconvertmode){
+				toadd+="<"+main.nodeName+"> "+main.firstChild.nodeValue+"> . \n"
+			}
+            if(!end && main.hasChildNodes())
+                loop(main.firstChild,depth+1,parentNodeName,strconvertmode,toadd);
+			
+        }
+        while (main = main.nextSibling);
+    }
+    loop(main,depth,parentNodeName,strconvertmode,"");
+	console.log(result)
+    return arr;
+}
+
+function generateUUID() {
+    var d = new Date().getTime();
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = (d + Math.random()*16)%16 | 0;
+        d = Math.floor(d/16);
+        return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+    });
+    return uuid;
+};
 
 function getAllProperties(){
 	currdfstore.execute(prefixList+" SELECT DISTINCT ?prop ?proplabel  WHERE { {?cls rdf:type owl:Class . ?ind rdf:type ?cls . ?ind ?prop ?clsLabel. OPTIONAL{?prop rdfs:label ?proplabel .} } }  ORDER BY ?prop ", function(success,results){ 
         console.log(success,results)
 		result="";
 				for(res in results){
+					prefix=results[res]["prop"]["value"].substring(0,results[res]["prop"]["value"].lastIndexOf('#')+1);
+					addpref=""
+					if(prefix in prefixMap){
+						addpref=prefixMap[prefix]+":"
+					}
 					result+="<option value=\""+results[res]["prop"]["value"]+"\">"+((results[res]["proplabel"]!=null && results[res]["proplabel"]["value"]!=null)?
-						results[res]["proplabel"]["value"]:results[res]["prop"]["value"].substring(results[res]["prop"]["value"].lastIndexOf('#')+1))+"</option>"
+						addpref+results[res]["proplabel"]["value"]:addpref+results[res]["prop"]["value"].substring(results[res]["prop"]["value"].lastIndexOf('#')+1))+"</option>"
 				}
 		$('#attributelist').html(result);
 	});
@@ -90,8 +238,10 @@ function readRDFFile(e){
 	reader.onload = function(e) {
 	    var contents = e.target.result;
 	    rdfstore.create(function(err, store) {
-		currdfstore=store;
-		store.load('text/turtle', contents, function(s,d){
+		if(currdfstore==null){
+			currdfstore=store;			
+		}
+		currdfstore.load('text/turtle', contents, function(s,d){
 			console.log(s,d);
 			displayGeometricObjects()
 			});
@@ -187,115 +337,16 @@ function displayGeometricObjects(){
 			}
 		}
 
-		displayQueryResult(persons)
+		displayQueryResult(persons,false)
 	});
 		        getAllClasses();  
 				getAllProperties();    
 	}
-	
-function displayQueryResult(persons){
-			firstpoint=false;
-				for(pers in persons){
-			markerIconPath=""
-			tooltip="<html><b><a href=\""+pers+"\" target=\"_blank\">"+pers.substring(pers.indexOf("#")+1)+"</a></b><ul>"
-			for(rel in persons[pers]){
-				//console.log(rel)		
-					if(rel.includes("img")){
-						markerIconPath=persons[pers][rel]
-						
-						//console.log(rel)
-					}else if(rel.includes("style")){
-					
-					}else{
-						for(val in persons[pers][rel]){
-							tooltip+="<li><a href=\""+rel+"\" target=\"_blank\">"+rel.substring(rel.lastIndexOf("#")+1)+"</a> - "
-							for(vall in persons[pers][rel][val]){
-								tooltip+="<a href=\""+vall+"\" target=\"_blank\">"+(persons[pers][rel][val][vall].includes("#")?persons[pers][rel][val][vall].substring(persons[pers][rel][val][vall].lastIndexOf('#')+1):persons[pers][rel][val][vall])+"</a>"
-							}
-							tooltip+="</li>"
-						}
-					}
-					
-			}
-			tooltip+="</ul></html>"
-			if(pers in personToWKT && personToWKT[pers]["type"]=="Point" && personToWKT[pers]["coordinates"]!=null && personToWKT[pers]["coordinates"][0]!=null){
-						
-                        if(markerIconPath!=null && markerIconPath!=""){
-							if(markerIconPath.startsWith("<svg")){
-								markerIconPath = encodeURI("data:image/svg+xml," +
-								markerIconPath
-								
-								).replace('#','%23');
-								//<svg xmlns='http://www.w3.org/2000/svg' width='1000' height='1000'><path d='M2,111 h300 l-242.7,176.3 92.7,-285.3 92.7,285.3 z' fill='#000000'/></svg>"
-
-							}
-							console.log(markerIconPath)
-                        	var markerIcon = L.icon({
-									iconUrl: markerIconPath,
-									iconSize: [38, 95], // size of the icon
-							});
-							
-			                var marker = new L.marker(personToWKT[pers]["coordinates"],{icon:markerIcon}); //opacity may be set to zero
-                            marker.bindPopup(tooltip, {maxWidth : 560});
-                            marker.addTo(mymap);
-                            markercollection.push(marker)
-                        } else{
-                                                    var marker = new L.marker(personToWKT[pers]["coordinates"]/*,{icon:markerIcon}*/); //opacity may be set to zero
-                            marker.bindPopup(tooltip, {maxWidth : 560});
-                            marker.addTo(mymap);
-                            markercollection.push(marker)
-                        }
-
-
-			}else if(pers in personToWKT && personToWKT[pers]["type"]=="LineString" && personToWKT[pers]["coordinates"]!=null && Array.isArray(personToWKT[pers]["coordinates"])){
-			       if(persons[pers]["style"]!=null){
-                                    			                               try{
-                            L.polyline( personToWKT[pers]["coordinates"],JSON.parse("{"+persons[pers]["style"]+"}")).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap); 
-                            }catch(err){}
-			       }else{
-			       			                               try{
-                            L.polyline( personToWKT[pers]["coordinates"],{color: 'blue'}).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap); 
-                            }catch(err){}
-			       }
-
-			}else if(pers in personToWKT && personToWKT[pers]["coordinates"]!=null &&Array.isArray(personToWKT[pers]["coordinates"])){//&& personToWKT[pers]["type"]=="Polygon"){
-			if(persons[pers]["style"]!=null){
-			//console.log("{"+persons[pers]["style"]+"}")
-                                    			                               try{
-                                    			                               poly=L.polygon( personToWKT[pers]["coordinates"],JSON.parse("{"+persons[pers]["style"]+"}"));
-                                poly.bindPopup(tooltip, {maxWidth : 560}).addTo( mymap);
-                            }catch(err){}
-			       }else{
-			       			                               try{
-                            poly=L.polygon( personToWKT[pers]["coordinates"],{color: 'red',});
-                                poly.bindPopup(tooltip, {maxWidth : 560}).addTo( mymap);
-                            }catch(err){}
-			       }
-
-			}
-		}
-		var group = new L.featureGroup(markercollection);
-
-	}
-	
-function clearMap() {
-    for(i in mymap._layers) {
-        if(mymap._layers[i]._path != undefined) {
-            try {
-                mymap.removeLayer(mymap._layers[i]);
-            }
-            catch(e) {
-                console.log("problem with " + e + mymap._layers[i]);
-            }
-        }
-    }
-	for(marker in markercollection){
-		mymap.removeLayer(markercollection[marker])
-	}
-}
-
 
 function uiQuery(){
+if(bboxpoint!=null)
+	bboxbuffer=turf.buffer(bboxpoint, $('#buffersize').val(), {units: "meters"})
+console.log(bboxbuffer)
 clearMap();
 	classesToQuery=$('#classeslist').val();
 	console.log(classesToQuery);
@@ -328,8 +379,149 @@ clearMap();
                             persons[results[res]["person"]["value"]]["img"]=results[res]["img"]["value"]
 			}
 		}
-		displayQueryResult(persons);
+		displayQueryResult(persons,true);
 	});
+}
+	
+function displayQueryResult(persons,query){
+			firstpoint=false;
+				for(pers in persons){
+			markerIconPath=""
+			tooltip="<html><b><a href=\""+pers+"\" target=\"_blank\">"+pers.substring(pers.indexOf("#")+1)+"</a></b><ul>"
+			for(rel in persons[pers]){
+				//console.log(rel)		
+					if(rel.includes("img")){
+						markerIconPath=persons[pers][rel]
+						
+						//console.log(rel)
+					}else if(rel.includes("style")){
+					
+					}else{
+						for(val in persons[pers][rel]){
+							tooltip+="<li><a href=\""+rel+"\" target=\"_blank\">"+rel.substring(rel.lastIndexOf("#")+1)+"</a> - "
+							for(vall in persons[pers][rel][val]){
+								tooltip+="<a href=\""+vall+"\" target=\"_blank\">"+(persons[pers][rel][val][vall].includes("#")?persons[pers][rel][val][vall].substring(persons[pers][rel][val][vall].lastIndexOf('#')+1):persons[pers][rel][val][vall])+"</a>"
+							}
+							tooltip+="</li>"
+						}
+					}
+					
+			}
+			tooltip+="</ul></html>"
+			if(pers in personToWKT && personToWKT[pers]["type"]=="Point" && personToWKT[pers]["coordinates"]!=null && personToWKT[pers]["coordinates"][0]!=null){
+						//console.log("Coord: "+personToWKT[pers]["coordinates"])
+						//console.log("BBOX: "+JSON.stringify(bboxbuffer))
+						if(!query || $('#coordinate').val()=="" || (!turf.booleanDisjoint(turf.envelope(turf.point(personToWKT[pers]["coordinates"])),bboxbuffer))){
+                        if(markerIconPath!=null && markerIconPath!=""){
+							if(markerIconPath.startsWith("<svg")){
+								markerIconPath = encodeURI("data:image/svg+xml," +
+								markerIconPath
+								
+								).replace('#','%23');
+								//<svg xmlns='http://www.w3.org/2000/svg' width='1000' height='1000'><path d='M2,111 h300 l-242.7,176.3 92.7,-285.3 92.7,285.3 z' fill='#000000'/></svg>"
+
+							}
+							console.log(markerIconPath)
+                        	var markerIcon = L.icon({
+									iconUrl: markerIconPath,
+									iconSize: [38, 95], // size of the icon
+							});
+							
+			                var marker = new L.marker(personToWKT[pers]["coordinates"],{icon:markerIcon}); //opacity may be set to zero
+                            marker.bindPopup(tooltip, {maxWidth : 560});
+                            marker.addTo(mymap);
+                            markercollection.push(marker)
+                        } else{
+                                                    var marker = new L.marker(personToWKT[pers]["coordinates"]/*,{icon:markerIcon}*/); //opacity may be set to zero
+                            marker.bindPopup(tooltip, {maxWidth : 560});
+                            marker.addTo(mymap);
+                            markercollection.push(marker)
+                        }
+						}
+
+
+			}else if(pers in personToWKT && personToWKT[pers]["type"]=="LineString" && personToWKT[pers]["coordinates"]!=null && Array.isArray(personToWKT[pers]["coordinates"])){
+									//console.log("Coord: "+turf.bbox(turf.lineString(personToWKT[pers]["coordinates"])))
+															//console.log("BBOX: "+JSON.stringify(bboxbuffer))
+
+						try{
+						//console.log(turf.envelope(turf.lineString(personToWKT[pers]["coordinates"])))
+					//console.log("BooleanOverlap: "+turf.booleanOverlap(turf.envelope(turf.lineString(personToWKT[pers]["coordinates"])),bboxbuffer))
+				if(!query || $('#coordinate').val()=="" || !turf.booleanDisjoint(turf.envelope(turf.lineString(personToWKT[pers]["coordinates"])),bboxbuffer)){
+			       if(persons[pers]["style"]!=null){
+                         try{
+                            L.polyline( personToWKT[pers]["coordinates"],JSON.parse("{"+persons[pers]["style"]+"}")).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap); 
+                            }catch(err){}
+			       }else{
+			       			                               try{
+                            L.polyline( personToWKT[pers]["coordinates"],{color: 'blue'}).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap); 
+                            }catch(err){}
+			       }
+				}
+							}catch(err){
+							console.log(err)
+			}
+
+			}else if(pers in personToWKT && personToWKT[pers]["coordinates"]!=null &&Array.isArray(personToWKT[pers]["coordinates"])){//&& personToWKT[pers]["type"]=="Polygon"){
+									//console.log("Coord: "+personToWKT[pers]["coordinates"])
+														//	console.log("BBOX: "+JSON.stringify(bboxbuffer))
+			try{
+			//console.log(turf.polygon(personToWKT[pers]["coordinates"]))
+			//console.log(turf.bbox(turf.polygon(personToWKT[pers]["coordinates"])))
+			if(!query || $('#coordinate').val()=="" || (!turf.booleanDisjoint(turf.envelope(turf.polygon(personToWKT[pers]["coordinates"])),bboxbuffer))){
+					if(persons[pers]["style"]!=null){
+			//console.log("{"+persons[pers]["style"]+"}")
+                            try{
+                                poly=L.polygon( personToWKT[pers]["coordinates"],JSON.parse("{"+persons[pers]["style"]+"}"));
+                                poly.bindPopup(tooltip, {maxWidth : 560}).addTo( mymap);
+                            }catch(err){}
+			       }else{
+			       			                               try{
+                            poly=L.polygon( personToWKT[pers]["coordinates"],{color: 'red',});
+                                poly.bindPopup(tooltip, {maxWidth : 560}).addTo( mymap);
+                            }catch(err){}
+			       }
+
+			}
+			}catch(err){
+			}
+			}
+			
+		}
+		var group = new L.featureGroup(markercollection);
+
+	}
+	
+function clearMap() {
+    for(i in mymap._layers) {
+        if(mymap._layers[i]._path != undefined) {
+            try {
+                mymap.removeLayer(mymap._layers[i]);
+            }
+            catch(e) {
+                console.log("problem with " + e + mymap._layers[i]);
+            }
+        }
+    }
+	for(marker in markercollection){
+		mymap.removeLayer(markercollection[marker])
+	}
+}
+
+function clearCoords(){
+	$('#coordinate').val("")
+}
+
+function addConstraint(){
+	if(!$('#attributelist').val()=="" && !$('#constrainttext').val()==""){
+		constraints.push(" ?ind rdf:type "+$( "#classeslist2 option:selected" ).val()+" . ?ind "+$( "#attributelist option:selected" ).val()+" "+$('#constrainttext').val()+" . ");
+		$('#constraints').html($('#constraints').html()+"<li>"+$( "#classeslist2 option:selected" ).text()+" - "+$( "#attributelist option:selected" ).text()+"="+$('#constrainttext').val()+"</li>")
+	}
+}
+
+function clearConstraints(){
+	$('#constraints').val("");
+	contraints=[]
 }
 
 </script>
@@ -338,8 +530,8 @@ clearMap();
 </head>
 <body>
 <h2 align="center">XPlanung Mapview based on LinkedData</h2>
-<table height="100%" width="100%" align="top" valign="top"><tr><td width="80%" height="80%" align="top" valign="top" >
-<div id="mapid" style="height:100%" width="80%">
+<table height="80%" width="100%" align="top" valign="top"><tr><td width="80%" height="80%" align="top" valign="top" >
+<div id="mapid" style="height:80%" width="80%">
 <script>
 
 	var mymap = L.map('mapid').setView([51.505, -0.09], 13);
@@ -353,17 +545,19 @@ clearMap();
 	}).addTo(mymap);
 
 </script>
-</div></td><td align="top" valign="top"><h3>Searching in the database</h3><table height="100%"><tr height="100%">
-<td>WHAT do you want?</td><td><select id="classeslist" multiple size="30" style="height: 100%;"></select></td></tr>
-<!--<tr><td>WHERE is it?</td><td>Coordinate: <input type="coordinate"/><br/>Boundingboxsize (m):<input type="number" min="1"/></td></tr>-->
-<tr><td>More restrictions?</td><td><select id="attributelist"></select><br/><input type="text"/></td></tr>
-<tr><td>Query: </td><td><button id="querybutton" onclick="uiQuery()">Query</button></td></tr>
+</div></td><td align="top" valign="top"><h3>Searching in the database</h3><table height="80%"><tr height="60%" valign="top" align="top">
+<td>WHAT?</td><td height="60%"><select id="classeslist" multiple size="30" style="height: 100%;"></select></td></tr>
+<tr  valign="top" align="top"><td>WHERE?</td><td>Coordinate: <input id="coordinate" disabled="disabled" size="30"/><button onclick="clearCoords()">Clear</button><br/>Boundingboxsize (m):<input type="number" min="1" value="100" id="buffersize"/></td></tr>
+<tr  valign="top" align="top"><td>Which features?</td><td><select id="classeslist2"></select><select id="attributelist"></select><br/><input type="text" id="constrainttext"/><button id="addconstraint" onClick="addConstraint()">Add</button>
+<button id="clearconstraints" onclick="clearConstraints()">Clear</button></td></tr>
+<tr  valign="top" align="top"><td colspan="2"><ul id="constraints"></ul></td></tr>
+<tr  valign="top" align="top"><td>Query: </td><td><button id="querybutton" onclick="uiQuery()">Query</button></td></tr>
 </table>
 </td></tr><tr><td colspan="2">
 RDF File Upload:<input type="file"  id="file-input" /><br/>
 OR:
 Import From GML File: <input type="file"  id="gml-input" />
 <select id="importtype"><option value="aaa">AAA-Data</option><option value="XPlanung">XPlanung</option><option value="XErleben">XErleben</option><option value="gml" selected="selected">GML</option></select>
-</td></tr></table>
+<button id="exportTTL" onclick="exportAsTTL()">Export Data as TTL</button><button id="exportGML" onclick="exportAsGML()" disabled="disabled">Export Data as GML</button></td></tr></table>
 </body>
 </html>
