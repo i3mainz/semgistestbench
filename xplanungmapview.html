@@ -13,23 +13,23 @@
 var epsg25832='+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs'
 var wgs84="+proj=gnom +lat_0=90 +lon_0=0 +x_0=6300000 +y_0=6300000 +ellps=WGS84 +datum=WGS84 +units=m +no_defs";
 var prefixList="PREFIX owl: <http://www.w3.org/2002/07/owl#>  PREFIX geo: <http://www.opengis.net/ont/geosparql#> PREFIX wd: <http://www.wikidata.org/entity/> PREFIX foaf: <http://xmlns.com/foaf/0.1/>  PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  PREFIX xml: <http://www.w3.org/XML/1998/namespace>  PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX xerl: <http://www.xerleben.de/schema/2.0_1#> PREFIX xplan5: <http://www.xplanung.de/xplangml/5/0#> "
+var ttlprefixList="@prefix wd: <http://www.wikidata.org/entity/> . @prefix foaf: <http://xmlns.com/foaf/0.1/> . @prefix owl: <http://www.w3.org/2002/07/owl#> . @prefix geo: <http://www.opengis.net/ont/geosparql#> . @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> . @prefix xml: <http://www.w3.org/XML/1998/namespace> . @prefix xsd: <http://www.w3.org/2001/XMLSchema#> . @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> . @prefix kml: <http://www.opengis.net/kml/2.2#> . @prefix gml: <http://www.opengis.net/gml/3.2#> . @prefix xplan5: <http://www.xplanung.de/xplangml/5/0#> . "
 var prefixMap={"http://www.w3.org/2002/07/owl#":"owl", "http://www.opengis.net/ont/geosparql#":"geo" 
 , "http://www.wikidata.org/entity/":"wd", "http://xmlns.com/foaf/0.1/":"foaf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#":"rdf", 
 "http://www.w3.org/XML/1998/namespace":"xml", "http://www.w3.org/2001/XMLSchema#":"xsd", "http://www.w3.org/2000/01/rdf-schema#":"rdfs" ,
- "http://www.xerleben.de/schema/2.0_1#":"xerl", "http://www.xplanung.de/xplangml/5/0#":"xplan5", "http://www.opengis.net/gml/3.2":"gml" }; 
+ "http://www.xerleben.de/schema/2.0_1#":"xerl", "http://www.xplanung.de/xplangml/5/0#":"xplan5", "http://www.opengis.net/gml/3.2":"gml", "http://www.opengis.net/kml/2.2#":"kml" }; 
 var currdfstore=null;
 var wkt = new Wkt.Wkt();
 var firstcoords=[]
 var bboxpoint;
 var bboxbuffer;
 var constraints={}
+var wgs84dest = new proj4.Proj('EPSG:4326'); 
 var curQueryResultTTL=""
 var curposmarker=null;
 $( function() {
 	  document.getElementById('file-input')
 	  .addEventListener('change', readRDFFile, false);
-	  document.getElementById('gml-input')
-	  .addEventListener('change', readGMLFile, false);
 	  mymap.on('click', function(e) {
 	  if(curposmarker!=null){
 			mymap.removeLayer(curposmarker);
@@ -84,7 +84,8 @@ function exportAsTTL(){
         console.log(success,results)
 		result="";
 		tosave=""
-				for(res in results){
+			switch($('#dbexportformat').val()){
+					case "ttl": for(res in results){
 					//console.log(results[res]["obj"])
 					if(results[res]["sub"]["value"]!=undefined && results[res]["pred"]["value"]!=undefined && results[res]["obj"]["value"]!=undefined){
 					tosave+="<"+results[res]["sub"]["value"]+"> <"+results[res]["pred"]["value"]+"> ";
@@ -97,6 +98,12 @@ function exportAsTTL(){
 					
 				}
 		saveTextAsFile(tosave,"ttl");
+		break;
+					case "gml": importGML(contents); break;
+					case "kml": importKML(contents);break;
+					case "geojson": importGeoJSON(contents);break;
+				}
+				
 	});
 }
 
@@ -132,8 +139,15 @@ console.log(xml)
 	 parser = new DOMParser();
     xmlDoc = parser.parseFromString(xml, "text/xml");
 	walkDOM(xmlDoc)
-	
 }
+
+function importKML(xml){
+console.log(xml)
+	 parser = new DOMParser();
+    xmlDoc = parser.parseFromString(xml, "text/xml");
+	walkDOMKML(xmlDoc)
+}
+
 
 function importGeoJSON(geojson){
 console.log(geojson)
@@ -143,19 +157,19 @@ JSON.parse(geojson)
 }
 
 function getLiteral(value){
-	if(Number.isInteger(value.toString())){
-		return "\""+value+"\"^^xsd:integer"
+	if (!isNaN(value) && value.toString().trim().indexOf('.') != -1){
+		return "\""+value+"\"^^<http://www.w3.org/2001/XMLSchema#double>"
 	}
-	if (!isNaN(value) && value.toString().indexOf('.') != -1){
-		return "\""+value+"\"^^xsd:double"
+	if(!isNaN(value.toString().trim())){
+		return "\""+value+"\"^^<http://www.w3.org/2001/XMLSchema#integer>"
 	}
-	return "\""+value+"\"^^xsd:string"
+	return "\""+value+"\"^^<http://www.w3.org/2001/XMLSchema#string>"
 }
 
 
 function walkDOM(main) {
     var arr = [];
-	var result=[]
+	var result=ttlprefixList
 	depth=0
 	parentNodeName=""
 	strconvertmode=false;
@@ -185,10 +199,9 @@ function walkDOM(main) {
 					chosen=null
 					console.log(chosen)
 					if(main.firstChild!=null && main.firstChild.nextSibling!=null){
-					xmlString = (new XMLSerializer()).serializeToString(main.firstChild.nextSibling);
-					
-					console.log("XMLString: "+xmlString)
-					result+=xmlString.replace(new RegExp("\"", 'g'),"\\\"")+"\"^^<http://www.opengis.net/ont/geosparql#gmlLiteral> . "
+						xmlString = (new XMLSerializer()).serializeToString(main.firstChild.nextSibling);					
+						console.log("XMLString: "+xmlString)
+						result+=xmlString.replace(new RegExp("\"", 'g'),"\\\"")+"\"^^<http://www.opengis.net/ont/geosparql#gmlLiteral> . "
 					}
 					end=true;
 				}else if(main.hasChildNodes()==1){
@@ -209,6 +222,97 @@ function walkDOM(main) {
 	console.log(result)
     return arr;
 }
+
+function walkDOMKML(main) {
+    var arr = [];
+	var result=ttlprefixList
+	depth=0
+	parentNodeName=""
+	classopen=-1;
+    var loop = function(main,depth,parentNodeName, folderopen,folderopenURI, classopen,styleopen) {
+        do {
+			console.log(main+" - "+depth)
+            arr.push(main);
+			end=false;
+			console.log(depth+" - "+classopen)
+			if(classopen<depth && classopen!=-1){
+				if(main.hasChildNodes()==1){
+					if(main.localName.includes("name")){
+						result+="<"+parentNodeName+"> rdfs:label "+getLiteral(main.firstChild.nodeValue.replace(new RegExp("\"", 'g')))+" . \n"
+					}else if(main.localName.includes("description")){
+						result+="<"+parentNodeName+"> rdfs:comment "+getLiteral(main.firstChild.nodeValue.replace(new RegExp("\"", 'g')))+" . \n"
+					}else if(main.localName.includes("styleUrl")){
+						result+="<"+parentNodeName+"> <"+main.namespaceURI+"#"+main.localName+"> <"+main.namespaceURI+main.firstChild.nodeValue+"> . \n"
+					}else{
+						result+="<"+main.namespaceURI+"#"+main.localName+"> rdf:type owl:DatatypeProperty . <"+parentNodeName+"> <"+main.namespaceURI+"#"+main.localName+"> "+getLiteral(main.firstChild.nodeValue.replace(new RegExp("\"", 'g')))+" . \n"
+					}
+					end=true;
+				}
+			}else if(folderopen!=-1){
+				if(main.hasChildNodes()==1){
+					if(main.localName=="name"){
+						result+="<"+folderopenURI+"> rdfs:label "+getLiteral(main.firstChild.nodeValue.replace(new RegExp("\"", 'g')))+" . \n"
+					}else if(main.localName=="description"){
+						result+="<"+folderopenURI+"> rdfs:comment "+getLiteral(main.firstChild.nodeValue.replace(new RegExp("\"", 'g')))+" . \n"
+					}else if(main.firstChild!=null && main.firstChild.nodeValue!=null)
+						result+="<"+main.namespaceURI+"#"+main.localName+"> rdf:type owl:DatatypeProperty . <"+folderopenURI+"> <"+main.namespaceURI+"#"+main.localName+"> "+getLiteral(main.firstChild.nodeValue.replace(new RegExp("\"", 'g')))+" . \n"
+				}
+			}
+			//if(depth==2){
+				if(main.nodeName=="Style"){
+					uuid=generateUUID()
+					result+="<"+main.namespaceURI+"#"+main.localName+"> rdf:type owl:Class . <"+main.namespaceURI+"#"+uuid+"> rdf:type <"+main.namespaceURI+"#"+main.localName+"> .  <"+main.namespaceURI+"#"+uuid+"> rdfs:label \""+main.getAttribute("id")+"\" .  \n"
+					styleopen=depth;
+				}else if(main.nodeName=="Folder"){
+					uuid=generateUUID()
+					result+="<"+main.namespaceURI+"#"+main.localName+"> rdf:type owl:Class . <"+main.namespaceURI+"#"+uuid+"> rdf:type <"+main.namespaceURI+"#"+main.localName+"> .  \n"
+					folderopen=depth;
+					folderopenURI=main.namespaceURI+"#"+uuid
+				}else if(main.nodeName=="Placemark"){
+					uuid=generateUUID()
+					result+="<"+main.namespaceURI+"#"+main.localName+"> rdf:type owl:Class . <"+main.namespaceURI+"#"+uuid+"> rdf:type <"+main.namespaceURI+"#"+main.localName+"> .  \n"
+					if(folderopen!=-1){
+						result+="<http://www.opengis.net/kml/2.2#hasPlacemark> rdf:type owl:ObjectProperty . <"+folderopenURI+"> <http://www.opengis.net/kml/2.2#hasPlacemark> <"+main.namespaceURI+"#"+uuid+"> .  \n"
+					}
+					classopen=depth;
+					parentNodeName=main.namespaceURI+"#"+uuid
+					console.log("New Class Open: "+classopen)
+				}	
+			if(!end && main.hasChildNodes())
+                loop(main.firstChild,depth+1,parentNodeName,folderopen,folderopenURI,classopen,styleopen);
+			//}
+			/*if(depth==3){
+				if(main.hasChildNodes()==1){
+					result+="<"+main.namespaceURI+"#"+main.localName+"> rdf:type owl:DatatypeProperty . <"+parentNodeName+"> <"+main.namespaceURI+"#"+main.localName+"> "+getLiteral(main.firstChild.nodeValue)+" . \n"
+					end=true;
+				}			
+				else if(main.nodeName.startsWith("gml:")){
+					toadd=""
+					result+=" <http://www.opengis.net/ont/geosparql#asGML> rdf:type owl:DatatypeProperty . <"+parentNodeName+"> <http://www.opengis.net/ont/geosparql#asGML> \""
+					chosen=null
+					console.log(chosen)
+					if(main.firstChild!=null && main.firstChild.nextSibling!=null){
+					xmlString = (new XMLSerializer()).serializeToString(main.firstChild.nextSibling);
+					
+					console.log("XMLString: "+xmlString)
+					result+=xmlString.replace(new RegExp("\"", 'g'),"\\\"")+"\"^^<http://www.opengis.net/ont/geosparql#gmlLiteral> . "
+					}
+					end=true;
+				}else{
+					//result+="<"+main.getAttribute("gml:id")+"> rdf:type <"+main.nodeName+"> . \n"
+					//parentNodeName=main.getAttribute("gml:id")
+				}
+			//}*/
+
+			
+        }
+        while (main = main.nextSibling);
+    }
+    loop(main,-1,"",-1,"",-1,-1);
+	console.log(result)
+    return arr;
+}
+
 
 function generateUUID() {
     var d = new Date().getTime();
@@ -240,29 +344,6 @@ function getAllProperties(){
 
 
 function readRDFFile(e){
-	var file = e.target.files[0];
-	if (!file) {
-	    return;
-	}
-	var reader = new FileReader();
-	reader.onload = function(e) {
-	    var contents = e.target.result;
-	    rdfstore.create(function(err, store) {
-		if(currdfstore==null){
-			currdfstore=store;			
-		}
-		currdfstore.load('text/turtle', contents, function(s,d){
-			console.log(s,d);
-			displayGeometricObjects()
-			});
-		});
-	};	
-	reader.readAsText(file);
-	 
-
-}
-
-function readGMLFile(e){
 	console.log(e)
 	var file = e.target.files[0];
 	console.log(file)
@@ -274,14 +355,24 @@ function readGMLFile(e){
 	reader.onload = function(e) {
 	    var contents = e.target.result;
 		console.log(contents)
-		importGML(contents);
+		rdfstore.create(function(err, store) {
+		if(currdfstore==null){
+				currdfstore=store;			
+		}
+		currdfstore.load('text/turtle', contents, function(s,d){
+				console.log(s,d);
+				switch($('#queryimportformat').val()){
+					case "ttl": displayGeometricObjects(); break;
+					case "gml": importGML(contents); break;
+					case "kml": importKML(contents);break;
+					case "geojson": importGeoJSON(contents);break;
+				}
+				});
+		});
 	};	
-	text=reader.readAsText(file);
-
-	//console.log(text)
-		   
-
+	text=reader.readAsText(file);    
 }
+
 
 function outputSPARQLResults(results) {
     for (row in results) {
@@ -648,7 +739,71 @@ function exportQueryResult(){
 		console.log(collection)
 		saveTextAsFile(JSON.stringify(collection, null, 2),"geojson")
 	}
+	if($( "#queryexportformat option:selected" ).val()=="kml"){
+		kml="<?xml version=\"1.0\"  encoding=\"utf-8\" standalone=\"yes\" ?><kml:Document xmlns:kml=\"http://www.opengis.net/kml/2.2\">\n"
+		remembersub1=""
+		curgmlid="";
+		towrite=[]
+		wrotetype=false;
+		splitt=curQueryResultTTL.split("\n")
+		for(spl in splitt){
+			console.log(splitt[spl])
+			subsplit=splitt[spl].split(" ")
+			console.log(subsplit)
+			//if(remembersub1="" || rememberremembersub1=subsplit[1]){
+			try{
+			if(splitt[spl].includes("NamedIndividual") || splitt[spl].includes("label") || splitt[spl].includes("gml:id")){
+				continue;
+			}
+			gmlid=subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","");
+			if(curgmlid!=gmlid){
+				wrotetype=false;
+				curgmlid=gmlid;
+			}
+			if(curgmlid==gmlid && !wrotetype && !splitt[spl].includes("type")){
+				towrite.push(splitt[spl])
+			}else if(!splitt[spl].includes("type")){
+					kml+="<"+subsplit[1].replace("<","").replace(">","")+">"+(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))+"</"+subsplit[1].replace("<","").replace(">","")+">\n"
+			}
+			if(splitt[spl].includes("type")){
+					console.log("IN TYPE CLAUSE")
+					if(!remembersub1==""){
+						kml+="</"+remembersub1.replace("<","").replace(">","")+">\n"
+					}
+
+					kml+="<"+subsplit[2].replace("<","").replace(">","")+" gml:id=\""+subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")+"\">\n"
+					remembersub1=subsplit[2]
+					wrotetype=true;
+					for(item in towrite){
+						subsplit=towrite[item].split(" ")
+						kml+="<"+subsplit[1].replace("<","").replace(">","")+">"+(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))+"</"+subsplit[1].replace("<","").replace(">","")+">\n"
+					}
+					towrite=[]
+			}
+
+			}catch(err){}
+		}
+		kml+="</kml:Document>"
+		console.log(kml)
+		saveTextAsFile(kml,"kml")
+	}
 }
+
+/*function convertCoordinates(source,dest){
+	var source = new proj4.Proj('EPSG:4326');    //source coordinates will be in Longitude/Latitude, WGS84
+var dest = new proj4.Proj('EPSG:3785');     //destination coordinates in meters, global spherical mercators projection, see http://spatialreference.org/ref/epsg/3785/
+
+
+// transforming point coordinates
+//var p = new proj4.Point(-76.0, 45.0);   //any object will do as long as it has 'x' and 'y' properties
+
+
+$("#convert").on("click", function(){
+    var p = new proj4.Point($("#lng").val(), $("#lat").val() );
+    proj4.transform(source, dest, p);
+    alert("X : " +p.x + " \nY : " + p.y);
+});
+}*/
 
 </script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
@@ -693,13 +848,28 @@ function exportQueryResult(){
 <tr  valign="top" align="top"><td colspan="2"><ul id="constraints"></ul></td></tr>
 
 <tr  valign="top" align="top"><td>Query: </td><td><button id="querybutton" onclick="uiQuery()">Query</button><br/>
-<button id="queryasTTL" onclick="exportQueryResult()">Query Result as</button><select id="queryexportformat"><option value="ttl" selected="selected">TTL</option><option value="gml">GML</option><option value="geojson">GeoJSON</option></select></td></tr>
+<button id="queryasTTL" onclick="exportQueryResult()">Query Result as</button>
+<select id="queryexportformat">
+<option value="ttl" selected="selected">TTL</option>
+<option value="gml">GML</option>
+<option value="kml">KML</option>
+<option value="geojson">GeoJSON</option>
+</select>CRS: <select id="epsgqueryexport"><option value="EPSG:4326"  selected="selected">EPSG:4326</option><option value="EPSG:25832">EPSG:25832</option><option value="EPSG:31467">EPSG:31467</option></select></td></tr>
 </table>
 </td></tr></table><table><tr><td colspan="2">
-RDF File Upload:<input type="file"  id="file-input" /><br/>
-OR:
-Import From GML File: <input type="file"  id="gml-input" />
-<select id="importtype"><option value="aaa">AAA-Data</option><option value="XPlanung">XPlanung</option><option value="XErleben">XErleben</option><option value="gml" selected="selected">GML</option></select>
-<button id="exportTTL" onclick="exportAsTTL()">Export Database as TTL</button><button id="exportGML" onclick="exportAsGML()" disabled="disabled">Export Data as GML</button></td></tr></table>
+Import From File:<input type="file"  id="file-input" />Format: <select id="queryimportformat">
+<option value="ttl" selected="selected">TTL</option>
+<option value="gml">GML</option>
+<option value="kml">KML</option>
+<option value="geojson">GeoJSON</option>
+<option value="aaa">AAA-Data</option><option value="XPlanung">XPlanung</option><option value="XErleben">XErleben</option>
+</select>
+CRS: <select id="epsgqueryimport"><option value="EPSG:4326" selected="selected">EPSG:4326</option><option value="EPSG:25832">EPSG:25832</option><option value="EPSG:31467">EPSG:31467</option></select></td></tr><tr><td>
+<button id="exportTTL" onclick="exportAsTTL()">Export Database as</button><select id="dbexportformat">
+<option value="ttl" selected="selected">TTL</option>
+<option value="gml">GML</option>
+<option value="kml">KML</option>
+<option value="geojson">GeoJSON</option>
+</select></td></tr></table>
 </body>
 </html>
