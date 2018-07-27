@@ -214,7 +214,7 @@ function displayGeometricObjects(){
 			//console.log(pers)
 			if(pers in personToWKT && personToWKT[pers]["type"]=="Point" && personToWKT[pers]["coordinates"]!=null && personToWKT[pers]["coordinates"][0]!=null){
                         console.log(markerIconPath)
-                        if(markerIconPath!=null){
+                        if(markerIconPath!=null && markerIconPath!=""){
                         			var markerIcon = L.icon({
 				iconUrl: markerIconPath,
 				iconSize: [38, 95], // size of the icon
