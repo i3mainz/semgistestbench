@@ -853,13 +853,6 @@ function exportQueryResult(){
 	}
 }
 
-var source = new proj4.Proj('EPSG:4326');    //source coordinates will be in Longitude/Latitude, WGS84
-var dest = new proj4.Proj('EPSG:3785');     //destination coordinates in meters, global spherical mercators projection, see http://spatialreference.org/ref/epsg/3785/
-
-
-// transforming point coordinates
-//var p = new proj4.Point(-76.0, 45.0);   //any object will do as long as it has 'x' and 'y' properties
-
 function gmlStringToWKT(gmlString){
 	wktString=""
 	if(gmlString.includes("LinearRing")){
@@ -1029,21 +1022,8 @@ function gmlStringToGeoJSON(gmlString,crs){
 	}else{
 		res["geometry"]["coordinates"]+="]"
 	}
-	//res["geometry"]["coordinates"]=JSON.parse(res["geometry"]["coordinates"])
 	console.log("GeoJSON Result: "+JSON.stringify(res))
 	return JSON.stringify(res);
-}
-
-function converttest(){
-        var poi=new proj4.Point(53.02818322281785, 8.85927200317383)
-        console.log(poi.x+" - "+poi.y)
-        console.log(wgs84)
-        console.log(epsg31467)
-        res=proj4(epsg31467,poi)
-        console.log(res.x+" - "+res.y)
-        res=proj4(epsg31467,wgs84,res)
-        console.log(res.x+" - "+res.y)
-        console.log(poi.x+" - "+poi.y)
 }
 
 function importConvert(coordinates,source){
@@ -1096,7 +1076,6 @@ function convertit(coordinates,source,dest){
 </head>
 <body>
 <h2 align="center">XPlanung Mapview based on LinkedData</h2>
-<button id="convert" onclick="converttest()">Converttest</button>
 <table height="80%" width="100%" align="top" valign="top"><tr><td width="80%" height="80%" align="top" valign="top" >
 <div id="mapid" style="height:90%" width="80%">
 <script>
