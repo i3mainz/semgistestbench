@@ -26,6 +26,7 @@ var firstcoords=[]
 var bboxpoint;
 var bboxbuffer;
 var constraints={}
+var geoconstraints={}
 var wgs84dest = new proj4.Proj('EPSG:4326'); 
 var curQueryResultTTL=""
 var curposmarker=null;
@@ -42,6 +43,20 @@ $( function() {
         $("#epsgqueryimport").html(epsg);
 	  document.getElementById('file-input')
 	  .addEventListener('change', readRDFFile, false);
+	  rdfstore.create(function(err, store) {
+		if(currdfstore==null){
+				currdfstore=store;			
+		}
+			console.log("SupportingOntology: "+$('#queryimportformat').val()+" - "+supportingOntologies["xplanung"])
+			ress=""
+			$.ajax({url: supportingOntologies["xplanung"],async: false, success: function(result){
+				console.log(result)
+				ress=result;
+				currdfstore.load('text/turtle', ress, function(s,d){
+				
+				});
+			}});
+		});
 	  mymap.on('click', function(e) {
 	  if(curposmarker!=null){
 			mymap.removeLayer(curposmarker);
@@ -70,7 +85,7 @@ function readSingleFile(e) {
 }
 
 function getAllClasses(){
-	currdfstore.execute(prefixList+" SELECT DISTINCT ?cls ?clsLabel  WHERE { {?cls rdf:type owl:Class . OPTIONAL{?cls rdfs:label ?clsLabel. }} } ORDER BY ?cls", function(success,results){ 
+	currdfstore.execute(prefixList+" SELECT DISTINCT ?cls ?clsLabel  WHERE {?ind rdf:type ?cls . ?ind ?rel ?geo. ?geo geo:asWKT ?wkt  . ?cls rdf:type owl:Class . OPTIONAL{?cls rdfs:label ?clsLabel. }} ORDER BY ?cls", function(success,results){ 
         console.log(success,results)
 		result="";
 				for(res in results){
@@ -455,10 +470,6 @@ function getAllProperties(){
 	});
 }
 
-function getSupportingOntology(name){
-	 
-}
-
 function readRDFFile(e){
 	console.log(e)
 	var file = e.target.files[0];
@@ -562,6 +573,7 @@ function uiQuery(start){
 	currdfstore.execute(queryString, function(success,results){ 
         console.log(success,results)
 		persons={}
+		classTopers={}
 		for(res in results){
 		//console.log(results[res])
 			if(!(results[res]["person"]["value"] in persons)){
@@ -572,6 +584,13 @@ function uiQuery(start){
 			}
 			if(!(results[res]["rel"]["value"] in persons[results[res]["person"]["value"]])){
 				persons[results[res]["person"]["value"]][results[res]["rel"]["value"]]=[]
+			}
+			if(results[res]["rel"]["value"].includes("type")){
+			//console.log("Rel: "+results[res]["rel"]["value"]+" - "+results[res]["val"]["value"]+" - "+results[res]["person"]["value"])
+                            if(!(results[res]["val"]["value"]  in classTopers)){
+                                classTopers[results[res]["val"]["value"]]=[]
+                            }
+                            classTopers[results[res]["val"]["value"]].push(results[res]["person"]["value"])
 			}
 			if(results[res]["person"]["value"]!=undefined && results[res]["rel"]["value"]!=undefined && results[res]["val"]["value"]!=undefined){
 					curQueryResultTTL+="<"+results[res]["person"]["value"]+"> <"+results[res]["rel"]["value"]+"> ";
@@ -595,12 +614,12 @@ function uiQuery(start){
                 persons[results[res]["person"]["value"]]["img"]=results[res]["img"]["value"]
 			}
 		}
-		displayQueryResult(persons,!start);
+		displayQueryResult(persons,!start,classTopers);
 
 	});
 }
 	
-function displayQueryResult(persons,query){
+function displayQueryResult(persons,query,classTopers){
 	var wkt = new Wkt.Wkt();
 		firstpoint=false;
 		for(pers in persons){
@@ -623,10 +642,23 @@ function displayQueryResult(persons,query){
 						}
 					}
 				});
+                        rest=[]
+                        if(geoconstraints.length>0){
+                                for(geocons in geoconstraints){
+                                        curcons=geoconstraints[geocons]
+                                        constraint=curcons.split(" ")
+                                        class1=constraint[0]
+                                        class2=constraint[2]
+                                        relation=constraint[1]
+                                        rest.concat(applyFilter(relation,classTopers[class1],classTopers[class2]))
+                                }
+                                
+                        }
 			for(rel in persons[pers]){
 				if(rel!=null && rel.includes("asWKT")){
+				//if(persons[pers]["asWKT"]!=null /*&& persons[pers]["asWKT"] in rest*/){
 					try{
-						//console.log(persons[pers][rel])
+						console.log(persons[pers][rel])
 						/*if(Array.isArray(persons[pers][rel])){
 							wkt.read(persons[pers][rel][0]);
 						}else{
@@ -651,6 +683,65 @@ function displayQueryResult(persons,query){
 		}
 		tooltip+="</ul></html>"
 	}
+	
+	
+function applyFilter(functiondef,set1,set2){
+        wkt=Wkt.Wkt()
+        resultset=[]
+        turf.bbox(set2.values())
+        for(elem in set1){
+                if(!set1 in resultset){
+                wkt.read(set1[elem1]["asWKT"]["value"])
+                curset1=wkt.toJson()
+                for(elem2 in set2){
+                        if(set2[elem2] in resultset){
+                            continue;
+                        }
+                        wkt.read(set2[elem2]["asWKT"]["value"])
+                        curset2=wkt.toJson()
+                        switch(functiondef){
+                            case "booleanContains":
+                                    if(turf.booleanContains(curset1,curset2)){
+                                            resultset.push(curset1)
+                                            resultset.push(curset2)
+                                    }
+                                    break;
+                            case "booleanCrosses":
+                                if(turf.booleanCrosses(curset1,curset2)){
+                                            resultset.push(curset1)
+                                            resultset.push(curset2)
+                                }
+                                break;
+                           case "booleanDisjoint":
+                                if(turf.booleanDisjoint(curset1,curset2)){
+                                            resultset.push(curset1)
+                                            resultset.push(curset2)
+                                }
+                                break;
+                        case "booleanEquals":
+                                if(turf.booleanEquals(curset1,curset2)){
+                                            resultset.push(curset1)
+                                            resultset.push(curset2)
+                                }
+                                break;
+                     case "booleanOverlap":
+                                if(turf.booleanOverlap(curset1,curset2)){
+                                            resultset.push(curset1)
+                                            resultset.push(curset2)
+                                }
+                                break;
+                    case "booleanWithin":
+                                if(turf.booleanOverlap(curset1,curset2)){
+                                            resultset.push(curset1)
+                                            resultset.push(curset2)
+                                }
+                                break;
+                        }
+                }
+                }
+        }
+        return resultset;        
+}
 	
 function isJSON (something) {
     if (typeof something != 'string')
@@ -816,7 +907,7 @@ function clearCoords(){
 function addConstraint(firstpart,secondpart,thirdpart){
 	if(!$('#'+secondpart).val()=="" && !$('#'+thirdpart).val()==""){
 	if($('#'+thirdpart).is("select")){
-                constraints[$( "#"+firstpart+" option:selected" ).val()]=" ?person <"+$( "#"+secondpart+" option:selected" ).val()+"> "+getLiteral($('#'+thirdpart+" option:selected").val())+" . ";
+                geoconstraints[$( "#"+firstpart+" option:selected" ).val()]=" ?person <"+$( "#"+secondpart+" option:selected" ).val()+"> "+getLiteral($('#'+thirdpart+" option:selected").val())+" . ";
 		$('#constraints').html($('#constraints').html()+"<li>"+$(  "#"+firstpart+" option:selected" ).text()+" - "+$( "#"+secondpart+" option:selected" ).text()+" - "+$('#'+thirdpart+" option:selected").val()+"</li>")
 	}else{
                 constraints[$( "#"+firstpart+" option:selected" ).val()]=" ?person <"+$( "#"+secondpart+" option:selected" ).val()+"> "+getLiteral($('#'+thirdpart).val())+" . ";
@@ -836,58 +927,7 @@ function clearConstraints(){
 	contraints=[]
 }
 
-function applyFilter(functiondef,set1,set2){
-        resultset=[]
-        turf.bbox(set2.values())
-        for(elem in set1){
-                if(!set1[elem] in resultset){
-                for(elem2 in set2){
-                        if(set2[elem] in resultset){
-                            continue;
-                        }
-                        switch(functiondef){
-                            case "booleanContains":
-                                    if(turf.booleanContains(set1[elem],set2[elem])){
-                                            resultset.push(set1[elem])
-                                            resultset.push(set2[elem])
-                                    }
-                                    break;
-                            case "booleanCrosses":
-                                if(turf.booleanCrosses(set1[elem],set2[elem])){
-                                            resultset.push(set1[elem])
-                                            resultset.push(set2[elem])
-                                }
-                                break;
-                           case "booleanDisjoint":
-                                if(turf.booleanDisjoint(set1[elem],set2[elem])){
-                                            resultset.push(set1[elem])
-                                            resultset.push(set2[elem])
-                                }
-                                break;
-                        case "booleanEquals":
-                                if(turf.booleanEquals(set1[elem],set2[elem])){
-                                            resultset.push(set1[elem])
-                                            resultset.push(set2[elem])
-                                }
-                                break;
-                     case "booleanOverlap":
-                                if(turf.booleanOverlap(set1[elem],set2[elem])){
-                                            resultset.push(set1[elem])
-                                            resultset.push(set2[elem])
-                                }
-                                break;
-                    case "booleanWithin":
-                                if(turf.booleanOverlap(set1[elem],set2[elem])){
-                                            resultset.push(set1[elem])
-                                            resultset.push(set2[elem])
-                                }
-                                break;
-                        }
-                }
-                }
-        }
-        
-}
+
 
 function exportQueryResult(){
 	console.log($( "#queryexportformat option:selected" ).val())
