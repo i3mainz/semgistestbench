@@ -479,7 +479,7 @@ function readRDFFile(e){
 		if($('#supportingOntology').is(':checked') && $('#queryimportformat').val() in supportingOntologies  ){
 			console.log("SupportingOntology: "+$('#queryimportformat').val()+" - "+supportingOntologies[$('#queryimportformat').val()])
 			ress=""
-			$.ajax({url: supportingOntologies[name],async: false, success: function(result){
+			$.ajax({url: supportingOntologies[$('#queryimportformat').val()],async: false, success: function(result){
 				console.log(result)
 				ress=result;
 				currdfstore.load('text/turtle', ress, function(s,d){
