@@ -1,3 +1,4 @@
+
 <html>
 <head><title>XPlanung Mapview based on LinkedData</title>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -17,6 +18,8 @@ var prefixMap={"http://www.w3.org/2002/07/owl#":"owl", "http://www.opengis.net/o
 , "http://www.wikidata.org/entity/":"wd", "http://xmlns.com/foaf/0.1/":"foaf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#":"rdf", 
 "http://www.w3.org/XML/1998/namespace":"xml", "http://www.w3.org/2001/XMLSchema#":"xsd", "http://www.w3.org/2000/01/rdf-schema#":"rdfs" ,
  "http://www.xerleben.de/schema/2.0_1#":"xerl", "http://www.xplanung.de/xplangml/5/0#":"xplan5", "http://www.opengis.net/gml/3.2":"gml", "http://www.opengis.net/kml/2.2#":"kml" }; 
+var supportingOntologies={"xplanung":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/master/XPlanung/xplanung5_0.ttl","aaa":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/master/AAA-Data/aaa6.ttl",
+"xerleben":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/master/XErleben/xerleben2_1.ttl_mod.ttl","inspire":""}
 var currdfstore=null;
 var wkt = new Wkt.Wkt();
 var firstcoords=[]
@@ -144,11 +147,105 @@ function saveTextAsFile(tosave,fileext)
 }
 
 
+function importGeoJSON(geojson,crs,switchlatlong){
+	result=ttlprefixList
+	result+="geo:Feature rdf:type owl:Class . \n geo:hasGeometry rdf:type owl:ObjectProperty . \n geo:asWKT rdf:type owl:DatatypeProperty . \n geo:asGeoJSON rdf:type owl:DatatypeProperty . \n geo:asGML rdf:type owl:DatatypeProperty . \n geo:asKML rdf:type owl:DatatypeProperty . \n"
+	console.log(geojson)
+	data=JSON.parse(geojson)
+	namespace="http://semgis.de/geodata#"
+	var wkt = new Wkt.Wkt();
+	for(feat in data["features"]){
+		indid="<http://semgis.de/geodata#"
+		if("id" in data["features"][feat]){
+			indid+=data["features"][feat]["id"]
+			result+=indid+"> rdf:type geo:Feature . \n"
+		}else{
+			uuid=generateUUID()
+			indid+=uuid
+			result+=indid+"> rdf:type geo:Feature . \n"
+		}
+		console.log("Ind Result: "+result)
+		geometry=data["features"][feat]["geometry"]
+		coordsconverted=getCoordArrayFromGML(JSON.stringify(geometry["coordinates"]),epsgdefs[$('#epsgqueryimport option:selected').val()],true,true)
+		wktString=coordarraytoWKT(coordsconverted,geometry["type"])
+		console.log(geometry)
+		wkt=wkt.read(wktString);
+		result+=indid+"> geo:hasGeometry "+indid+"_geom> . \n "+indid+"_geom> rdf:type geo:"+geometry["type"]+" . \n geo:"+geometry["type"]+" rdf:type owl:Class . \n "
+		+indid+"_geom> geo:asWKT \""+wktString+"\"^^geo:wktLiteral . \n "+indid+"_geom> geo:asGeoJSON \""+JSON.stringify(wkt.toJson()).replace(new RegExp("\"", 'g'),"\\\"")+"\"^^geo:geoJSONLiteral . \n "
+		+indid+"_geom> geo:asGML \""+geoJSONGeometryToGML(coordsconverted,geometry["type"]).replace(new RegExp("\"", 'g'),"\\\"")+"\"^^geo:gmlLiteral . \n "
+		+indid+"_geom> geo:asKML \""+geoJSONGeometryToKML(coordsconverted,geometry["type"]).replace(new RegExp("\"", 'g'),"\\\"")+"\"^^geo:kmlLiteral . \n "
+		
+		properties=data["features"][feat]["properties"]
+		for(prop in properties){
+			result+="<"+namespace+prop+"> rdf:type owl:DatatypeProperty . \n "+indid+"> <"+namespace+prop+"> "+getLiteral(properties[prop])+" . \n"
+		}
+	}
+	console.log(result)
+	return result
+}
 
-function importGeoJSON(geojson){
-console.log(geojson)
-JSON.parse(geojson)
-	
+function coordarraytoWKT(coordarray,type){
+	wktString=""
+	if(type=="LinearRing" || type=="Polygon"){
+		wktString+="POLYGON((";
+	}else if(type=="Envelope"){
+		wktString+="ENVELOPE(";
+	}else if(type=="LineString"){
+		wktString+="LINESTRING(";
+	}else if(type=="Point"){
+		wktString+="POINT(";
+	}
+		i=0;
+		while(i<coordarray.length){
+			wktString+=coordarray[i]+" "+coordarray[i+1]+", "
+			i+=2;
+		}
+		wktString=wktString.substring(0,wktString.length-2)
+	if(type=="LinearRing" || type=="Polygon" ){
+		wktString+="))";
+	}else{
+		wktString+=")";
+	}
+	//console.log("WKT Result: "+wktString)
+	return wktString;
+}
+
+function geoJSONGeometryToGML(coordarray,type){
+	result="<gml:"+type+"><gml:posList>"
+	i=0;
+	if(coordarray.length==1){
+		while(i<coordarray[0].length){
+			result+=coordarray[0][i]+" "+coordarray[0][i+1]+" "
+			i+=2;
+		}
+	}else{
+		while(i<coordarray.length){
+			result+=coordarray[i]+" "+coordarray[i+1]+" "
+			i+=2;
+		}
+	}
+	result=result.substring(0,result.length-2)
+	result+="</gml:posList></gml:"+geometry["type"]+">"
+	return result;
+}
+
+function geoJSONGeometryToKML(coordarray,type){
+	result="<kml:"+type+"><kml:coordinates>"
+	i=0;
+	if(coordarray.length==1){
+		while(i<coordarray[0].length){
+			result+=coordarray[0][i]+","+coordarray[0][i+1]+" "
+			i+=2;
+		}
+	}else{
+		while(i<coordarray.length){
+			result+=coordarray[i]+","+coordarray[i+1]+" "
+			i+=2;
+		}
+	}
+	result=result.substring(0,result.length-2)
+	result+="</kml:coordinates></kml:"+geometry["type"]+">"
+	return result;
 }
 
 function getLiteral(value){
@@ -205,7 +302,7 @@ function walkDOM(main) {
 					relName=""
 						if(parentRelationName!="" && parentIndName!=""){
 							relName=parentIndName
-							result+="<"+parentNodeName+"> <"+parentRelationName+"> <"+parentIndName+"> . "
+							result+="<"+parentNodeName+"> "+(parentRelationName.includes(":")?parentRelationName:"<"+parentRelationName+">")+" <"+parentIndName+"> . "
 							result+=" <http://www.opengis.net/ont/geosparql#asGML> rdf:type owl:DatatypeProperty . \n  "
 						}else{
 							relName=parentNodeName
@@ -214,7 +311,7 @@ function walkDOM(main) {
 					if(main.firstChild!=null && main.firstChild.nextSibling!=null){						
 						xmlString = (new XMLSerializer()).serializeToString(main.firstChild.nextSibling);					
 						//console.log("XMLString: "+xmlString)
-						coordsconverted=getCoordArrayFromGML(xmlString,epsgdefs[$('#epsgqueryimport option:selected').val()],true)
+						coordsconverted=getCoordArrayFromGML(xmlString,epsgdefs[$('#epsgqueryimport option:selected').val()],true,false)
 						result+="<"+relName+"> <http://www.opengis.net/ont/geosparql#asGML> \""+convertGMLToOtherCRS(xmlString.replace(new RegExp("\"", 'g'),"\\\"").replace(new RegExp("\n", 'g'),""),coordsconverted)+"\"^^<http://www.opengis.net/ont/geosparql#gmlLiteral> . \n "
 						wkt=gmlStringToWKT(xmlString,coordsconverted)
 						result+=" <http://www.opengis.net/ont/geosparql#asWKT> rdf:type owl:DatatypeProperty . \n <"+relName+"> <http://www.opengis.net/ont/geosparql#asWKT> \""+wkt+"\"^^<http://www.opengis.net/ont/geosparql#wktLiteral> . \n "
@@ -358,6 +455,15 @@ function getAllProperties(){
 	});
 }
 
+function getSupportingOntology(name){
+	 $.ajax({url: supportingOntologies[name],async: false, success: function(result){
+		console.log(result)
+        currdfstore.load('text/turtle', result, function(s,d){
+				
+				});
+		}});
+}
+
 function readRDFFile(e){
 	console.log(e)
 	var file = e.target.files[0];
@@ -374,11 +480,18 @@ function readRDFFile(e){
 		if(currdfstore==null){
 				currdfstore=store;			
 		}
+		if($('#supportingOntology').is(':checked') && $('#queryimportformat').val() in supportingOntologies  ){
+			console.log("SupportingOntology: "+$('#queryimportformat').val()+" - "+supportingOntologies[$('#queryimportformat').val()])
+			getSupportingOntology($('#queryimportformat').val())
+		}
 		switch($('#queryimportformat').val()){
-					case "ttl":  break;
-					case "gml": contents=walkDOM(new DOMParser().parseFromString(contents, "text/xml")); break;
-					case "kml": contents=walkDOMKML(new DOMParser().parseFromString(contents, "text/xml")); break;
+					case "aaa": contents=walkDOM(new DOMParser().parseFromString(contents, "text/xml")); break;
 					case "geojson": contents=importGeoJSON(contents);break;
+					case "gml": contents=walkDOM(new DOMParser().parseFromString(contents, "text/xml")); break;
+					case "inspire": contents=walkDOM(new DOMParser().parseFromString(contents, "text/xml")); break;
+					case "kml": contents=walkDOMKML(new DOMParser().parseFromString(contents, "text/xml")); break;
+					case "ttl":  break;
+					case "xplanung": contents=walkDOM(new DOMParser().parseFromString(contents, "text/xml")); break;	
 		}
 		currdfstore.load('text/turtle', contents, function(s,d){
 				console.log(s,d);
@@ -393,8 +506,8 @@ function readRDFFile(e){
 
 function uiQuery(start){
 	if(start){
-			getAllClasses();  
-			getAllProperties(); 
+		getAllClasses();  
+		getAllProperties(); 
 	}
 	firstpoint=false;
 	if(bboxpoint!=null)
@@ -453,13 +566,13 @@ function uiQuery(start){
 			//console.log(results[res]["person"]["value"])
 			persons[results[res]["person"]["value"]][results[res]["rel"]["value"]].push(app)
 			if(results[res]["style"]!=null){
-                                persons[results[res]["person"]["value"]]["style"]=results[res]["style"]["value"]
+                persons[results[res]["person"]["value"]]["style"]=results[res]["style"]["value"]
 			}
 			if(results[res]["val2"]!=null){
-                                persons[results[res]["person"]["value"]]["asWKT"]=results[res]["val2"]["value"]
+                persons[results[res]["person"]["value"]]["asWKT"]=results[res]["val2"]["value"]
 			}
 			if(results[res]["img"]!=null){
-                            persons[results[res]["person"]["value"]]["img"]=results[res]["img"]["value"]
+                persons[results[res]["person"]["value"]]["img"]=results[res]["img"]["value"]
 			}
 		}
 		displayQueryResult(persons,!start);
@@ -511,7 +624,18 @@ function displayQueryResult(persons,query){
 	
 function handleGeometry(type,coordinates,query,markerIconPath){
 	//console.log("Handle Geometry "+type+" "+JSON.stringify(coordinates)+" "+query+" "+firstpoint)
-	if(!firstpoint && coordinates!=null && coordinates[0]!=null){
+	if(type.toLowerCase()=="point" && coordinates!=null && coordinates[0]!=null){
+				if(!query || $('#coordinate').val()=="" || !$('#whereactive').is(':checked')  || (!turf.booleanDisjoint(turf.envelope(turf.point(coordinates)),bboxbuffer))){
+					curQueryResultTTL+="<"+pers+"> <http://www.opengis.net/ont/geosparql#asWKT> \""+personToWKT[pers]["coordinates"]+"\" . \n";
+					/*if(results[res]["person"]["value"]!=undefined && results[res]["rel"]["value"]!=undefined && results[res]["val"]["value"]!=undefined){
+						curQueryResultTTL+="<"+results[res]["person"]["value"]+"> <"+results[res]["rel"]["value"]+"> ";
+						if(!results[res]["val"]["value"].includes("http") || results[res]["rel"]["value"].includes("asGML")){
+							curQueryResultTTL+="\""+results[res]["val"]["value"].replace(new RegExp("\"", 'g'),"\\\"")+"\"^^<"+(results[res]["val"]["type"]!=undefined?results[res]["val"]["type"]:"http://www.w3.org/2001/XMLSchema#string")+"> . \n";
+						}else{
+							curQueryResultTTL+="<"+results[res]["val"]["value"]+"> . \n";
+						}
+					}*/
+					if(!firstpoint && coordinates!=null && coordinates[0]!=null){
 		//console.log("Firstcoords")
 		if(Array.isArray(coordinates[0])){
 			firstcoords=coordinates[0]
@@ -525,17 +649,6 @@ function handleGeometry(type,coordinates,query,markerIconPath){
 		mymap.setView(firstcoords, 15);
 		firstpoint=true;
 	}
-	if(type.toLowerCase()=="point" && coordinates!=null && coordinates[0]!=null){
-				if(!query || $('#coordinate').val()=="" || !$('#whereactive').is(':checked')  || (!turf.booleanDisjoint(turf.envelope(turf.point(coordinates)),bboxbuffer))){
-					curQueryResultTTL+="<"+pers+"> <http://www.opengis.net/ont/geosparql#asWKT> \""+personToWKT[pers]["coordinates"]+"\" . \n";
-					/*if(results[res]["person"]["value"]!=undefined && results[res]["rel"]["value"]!=undefined && results[res]["val"]["value"]!=undefined){
-						curQueryResultTTL+="<"+results[res]["person"]["value"]+"> <"+results[res]["rel"]["value"]+"> ";
-						if(!results[res]["val"]["value"].includes("http") || results[res]["rel"]["value"].includes("asGML")){
-							curQueryResultTTL+="\""+results[res]["val"]["value"].replace(new RegExp("\"", 'g'),"\\\"")+"\"^^<"+(results[res]["val"]["type"]!=undefined?results[res]["val"]["type"]:"http://www.w3.org/2001/XMLSchema#string")+"> . \n";
-						}else{
-							curQueryResultTTL+="<"+results[res]["val"]["value"]+"> . \n";
-						}
-					}*/
 						
                         if(markerIconPath!=null && markerIconPath!=""){
 							if(markerIconPath.startsWith("<svg")){
@@ -566,6 +679,20 @@ function handleGeometry(type,coordinates,query,markerIconPath){
 
 
 			}else if(type.toLowerCase()=="linestring" && coordinates!=null && Array.isArray(coordinates)){
+			if(!firstpoint && coordinates!=null && coordinates[0]!=null){
+		//console.log("Firstcoords")
+		if(Array.isArray(coordinates[0])){
+			firstcoords=coordinates[0]
+			if(Array.isArray(coordinates[0][0])){
+				firstcoords=coordinates[0][0]
+				if(Array.isArray(coordinates[0][0][0])){
+					firstcoords=coordinates[0][0][0]
+				}
+			}
+		}
+		mymap.setView(firstcoords, 15);
+		firstpoint=true;
+	}
 						try{
 				if(!query || $('#coordinate').val()=="" || $('#coordinate').val()=="" || !$('#whereactive').is(':checked')  || !turf.booleanDisjoint(turf.envelope(turf.lineString(coordinates)),bboxbuffer)){
 			       if(persons[pers]["style"]!=null){
@@ -583,6 +710,20 @@ function handleGeometry(type,coordinates,query,markerIconPath){
 			}
 
 			}else if(coordinates!=null && Array.isArray(coordinates)){//&& personToWKT[pers]["type"]=="Polygon"){
+			if(!firstpoint && coordinates!=null && coordinates[0]!=null){
+		//console.log("Firstcoords")
+		if(Array.isArray(coordinates[0])){
+			firstcoords=coordinates[0]
+			if(Array.isArray(coordinates[0][0])){
+				firstcoords=coordinates[0][0]
+				if(Array.isArray(coordinates[0][0][0])){
+					firstcoords=coordinates[0][0][0]
+				}
+			}
+		}
+		mymap.setView(firstcoords, 15);
+		firstpoint=true;
+	}
 			try{
 			if(!query || $('#coordinate').val()=="" || !$('#whereactive').is(':checked') || (!turf.booleanDisjoint(turf.envelope(turf.polygon(coordinates)),bboxbuffer))){
 					if(persons[pers]["style"]!=null){
@@ -886,7 +1027,7 @@ function gmlStringToWKT(gmlString,coordarray){
 	return wktString;
 }
 
-function getCoordArrayFromGML(gmlString,crs,switchlatlong){
+function getCoordArrayFromGML(gmlString,crs,switchlatlong,geojson){
 	if(gmlString.includes("posList") || gmlString.includes("pos")){
 		firststep=gmlString.indexOf("<gml:posList")+13;
 		posliststr=gmlString.substring(gmlString.indexOf(">",firststep)+1,gmlString.indexOf("</gml:posList>")).trim();
@@ -902,6 +1043,11 @@ function getCoordArrayFromGML(gmlString,crs,switchlatlong){
 		lowersplit=lowerCorner.split(" ")
 		uppersplit=upperCorner.split(" ")
 		return lowersplit[0]+","+uppersplit[0]+","+lowersplit[1]+","+uppersplit[1]
+	}
+	if(geojson){
+		splstr=gmlString.replace(new RegExp("\\[",'g'),"").replace(new RegExp("\\]",'g'),"").trim().replace(new RegExp(" ",'g'),",").split(",");
+		resultarray=importConvert(splstr,crs,switchlatlong)
+		return resultarray;
 	}
 	return null;
 }
@@ -1043,7 +1189,7 @@ function exportConvert(coordinates,dest,type,geomtype){
         case "geojson":
            res=geometryToGeoJSON(geomtype,coords)
            console.log("Res: "+res)
-            return res;            
+           return res;            
     }
     return null;
 }
@@ -1129,15 +1275,16 @@ function convertit(coordinates,source,dest,switchlatlong){
 <option value="geojson">GeoJSON</option>
 </select>CRS: <select id="epsgqueryexport"></select></td></tr>
 </table>
-</td></tr></table><table><tr><td colspan="2">
-Import From File:<input type="file"  id="file-input" />Format: <select id="queryimportformat">
+</td></tr></table><table width="70%"><tr><td colspan="2">
+Import From File:<input type="file"  id="file-input" /><br/>Format: <select id="queryimportformat">
 <option value="ttl" selected="selected">TTL</option>
 <option value="gml">GML</option>
 <option value="kml">KML</option>
 <option value="geojson">GeoJSON</option>
-<option value="aaa">AAA-Data</option><option value="XPlanung">XPlanung</option><option value="XErleben">XErleben</option>
+<option value="aaa">AAA-Data</option><option value="xplanung">XPlanung</option><option value="xerleben">XErleben</option><option value="inspire">INSPIRE</option>
 </select>
-CRS: <select id="epsgqueryimport"></select></td></tr><tr><td>
+CRS: <select id="epsgqueryimport"></select><br/>
+Load supporting Ontology:<input type="checkbox" id="supportingOntology"/></td><td align="right">
 <button id="exportTTL" onclick="exportAsTTL()">Export Database as</button><select id="dbexportformat">
 <option value="ttl" selected="selected">TTL</option>
 <option value="gml">GML</option>
