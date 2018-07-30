@@ -466,6 +466,22 @@ function readRDFFile(e){
 	if (!file) {
 	    return;
 	}
+	if($('#supportingOntology').is(':checked') && $('#queryimportformat').val() in supportingOntologies  ){
+		rdfstore.create(function(err, store) {
+		if(currdfstore==null){
+				currdfstore=store;			
+		}
+			console.log("SupportingOntology: "+$('#queryimportformat').val()+" - "+supportingOntologies[$('#queryimportformat').val()])
+			ress=""
+			$.ajax({url: supportingOntologies[$('#queryimportformat').val()],async: false, success: function(result){
+				console.log(result)
+				ress=result;
+				currdfstore.load('text/turtle', ress, function(s,d){
+				
+				});
+			}});
+		});
+	}
 
 	var reader = new FileReader();
 	
@@ -476,7 +492,7 @@ function readRDFFile(e){
 		if(currdfstore==null){
 				currdfstore=store;			
 		}
-		if($('#supportingOntology').is(':checked') && $('#queryimportformat').val() in supportingOntologies  ){
+		/*if($('#supportingOntology').is(':checked') && $('#queryimportformat').val() in supportingOntologies  ){
 			console.log("SupportingOntology: "+$('#queryimportformat').val()+" - "+supportingOntologies[$('#queryimportformat').val()])
 			ress=""
 			$.ajax({url: supportingOntologies[$('#queryimportformat').val()],async: false, success: function(result){
@@ -487,7 +503,7 @@ function readRDFFile(e){
 				});
 			}});
 
-		}
+		}*/
 		switch($('#queryimportformat').val()){
 					case "aaa": contents=walkDOM(new DOMParser().parseFromString(contents, "text/xml")); break;
 					case "geojson": contents=importGeoJSON(contents);break;
@@ -611,8 +627,19 @@ function displayQueryResult(persons,query){
 				if(rel!=null && rel.includes("asWKT")){
 					try{
 						//console.log(persons[pers][rel])
-						if(Array.isArray(persons[pers][rel])){
+						/*if(Array.isArray(persons[pers][rel])){
 							wkt.read(persons[pers][rel][0]);
+						}else{
+							wkt.read(persons[pers][rel]);
+						}*/
+						if(Array.isArray(persons[pers][rel])){
+							if(isJSON(persons[pers][rel][0])){
+								console.log(persons[pers][rel][0][Object.keys(persons[pers][rel][0])[0]])
+								wkt.read(persons[pers][rel][0][Object.keys(persons[pers][rel][0])[0]]);
+							}else{
+								console.log(persons[pers][rel][0])
+								wkt.read(persons[pers][rel][0]);
+							}							
 						}else{
 							wkt.read(persons[pers][rel]);
 						}
@@ -625,6 +652,17 @@ function displayQueryResult(persons,query){
 		tooltip+="</ul></html>"
 	}
 	
+function isJSON (something) {
+    if (typeof something != 'string')
+        something = JSON.stringify(something);
+
+    try {
+        JSON.parse(something);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
 	
 function handleGeometry(type,coordinates,query,markerIconPath){
 	//console.log("Handle Geometry "+type+" "+JSON.stringify(coordinates)+" "+query+" "+firstpoint)
