@@ -456,12 +456,7 @@ function getAllProperties(){
 }
 
 function getSupportingOntology(name){
-	 $.ajax({url: supportingOntologies[name],async: false, success: function(result){
-		console.log(result)
-        currdfstore.load('text/turtle', result, function(s,d){
-				
-				});
-		}});
+	 
 }
 
 function readRDFFile(e){
@@ -471,6 +466,7 @@ function readRDFFile(e){
 	if (!file) {
 	    return;
 	}
+
 	var reader = new FileReader();
 	
 	reader.onload = function(e) {
@@ -482,7 +478,15 @@ function readRDFFile(e){
 		}
 		if($('#supportingOntology').is(':checked') && $('#queryimportformat').val() in supportingOntologies  ){
 			console.log("SupportingOntology: "+$('#queryimportformat').val()+" - "+supportingOntologies[$('#queryimportformat').val()])
-			getSupportingOntology($('#queryimportformat').val())
+			ress=""
+			$.ajax({url: supportingOntologies[name],async: false, success: function(result){
+				console.log(result)
+				ress=result;
+				currdfstore.load('text/turtle', ress, function(s,d){
+				
+				});
+			}});
+
 		}
 		switch($('#queryimportformat').val()){
 					case "aaa": contents=walkDOM(new DOMParser().parseFromString(contents, "text/xml")); break;
@@ -914,6 +918,8 @@ function exportQueryResult(){
 		console.log("GeoJSON: "+geojson["geometry"]["coordinates"])
 		geojson["geometry"]["coordinates"]=exportConvert(geojson["geometry"]["coordinates"],epsgdefs[$('#epsgqueryexport option:selected').val()],"geojson",geojson["geometry"]["type"]);
 		console.log("GeoJSON: "+geojson["geometry"]["coordinates"])
+		console.log(curQueryResultTTL)
+		if(curQueryResultTTL!=null){
 		splitt=curQueryResultTTL.split("\n")
 		for(spl in splitt){
 			console.log(splitt[spl])
@@ -931,6 +937,7 @@ function exportQueryResult(){
 					//gml+="<"+subsplit[1].replace("<","").replace(">","")+">"+(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))+"</"+subsplit[1].replace("<","").replace(">","")+">\n"
 				}
 			}catch(err){console.log(err)}
+		}
 		}
 
         // Push GeoJSON object to collection
@@ -994,7 +1001,7 @@ function exportQueryResult(){
 
 function gmlStringToWKT(gmlString,coordarray){
 	wktString=""
-	if(gmlString.includes("LinearRing")){
+	if(gmlString.includes("LinearRing") || gmlString.includes("Polygon")){
 		wktString+="POLYGON((";
 	}else if(gmlString.includes("Envelope")){
 		wktString+="ENVELOPE(";
@@ -1018,7 +1025,7 @@ function gmlStringToWKT(gmlString,coordarray){
 		uppersplit=upperCorner.split(" ")*/
 		wktString+=coordarray[0]+" "+coordarray[1]+","+coordarray[2]+" "+coordarray[3]
 	}
-	if(gmlString.includes("LinearRing")){
+	if(gmlString.includes("LinearRing") || gmlString.includes("Polygon") ){
 		wktString+="))";
 	}else{
 		wktString+=")";
