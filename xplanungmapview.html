@@ -100,7 +100,7 @@ function getAllClasses(){
 					}
 				}
 		$('#classeslist').html(result);
-		$('#classeslist2').html(result);
+		$('#classeslist2').html("<option value=\"?\">?</option>"+result);
 		$('#classeslist3').html(result);
 		$('#classeslist4').html(result);
 	});
@@ -552,13 +552,19 @@ function uiQuery(start){
 		alert("No classes to query!")
 		return
 	}
-	console.log(constraints)
 	queryString=prefixList+" SELECT DISTINCT ?person ?rel ?style ?img ?val ?valLabel ?val2 WHERE { "
 	for(cls in classesToQuery){
 		console.log(cls)
-		if($('#whichactive').is(':checked') && classesToQuery[cls] in constraints){
+		if($('#whichactive').is(':checked')){
 						queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val .  OPTIONAL{?val geo:asWKT ?val2 .} OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> xplan5:style ?style .} OPTIONAL{<"+classesToQuery[cls]+"> xplan5:image ?img .} "
-						queryString+=constraints[classesToQuery[cls]]
+						if(classesToQuery[cls] in constraints){
+							queryString+=constraints[classesToQuery[cls]]
+						}
+						if("?" in constraints){
+							for(cons in constraints["?"]){
+								queryString+=constraints["?"][cons]
+							}
+						}
 						queryString+="} UNION"
 		}else{
 			queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?val2 .} OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> xplan5:style ?style .} OPTIONAL{<"+classesToQuery[cls]+"> xplan5:image ?img .} } UNION "
@@ -910,8 +916,16 @@ function addConstraint(firstpart,secondpart,thirdpart){
                 geoconstraints[$( "#"+firstpart+" option:selected" ).val()]=" ?person <"+$( "#"+secondpart+" option:selected" ).val()+"> "+getLiteral($('#'+thirdpart+" option:selected").val())+" . ";
 		$('#constraints').html($('#constraints').html()+"<li>"+$(  "#"+firstpart+" option:selected" ).text()+" - "+$( "#"+secondpart+" option:selected" ).text()+" - "+$('#'+thirdpart+" option:selected").val()+"</li>")
 	}else{
-                constraints[$( "#"+firstpart+" option:selected" ).val()]=" ?person <"+$( "#"+secondpart+" option:selected" ).val()+"> "+getLiteral($('#'+thirdpart).val())+" . ";
-		$('#constraints').html($('#constraints').html()+"<li>"+$(  "#"+firstpart+" option:selected" ).text()+" - "+$( "#"+secondpart+" option:selected" ).text()+"=\""+$('#'+thirdpart).val()+"\"</li>")
+			if($( "#"+firstpart+" option:selected" ).val().includes("?")){
+				if(!($( "#"+firstpart+" option:selected" ).val() in constraints)){
+					constraints["?"]=[]
+				}
+				constraints["?"].push(" ?person <"+$( "#"+secondpart+" option:selected" ).val()+"> "+getLiteral($('#'+thirdpart).val())+" . ");
+
+			}else{
+				constraints[$( "#"+firstpart+" option:selected" ).val()]=" ?person <"+$( "#"+secondpart+" option:selected" ).val()+"> "+getLiteral($('#'+thirdpart).val())+" . ";
+			}
+                		$('#constraints').html($('#constraints').html()+"<li>"+$(  "#"+firstpart+" option:selected" ).text()+" - "+$( "#"+secondpart+" option:selected" ).text()+"=\""+$('#'+thirdpart).val()+"\"</li>")
 		$('#'+thirdpart).val("")
 	}
 	}
@@ -1358,7 +1372,7 @@ function clearGraph(){
 </select><select id="classeslist4"></select><br/><button id="addgeoconstraint"  onClick="addConstraint('classeslist3','geospatiallist','classeslist4')">Add</button>
 <button id="clearconstraints" onclick="clearConstraints()">Clear</button></td></tr>
 <tr  valign="top" align="top"><td>Which features?<input type="checkbox" id="whichactive"/></td>
-<td><input type="checkbox" id="whichclasscheck"/><select id="classeslist2"></select><select id="attributelist"></select><br/><input type="text" id="constrainttext"/><br/>
+<td><select id="classeslist2"></select><select id="attributelist"></select><br/><input type="text" id="constrainttext"/><br/>
 <button id="addconstraint" onClick="addConstraint('classeslist2','attributelist','constrainttext')">Add</button>
 <button id="clearconstraints" onclick="clearConstraints()">Clear</button></td></tr>
 <tr  valign="top" align="top"><td colspan="2"><ul id="constraints"></ul></td></tr>
