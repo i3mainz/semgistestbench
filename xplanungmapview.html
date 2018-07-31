@@ -20,7 +20,7 @@ var prefixMap={"http://www.w3.org/2002/07/owl#":"owl", "http://www.opengis.net/o
 , "http://www.wikidata.org/entity/":"wd", "http://xmlns.com/foaf/0.1/":"foaf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#":"rdf", 
 "http://www.w3.org/XML/1998/namespace":"xml", "http://www.w3.org/2001/XMLSchema#":"xsd", "http://www.w3.org/2000/01/rdf-schema#":"rdfs" ,
  "http://www.xerleben.de/schema/2.0_1#":"xerl", "http://www.xplanung.de/xplangml/5/0#":"xplan5", "http://www.opengis.net/gml/3.2":"gml", "http://www.opengis.net/kml/2.2#":"kml" }; 
-var supportingOntologies={"xplanung":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/a4be9c726d083a8929b84a64d2a6b577c55c6d99/XPlanung/xplanung5_0.ttl","aaa":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/master/AAA-Data/aaa6.ttl",
+var supportingOntologies={"xplanung":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/24e994cb618de5ffc15d90a7f9df20aeb4f01f13/XPlanung/xplanung5_0.ttl","aaa":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/master/AAA-Data/aaa6.ttl",
 "xerleben":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/master/XErleben/xerleben2_1.ttl_mod.ttl","inspire":""}
 var currdfstore=null;
 var wkt = new Wkt.Wkt();
@@ -646,12 +646,10 @@ function displayQueryResult(persons,query,classTopers){
 			markerIconPath=""
 			tooltip="<html><b><a href=\""+pers+"\" target=\"_blank\">"+pers.substring(pers.indexOf("#")+1)+"</a></b><ul>"
 			Object.keys(persons[pers]).sort().forEach(function(rel) {
-				if(rel!=null && (rel.includes("asWKT") || rel.includes("asGML") || rel.includes("asKML") || rel.includes("asGeoJSON"))){
+				if(rel!=null && (rel.includes("asWKT") || rel.includes("asGML") || rel.includes("asKML") || rel.includes("asGeoJSON") || rel.includes("pointStyle") || rel.includes("polygonStyle") || rel.includes("linestringStyle"))){
 					}
 					else if(rel.includes("img")){
 						markerIconPath=persons[pers][rel]
-					}else if(rel.includes("style")){
-					
 					}else{
 						for(val in persons[pers][rel]){
 							tooltip+="<li><a href=\""+rel+"\" target=\"_blank\">"+rel.substring(rel.lastIndexOf("#")+1)+"</a> - "
