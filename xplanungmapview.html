@@ -18,7 +18,7 @@ var prefixMap={"http://www.w3.org/2002/07/owl#":"owl", "http://www.opengis.net/o
 , "http://www.wikidata.org/entity/":"wd", "http://xmlns.com/foaf/0.1/":"foaf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#":"rdf", 
 "http://www.w3.org/XML/1998/namespace":"xml", "http://www.w3.org/2001/XMLSchema#":"xsd", "http://www.w3.org/2000/01/rdf-schema#":"rdfs" ,
  "http://www.xerleben.de/schema/2.0_1#":"xerl", "http://www.xplanung.de/xplangml/5/0#":"xplan5", "http://www.opengis.net/gml/3.2":"gml", "http://www.opengis.net/kml/2.2#":"kml" }; 
-var supportingOntologies={"xplanung":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/master/XPlanung/xplanung5_0.ttl","aaa":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/master/AAA-Data/aaa6.ttl",
+var supportingOntologies={"xplanung":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/a262cc8b3501d2765abc9f2f57b93a2c0eb4821b/XPlanung/xplanung5_0.ttl","aaa":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/master/AAA-Data/aaa6.ttl",
 "xerleben":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/master/XErleben/xerleben2_1.ttl_mod.ttl","inspire":""}
 var currdfstore=null;
 var wkt = new Wkt.Wkt();
@@ -87,7 +87,7 @@ function readSingleFile(e) {
 
 function getAllClasses(){
 	currdfstore.execute(prefixList+" SELECT DISTINCT ?cls ?clsLabel  WHERE {?ind rdf:type ?cls . ?ind ?rel ?geo. ?geo geo:asWKT ?wkt  . ?cls rdf:type owl:Class . OPTIONAL{?cls rdfs:label ?clsLabel. }} ORDER BY ?cls", function(success,results){ 
-        console.log(success,results)
+        //console.log(success,results)
 		result="";
 				for(res in results){
 					if(!results[res]["cls"]["value"].startsWith("_")){
@@ -166,7 +166,7 @@ function saveTextAsFile(tosave,fileext)
 function importGeoJSON(geojson,crs,switchlatlong){
 	result=ttlprefixList
 	result+="geo:Feature rdf:type owl:Class . \n geo:hasGeometry rdf:type owl:ObjectProperty . \n geo:asWKT rdf:type owl:DatatypeProperty . \n geo:asGeoJSON rdf:type owl:DatatypeProperty . \n geo:asGML rdf:type owl:DatatypeProperty . \n geo:asKML rdf:type owl:DatatypeProperty . \n"
-	console.log(geojson)
+	//console.log(geojson)
 	data=JSON.parse(geojson)
 	namespace="http://semgis.de/geodata#"
 	var wkt = new Wkt.Wkt();
@@ -180,11 +180,11 @@ function importGeoJSON(geojson,crs,switchlatlong){
 			indid+=uuid
 			result+=indid+"> rdf:type geo:Feature . \n"
 		}
-		console.log("Ind Result: "+result)
+		//console.log("Ind Result: "+result)
 		geometry=data["features"][feat]["geometry"]
 		coordsconverted=getCoordArrayFromGML(JSON.stringify(geometry["coordinates"]),epsgdefs[$('#epsgqueryimport option:selected').val()],true,true)
 		wktString=coordarraytoWKT(coordsconverted,geometry["type"])
-		console.log(geometry)
+		//console.log(geometry)
 		wkt=wkt.read(wktString);
 		result+=indid+"> geo:hasGeometry "+indid+"_geom> . \n "+indid+"_geom> rdf:type geo:"+geometry["type"]+" . \n geo:"+geometry["type"]+" rdf:type owl:Class . \n "
 		+indid+"_geom> geo:asWKT \""+wktString+"\"^^geo:wktLiteral . \n "+indid+"_geom> geo:asGeoJSON \""+JSON.stringify(wkt.toJson()).replace(new RegExp("\"", 'g'),"\\\"")+"\"^^geo:geoJSONLiteral . \n "
@@ -197,7 +197,7 @@ function importGeoJSON(geojson,crs,switchlatlong){
 		}
 	}
 	lastimportAsTTL=result;
-	console.log(result)
+	//console.log(result)
 	return result
 }
 
@@ -288,7 +288,7 @@ function walkDOM(main) {
 	strconvertmode=false;
     var loop = function(main,depth,parentNodeName,parentIndName,parentRelationName,strconvertmode,toadd) {
         do {
-			console.log(main.nodeName+" - "+depth)
+			//console.log(main.nodeName+" - "+depth)
             arr.push(main);
 			end=false;
 			if(depth==1 && main.attributes!=null){
@@ -327,12 +327,12 @@ function walkDOM(main) {
 						}	
 					if(main.firstChild!=null && main.firstChild.nextSibling!=null){						
 						xmlString = (new XMLSerializer()).serializeToString(main);					
-						console.log("XMLString: "+xmlString)
+						//console.log("XMLString: "+xmlString)
 						coordsconverted=getCoordArrayFromGML(xmlString,epsgdefs[$('#epsgqueryimport option:selected').val()],true,false)
 						result+="<"+relName+"> <http://www.opengis.net/ont/geosparql#asGML> \""+convertGMLToOtherCRS(xmlString.replace(new RegExp("\"", 'g'),"\\\"").replace(new RegExp("\n", 'g'),""),coordsconverted)+"\"^^<http://www.opengis.net/ont/geosparql#gmlLiteral> . \n "
-						console.log(coordsconverted)
+						//console.log(coordsconverted)
 						wkt=gmlStringToWKT(xmlString,coordsconverted)
-						console.log("WKT: "+wkt)
+						//console.log("WKT: "+wkt)
 						result+=" <http://www.opengis.net/ont/geosparql#asWKT> rdf:type owl:DatatypeProperty . \n <"+relName+"> <http://www.opengis.net/ont/geosparql#asWKT> \""+wkt+"\"^^<http://www.opengis.net/ont/geosparql#wktLiteral> . \n "
 						geojson=gmlStringToGeoJSON(xmlString,coordsconverted)
 						result+=" <http://www.opengis.net/ont/geosparql#asGeoJSON> rdf:type owl:DatatypeProperty . \n <"+relName+"> <http://www.opengis.net/ont/geosparql#asGeoJSON> \""+geojson.replace(new RegExp("\"", 'g'),"\\\"")+"\"^^<http://www.opengis.net/ont/geosparql#geojsonLiteral> . \n "
@@ -342,8 +342,8 @@ function walkDOM(main) {
 					end=true;
 				}else if(main.childNodes.length>1 && main.nodeName!="#text"){// && main.firstChild.nodeName!="#text")
 					uuid=generateUUID()
-					console.log(main)
-					console.log("OBJECTPROPERTY: "+main.nodeName)
+					//console.log(main)
+					//console.log("OBJECTPROPERTY: "+main.nodeName)
 					
 					result+=(main.nodeName.includes(":")?main.nodeName:"<"+main.namespaceURI+"#"+main.nodeName+">")+" rdf:type owl:ObjectProperty . <"+main.namespaceURI+"#"+uuid+"> rdf:type "+(main.firstChild.nextSibling.nodeName.includes(":")?main.firstChild.nextSibling.nodeName:"<"+main.firstChild.nextSibling.nodeName+">")+" .  \n"
 					result+=" "+(main.firstChild.nextSibling.nodeName.includes(":")?main.firstChild.nextSibling.nodeName:"<"+main.firstChild.nextSibling.nodeName+">")+" rdf:type owl:Class . \n "
@@ -362,7 +362,7 @@ function walkDOM(main) {
         while (main = main.nextSibling);
     }
     loop(main,depth,parentNodeName,"","",strconvertmode,"");
-	console.log(result)
+	//console.log(result)
 	lastimportAsTTL=result;
     return result;
 }
@@ -394,7 +394,7 @@ function walkDOMKML(main) {
 			console.log(main+" - "+depth)
             arr.push(main);
 			end=false;
-			console.log(depth+" - "+classopen)
+			//console.log(depth+" - "+classopen)
 			if(classopen<depth && classopen!=-1){
 				if(main.hasChildNodes()==1){
 					if(main.localName.includes("name")){
@@ -443,7 +443,7 @@ function walkDOMKML(main) {
         while (main = main.nextSibling);
     }
     loop(main,-1,"",-1,"",-1,-1);
-	console.log(result)
+	//console.log(result)
 	lastimportAsTTL=result;
     return arr;
 }
@@ -461,7 +461,7 @@ function generateUUID() {
 
 function getAllProperties(){
 	currdfstore.execute(prefixList+" SELECT DISTINCT ?prop ?proplabel  WHERE { {?cls rdf:type owl:Class . ?ind rdf:type ?cls . ?ind ?prop ?clsLabel. OPTIONAL{?prop rdfs:label ?proplabel .} } }  ORDER BY ?prop ", function(success,results){ 
-        console.log(success,results)
+        //console.log(success,results)
 		result="";
 				for(res in results){
 					prefix=results[res]["prop"]["value"].substring(0,results[res]["prop"]["value"].lastIndexOf('#')+1);
@@ -504,7 +504,7 @@ function readRDFFile(e){
 	
 	reader.onload = function(e) {
 	    var contents = e.target.result;
-		console.log(contents)
+		//console.log(contents)
 		rdfstore.create(function(err, store) {
 		if(currdfstore==null){
 				currdfstore=store;			
@@ -531,7 +531,7 @@ function readRDFFile(e){
 					case "xplanung": contents=walkDOM(new DOMParser().parseFromString(contents, "text/xml")); break;	
 		}
 		currdfstore.load('text/turtle', contents, function(s,d){
-				console.log(s,d);
+				//console.log(s,d);
 				markercollection=[]
 				firstpoint=false;
 				uiQuery(true)
@@ -549,10 +549,10 @@ function uiQuery(start){
 	firstpoint=false;
 	if(bboxpoint!=null)
 		bboxbuffer=turf.buffer(bboxpoint, $('#buffersize').val(), {units: "meters"})
-	console.log(bboxbuffer)
+	//console.log(bboxbuffer)
 	clearMap();
 	classesToQuery=$('#classeslist').val();
-	console.log(classesToQuery);
+	//console.log(classesToQuery);
 	if(!start){
 	if(classesToQuery.length==0){
 		alert("No classes to query!")
@@ -583,7 +583,7 @@ function uiQuery(start){
 	queryString+="} ORDER BY ?person "
 	console.log(queryString)
 	currdfstore.execute(queryString, function(success,results){ 
-        console.log(success,results)
+        //console.log(success,results)
 		persons={}
 		classTopers={}
 		for(res in results){
@@ -619,7 +619,7 @@ function uiQuery(start){
 			if(results[res]["style"]!=null){
                 persons[results[res]["person"]["value"]]["style"]=results[res]["style"]["value"]
 			}
-			if(results[res]["val2"]!=null){
+			if(results[res]["val2"]!=null && !results[res]["val2"]["value"].includes("ENVELOPE")){
                 persons[results[res]["person"]["value"]]["asWKT"]=results[res]["val2"]["value"]
 			}
 			if(results[res]["img"]!=null){
@@ -654,10 +654,10 @@ function displayQueryResult(persons,query,classTopers){
 						}
 					}
 				});
-				console.log("Geoconstraints: "+JSON.stringify(geoconstraints))
+				//console.log("Geoconstraints: "+JSON.stringify(geoconstraints))
                         rest=[]
                         if(!jQuery.isEmptyObject(geoconstraints)){
-								console.log("GEOCONSTRAINTS!!!!")
+								//console.log("GEOCONSTRAINTS!!!!")
                                 for(geocons in geoconstraints){
                                         curcons=geoconstraints[geocons]
                                         constraint=curcons.split(" ")
@@ -670,10 +670,11 @@ function displayQueryResult(persons,query,classTopers){
                                 
                         }
 			for(rel in persons[pers]){
+				//console.log("Geometry render loop "+rel+" - "+persons[pers][rel])
 				if(rel!=null && rel.includes("asWKT") && !persons[pers][rel].includes("ENVELOPE")){
 				//if(persons[pers]["asWKT"]!=null /*&& persons[pers]["asWKT"] in rest*/){
 					try{
-						console.log(persons[pers][rel])
+						//console.log(persons[pers][rel])
 						/*if(Array.isArray(persons[pers][rel])){
 							wkt.read(persons[pers][rel][0]);
 						}else{
@@ -693,32 +694,33 @@ function displayQueryResult(persons,query,classTopers){
 
 						geom=wkt.toJson();
 						handleGeometry(geom["type"],geom["coordinates"],query,markerIconPath,pers)
-					}catch(err){}//console.log(err)}
+					}catch(err){console.log(err)}//}
 				}
 		}
 		tooltip+="</ul></html>"
 	}
+}
 	
 	
 function applyFilter(functiondef,set1,set2,persons){
         var wkt=new Wkt.Wkt()
         resultset=[]
         //turf.bbox(set2.values())
-		console.log("ApplyFilter")
+		//console.log("ApplyFilter")
         for(elem in set1){			
                 if(!(set1[elem] in resultset)){
-					console.log(persons[set1[elem]])
-					console.log(persons[set1[elem]]["asWKT"])
+					//console.log(persons[set1[elem]])
+					//console.log(persons[set1[elem]]["asWKT"])
 					wkt.read(persons[set1[elem]]["asWKT"])
 					curset1=wkt.toJson()
-					console.log("Curset1: "+JSON.stringify(curset1))
+					//console.log("Curset1: "+JSON.stringify(curset1))
                 for(elem2 in set2){
                         if(set2[elem2] in resultset){
                             continue;
                         }
                         wkt.read(persons[set2[elem2]]["asWKT"])
                         curset2=wkt.toJson()
-						console.log("Curset2: "+JSON.stringify(curset2))
+						//console.log("Curset2: "+JSON.stringify(curset2))
                         switch(functiondef){
                             case "booleanContains":
 									console.log("Contains? "+turf.booleanDisjoint(curset1,curset2))
@@ -782,7 +784,8 @@ function isJSON (something) {
 }
 	
 function handleGeometry(type,coordinates,query,markerIconPath,pers){
-	//console.log("Handle Geometry "+type+" "+JSON.stringify(coordinates)+" "+query+" "+firstpoint)
+	console.log("Handle Geometry "+type+" "+JSON.stringify(coordinates)+" "+query+" "+firstpoint)
+	try{
 	if(type.toLowerCase()=="point" && coordinates!=null && coordinates[0]!=null){
 				if(!query || $('#coordinate').val()=="" || !$('#whereactive').is(':checked')  || (!turf.booleanDisjoint(turf.envelope(turf.point(coordinates)),bboxbuffer))){
 				console.log("MAKE POINT MARKER!")
@@ -795,9 +798,9 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers){
 							curQueryResultTTL+="<"+results[res]["val"]["value"]+"> . \n";
 						}
 					}*/
-					console.log("before first point")
+					//console.log("before first point")
 					if(!firstpoint && coordinates!=null && coordinates[0]!=null){
-						console.log("Firstcoords")					
+						//console.log("Firstcoords")					
 						if(Array.isArray(coordinates[0])){
 							firstcoords=coordinates[0]
 							if(Array.isArray(coordinates[0][0])){
@@ -814,7 +817,7 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers){
 					}
 						
                         if(markerIconPath!=null && markerIconPath!=""){
-							console.log("CREATING MARKER AT "+JSON.stringify(coordinates)+" - "+markerIconPath)
+							//console.log("CREATING MARKER AT "+JSON.stringify(coordinates)+" - "+markerIconPath)
 							if(markerIconPath.startsWith("<svg")){
 								markerIconPath = encodeURI("data:image/svg+xml," +
 								markerIconPath).replace('#','%23');
@@ -831,7 +834,7 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers){
                             marker.addTo(mymap);
                             markercollection.push(marker)
                         } else{
-							console.log("CREATING MARKER AT "+JSON.stringify(coordinates))
+							//console.log("CREATING MARKER AT "+JSON.stringify(coordinates))
                             var marker = new L.marker(coordinates/*,{icon:markerIcon}*/); //opacity may be set to zero
                             marker.bindPopup(tooltip, {maxWidth : 560});
                             marker.addTo(mymap);
@@ -851,29 +854,27 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers){
 							firstcoords=coordinates[0][0][0]
 						}
 					}
-				}
+				}else{
+							firstcoords=coordinates
+						}
 				mymap.setView(firstcoords, 15);
 				firstpoint=true;
 			}
-			try{
 				if(!query || $('#coordinate').val()=="" || $('#coordinate').val()=="" || !$('#whereactive').is(':checked')  || !turf.booleanDisjoint(turf.envelope(turf.lineString(coordinates)),bboxbuffer)){
 			       if(persons[pers]["style"]!=null){
-                         try{
+
                             L.polyline( coordinates,JSON.parse("{"+persons[pers]["style"]+"}")).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap); 
-                            }catch(err){}
+                        
 			       }else{
-			       			                               try{
+			       			
                             L.polyline( coordinates,{color: 'blue'}).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap); 
-                            }catch(err){}
+                            
 			       }
 				}
-							}catch(err){
-							//console.log(err)
-			}
 
 			}else if(coordinates!=null && Array.isArray(coordinates)){//&& personToWKT[pers]["type"]=="Polygon"){
 				if(!firstpoint && coordinates!=null && coordinates[0]!=null){
-					//console.log("Firstcoords")
+					console.log("Firstcoords")
 					if(Array.isArray(coordinates[0])){
 						firstcoords=coordinates[0]
 						if(Array.isArray(coordinates[0][0])){
@@ -881,34 +882,32 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers){
 							if(Array.isArray(coordinates[0][0][0])){
 								firstcoords=coordinates[0][0][0]
 							}
+						}else{
+							firstcoords=coordinates
 						}
 					}
 				mymap.setView(firstcoords, 15);
 				firstpoint=true;
 			}
-			try{
+
 			if(!query || $('#coordinate').val()=="" || !$('#whereactive').is(':checked') || (!turf.booleanDisjoint(turf.envelope(turf.polygon(coordinates)),bboxbuffer))){
+				//console.log("CREATING POLYGON AT "+JSON.stringify(coordinates)+" - "+persons[pers]["style"])
 					if(persons[pers]["style"]!=null){
-                            try{
-                                poly=L.polygon( coordinates,JSON.parse("{"+persons[pers]["style"]+"}"));
+                                poly=L.polygon(coordinates,JSON.parse("{"+persons[pers]["style"]+"}"));
                                 poly.bindPopup(tooltip, {maxWidth : 560}).addTo( mymap);
-                            }catch(err){}
 			       }else{
-			       			                               try{
                             poly=L.polygon( coordinates,{color: 'red',});
                                 poly.bindPopup(tooltip, {maxWidth : 560}).addTo( mymap);
-                            }catch(err){}
+                           
 			       }
 
 			}
-			}catch(err){
-				//console.log(err)
-			}
+
 			}
 			
-		}
-		var group = new L.featureGroup(markercollection);
-
+		}catch(err){
+				console.log(err)
+			}
 }
 	
 function clearMap() {
@@ -953,7 +952,7 @@ function addConstraint(firstpart,secondpart,thirdpart){
 	}
 	}
 	if(!$('#classeslist option:selected[value="'+$( "#"+firstpart+"  option:selected" ).val()+'"]')){
-		console.log("SELECTED")
+		//console.log("SELECTED")
 		$('#classeslist option:selected[value="'+$( "#"+firstpart+" option:selected" ).val()+'"]').prop("selected","selected");
 	}
 	
@@ -979,9 +978,9 @@ function exportQueryResult(){
 		wrotetype=false;
 		splitt=curQueryResultTTL.split("\n")
 		for(spl in splitt){
-			console.log(splitt[spl])
+			//console.log(splitt[spl])
 			subsplit=splitt[spl].split(" ")
-			console.log(subsplit)
+			//console.log(subsplit)
 			//if(remembersub1="" || rememberremembersub1=subsplit[1]){
 			try{
 			if(splitt[spl].includes("NamedIndividual") || splitt[spl].includes("label") || splitt[spl].includes("gml:id")){
