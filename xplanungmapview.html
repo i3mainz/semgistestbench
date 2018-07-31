@@ -317,7 +317,7 @@ function walkDOM(main) {
 					relName=""
 						if(parentRelationName!="" && parentIndName!=""){
 							relName=parentIndName
-							result+="<"+parentNodeName+"> "+(parentRelationName.includes(":")?parentRelationName:"<"+parentRelationName+">")+" <"+parentIndName+"> . "
+							result+="<"+parentNodeName.replace(new RegExp(" ", 'g'),"_")+"> "+(parentRelationName.includes(":")?parentRelationName.replace(new RegExp(" ", 'g'),"_"):"<"+parentRelationName.replace(new RegExp(" ", 'g'),"_")+">")+" <"+parentIndName.replace(new RegExp(" ", 'g'),"_")+"> . "
 							result+=" <http://www.opengis.net/ont/geosparql#asGML> rdf:type owl:DatatypeProperty . \n  "
 						}else{
 							relName=parentNodeName
@@ -347,7 +347,7 @@ function walkDOM(main) {
 					parentRelationName=main.nodeName
 					//parentNodeName=main.getAttribute("gml:id")
 				}else if(main.childNodes.length==1 && main.firstChild.nodeName=="#text"){
-					result+="<"+main.namespaceURI+"#"+main.localName+"> rdf:type owl:DatatypeProperty . \n <"+parentNodeName+"> <"+main.namespaceURI+"#"+main.localName+"> "+getLiteral(main.firstChild.nodeValue)+" . \n"
+					result+="<"+main.namespaceURI+"#"+main.localName+"> rdf:type owl:DatatypeProperty . \n <"+parentNodeName.replace(new RegExp(" ", 'g'),"_")+"> <"+main.namespaceURI+"#"+main.localName+"> "+getLiteral(main.firstChild.nodeValue)+" . \n"
 					end=true;
 				}
 			}
@@ -655,7 +655,7 @@ function displayQueryResult(persons,query,classTopers){
                                 
                         }
 			for(rel in persons[pers]){
-				if(rel!=null && rel.includes("asWKT")){
+				if(rel!=null && rel.includes("asWKT") && !persons[pers][rel].includes("ENVELOPE")){
 				//if(persons[pers]["asWKT"]!=null /*&& persons[pers]["asWKT"] in rest*/){
 					try{
 						console.log(persons[pers][rel])
@@ -1309,6 +1309,18 @@ function convertit(coordinates,source,dest,switchlatlong){
 	return resultarray
 }
 
+function clearGraph(){
+	currdfstore.clear(function(err){console.log(err)});
+	$('#classeslist').html("")
+	$('#classeslist2').html("")
+	$('#classeslist3').html("")
+	$('#classeslist4').html("")
+	$('#attributelist').html("")
+	clearConstraints();
+	clearCoords();
+	clearMap();
+}
+
 </script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
@@ -1375,6 +1387,6 @@ Load supporting Ontology:<input type="checkbox" id="supportingOntology"/></td><t
 <option value="gml">GML</option>
 <option value="kml">KML</option>
 <option value="geojson">GeoJSON</option>
-</select></td></tr></table>
+</select><br/><button id="cleargraph" onclick="clearGraph()">Delete Database</button></td></tr></table>
 </body>
 </html>
