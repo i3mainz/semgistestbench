@@ -648,15 +648,18 @@ function displayQueryResult(persons,query,classTopers){
 						}
 					}
 				});
+				console.log("Geoconstraints: "+JSON.stringify(geoconstraints))
                         rest=[]
-                        if(geoconstraints.length>0){
+                        if(!jQuery.isEmptyObject(geoconstraints)){
+								console.log("GEOCONSTRAINTS!!!!")
                                 for(geocons in geoconstraints){
                                         curcons=geoconstraints[geocons]
                                         constraint=curcons.split(" ")
                                         class1=constraint[0]
                                         class2=constraint[2]
                                         relation=constraint[1]
-                                        rest.concat(applyFilter(relation,classTopers[class1],classTopers[class2]))
+										console.log(relation+" - "+classTopers[class1]+" - "+classTopers[class2])
+                                        rest.concat(applyFilter(relation,classTopers[class1],classTopers[class2],persons))
                                 }
                                 
                         }
@@ -691,52 +694,63 @@ function displayQueryResult(persons,query,classTopers){
 	}
 	
 	
-function applyFilter(functiondef,set1,set2){
-        wkt=Wkt.Wkt()
+function applyFilter(functiondef,set1,set2,persons){
+        var wkt=new Wkt.Wkt()
         resultset=[]
-        turf.bbox(set2.values())
-        for(elem in set1){
-                if(!set1 in resultset){
-                wkt.read(set1[elem1]["asWKT"]["value"])
-                curset1=wkt.toJson()
+        //turf.bbox(set2.values())
+		console.log("ApplyFilter")
+        for(elem in set1){			
+                if(!(set1[elem] in resultset)){
+					console.log(persons[set1[elem]])
+					console.log(persons[set1[elem]]["asWKT"])
+					wkt.read(persons[set1[elem]]["asWKT"])
+					curset1=wkt.toJson()
+					console.log("Curset1: "+JSON.stringify(curset1))
                 for(elem2 in set2){
                         if(set2[elem2] in resultset){
                             continue;
                         }
-                        wkt.read(set2[elem2]["asWKT"]["value"])
+                        wkt.read(persons[set2[elem2]]["asWKT"])
                         curset2=wkt.toJson()
+						console.log("Curset2: "+JSON.stringify(curset2))
                         switch(functiondef){
                             case "booleanContains":
+									console.log("Contains? "+turf.booleanDisjoint(curset1,curset2))
                                     if(turf.booleanContains(curset1,curset2)){
                                             resultset.push(curset1)
                                             resultset.push(curset2)
                                     }
                                     break;
                             case "booleanCrosses":
+								console.log("Crosses? "+turf.booleanDisjoint(curset1,curset2))
                                 if(turf.booleanCrosses(curset1,curset2)){
                                             resultset.push(curset1)
                                             resultset.push(curset2)
                                 }
                                 break;
                            case "booleanDisjoint":
+								console.log("Disjoint? "+turf.booleanDisjoint(curset1,curset2))
                                 if(turf.booleanDisjoint(curset1,curset2)){
                                             resultset.push(curset1)
                                             resultset.push(curset2)
                                 }
                                 break;
                         case "booleanEquals":
+								console.log("Equals? "+turf.booleanDisjoint(curset1,curset2))
                                 if(turf.booleanEquals(curset1,curset2)){
                                             resultset.push(curset1)
                                             resultset.push(curset2)
                                 }
                                 break;
                      case "booleanOverlap":
+							console.log("Overlap? "+turf.booleanDisjoint(curset1,curset2))	
                                 if(turf.booleanOverlap(curset1,curset2)){
                                             resultset.push(curset1)
                                             resultset.push(curset2)
                                 }
                                 break;
                     case "booleanWithin":
+							console.log("Within? "+turf.booleanDisjoint(curset1,curset2))
                                 if(turf.booleanOverlap(curset1,curset2)){
                                             resultset.push(curset1)
                                             resultset.push(curset2)
@@ -913,7 +927,7 @@ function clearCoords(){
 function addConstraint(firstpart,secondpart,thirdpart){
 	if(!$('#'+secondpart).val()=="" && !$('#'+thirdpart).val()==""){
 	if($('#'+thirdpart).is("select")){
-                geoconstraints[$( "#"+firstpart+" option:selected" ).val()]=" ?person <"+$( "#"+secondpart+" option:selected" ).val()+"> "+getLiteral($('#'+thirdpart+" option:selected").val())+" . ";
+                geoconstraints[$( "#"+firstpart+" option:selected" ).val()+$( "#"+secondpart+" option:selected" ).val()]=$( "#"+firstpart+" option:selected" ).val()+" "+$( "#"+secondpart+" option:selected" ).val()+" "+$('#'+thirdpart+" option:selected").val()+" ";
 		$('#constraints').html($('#constraints').html()+"<li>"+$(  "#"+firstpart+" option:selected" ).text()+" - "+$( "#"+secondpart+" option:selected" ).text()+" - "+$('#'+thirdpart+" option:selected").val()+"</li>")
 	}else{
 			if($( "#"+firstpart+" option:selected" ).val().includes("?")){
