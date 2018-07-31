@@ -23,6 +23,7 @@ var supportingOntologies={"xplanung":"https://cdn.rawgit.com/i3mainz/SemGISOntol
 var currdfstore=null;
 var wkt = new Wkt.Wkt();
 var firstcoords=[]
+var lastimportAsTTL=""
 var bboxpoint;
 var bboxbuffer;
 var constraints={}
@@ -195,6 +196,7 @@ function importGeoJSON(geojson,crs,switchlatlong){
 			result+="<"+namespace+prop+"> rdf:type owl:DatatypeProperty . \n "+indid+"> <"+namespace+prop+"> "+getLiteral(properties[prop])+" . \n"
 		}
 	}
+	lastimportAsTTL=result;
 	console.log(result)
 	return result
 }
@@ -293,7 +295,7 @@ function walkDOM(main) {
 				i=0;
 				while(i<main.attributes.length){
 					if(main.attributes[i].nodeName.includes("xmlns")){
-						result+=" @prefix "+main.attributes[i].nodeName.substring(main.attributes[i].nodeName.indexOf(":")+1)+": <"+main.attributes[i].nodeValue+"> . \n "
+						result+=" @prefix "+main.attributes[i].nodeName.substring(main.attributes[i].nodeName.indexOf(":")+1)+": <"+(main.attributes[i].nodeValue.endsWith("#")?main.attributes[i].nodeValue:main.attributes[i].nodeValue+"#")+"> . \n "
 					}
 					i++;
 				}
@@ -312,7 +314,7 @@ function walkDOM(main) {
 				}catch(err){}
 			}
 			if(depth>3 && parentNodeName!=""){				
-				if(main.nodeName.startsWith("gml:")){
+				if(main.nodeName.startsWith("gml:") && !main.nodeName.includes("boundedBy")){
 					toadd=""
 					relName=""
 						if(parentRelationName!="" && parentIndName!=""){
@@ -324,11 +326,13 @@ function walkDOM(main) {
 							result+=" <http://www.opengis.net/ont/geosparql#asGML> rdf:type owl:DatatypeProperty . \n  "
 						}	
 					if(main.firstChild!=null && main.firstChild.nextSibling!=null){						
-						xmlString = (new XMLSerializer()).serializeToString(main.firstChild.nextSibling);					
-						//console.log("XMLString: "+xmlString)
+						xmlString = (new XMLSerializer()).serializeToString(main);					
+						console.log("XMLString: "+xmlString)
 						coordsconverted=getCoordArrayFromGML(xmlString,epsgdefs[$('#epsgqueryimport option:selected').val()],true,false)
 						result+="<"+relName+"> <http://www.opengis.net/ont/geosparql#asGML> \""+convertGMLToOtherCRS(xmlString.replace(new RegExp("\"", 'g'),"\\\"").replace(new RegExp("\n", 'g'),""),coordsconverted)+"\"^^<http://www.opengis.net/ont/geosparql#gmlLiteral> . \n "
+						console.log(coordsconverted)
 						wkt=gmlStringToWKT(xmlString,coordsconverted)
+						console.log("WKT: "+wkt)
 						result+=" <http://www.opengis.net/ont/geosparql#asWKT> rdf:type owl:DatatypeProperty . \n <"+relName+"> <http://www.opengis.net/ont/geosparql#asWKT> \""+wkt+"\"^^<http://www.opengis.net/ont/geosparql#wktLiteral> . \n "
 						geojson=gmlStringToGeoJSON(xmlString,coordsconverted)
 						result+=" <http://www.opengis.net/ont/geosparql#asGeoJSON> rdf:type owl:DatatypeProperty . \n <"+relName+"> <http://www.opengis.net/ont/geosparql#asGeoJSON> \""+geojson.replace(new RegExp("\"", 'g'),"\\\"")+"\"^^<http://www.opengis.net/ont/geosparql#geojsonLiteral> . \n "
@@ -339,9 +343,9 @@ function walkDOM(main) {
 				}else if(main.childNodes.length>1 && main.nodeName!="#text"){// && main.firstChild.nodeName!="#text")
 					uuid=generateUUID()
 					console.log(main)
-					console.log("OBJECTPROPERTY: "+main.firstChild.nextSibling.nodeName)
+					console.log("OBJECTPROPERTY: "+main.nodeName)
 					
-					result+="<"+main.namespaceURI+"#"+main.localName+"> rdf:type owl:ObjectProperty . <"+main.namespaceURI+"#"+uuid+"> rdf:type "+(main.firstChild.nextSibling.nodeName.includes(":")?main.firstChild.nextSibling.nodeName:"<"+main.firstChild.nextSibling.nodeName+">")+" .  \n"
+					result+=(main.nodeName.includes(":")?main.nodeName:"<"+main.namespaceURI+"#"+main.nodeName+">")+" rdf:type owl:ObjectProperty . <"+main.namespaceURI+"#"+uuid+"> rdf:type "+(main.firstChild.nextSibling.nodeName.includes(":")?main.firstChild.nextSibling.nodeName:"<"+main.firstChild.nextSibling.nodeName+">")+" .  \n"
 					result+=" "+(main.firstChild.nextSibling.nodeName.includes(":")?main.firstChild.nextSibling.nodeName:"<"+main.firstChild.nextSibling.nodeName+">")+" rdf:type owl:Class . \n "
 					parentIndName=main.namespaceURI+"#"+uuid
 					parentRelationName=main.nodeName
@@ -359,6 +363,7 @@ function walkDOM(main) {
     }
     loop(main,depth,parentNodeName,"","",strconvertmode,"");
 	console.log(result)
+	lastimportAsTTL=result;
     return result;
 }
 
@@ -439,6 +444,7 @@ function walkDOMKML(main) {
     }
     loop(main,-1,"",-1,"",-1,-1);
 	console.log(result)
+	lastimportAsTTL=result;
     return arr;
 }
 
@@ -686,7 +692,7 @@ function displayQueryResult(persons,query,classTopers){
 						}
 
 						geom=wkt.toJson();
-						handleGeometry(geom["type"],geom["coordinates"],query)
+						handleGeometry(geom["type"],geom["coordinates"],query,markerIconPath,pers)
 					}catch(err){}//console.log(err)}
 				}
 		}
@@ -775,11 +781,12 @@ function isJSON (something) {
     }
 }
 	
-function handleGeometry(type,coordinates,query,markerIconPath){
+function handleGeometry(type,coordinates,query,markerIconPath,pers){
 	//console.log("Handle Geometry "+type+" "+JSON.stringify(coordinates)+" "+query+" "+firstpoint)
 	if(type.toLowerCase()=="point" && coordinates!=null && coordinates[0]!=null){
 				if(!query || $('#coordinate').val()=="" || !$('#whereactive').is(':checked')  || (!turf.booleanDisjoint(turf.envelope(turf.point(coordinates)),bboxbuffer))){
-					curQueryResultTTL+="<"+pers+"> <http://www.opengis.net/ont/geosparql#asWKT> \""+personToWKT[pers]["coordinates"]+"\" . \n";
+				console.log("MAKE POINT MARKER!")
+					curQueryResultTTL+="<"+pers+"> <http://www.opengis.net/ont/geosparql#asWKT> \""+coordinates+"\" . \n ";
 					/*if(results[res]["person"]["value"]!=undefined && results[res]["rel"]["value"]!=undefined && results[res]["val"]["value"]!=undefined){
 						curQueryResultTTL+="<"+results[res]["person"]["value"]+"> <"+results[res]["rel"]["value"]+"> ";
 						if(!results[res]["val"]["value"].includes("http") || results[res]["rel"]["value"].includes("asGML")){
@@ -788,29 +795,30 @@ function handleGeometry(type,coordinates,query,markerIconPath){
 							curQueryResultTTL+="<"+results[res]["val"]["value"]+"> . \n";
 						}
 					}*/
+					console.log("before first point")
 					if(!firstpoint && coordinates!=null && coordinates[0]!=null){
-		//console.log("Firstcoords")
-		if(Array.isArray(coordinates[0])){
-			firstcoords=coordinates[0]
-			if(Array.isArray(coordinates[0][0])){
-				firstcoords=coordinates[0][0]
-				if(Array.isArray(coordinates[0][0][0])){
-					firstcoords=coordinates[0][0][0]
-				}
-			}
-		}
-		mymap.setView(firstcoords, 15);
-		firstpoint=true;
-	}
+						console.log("Firstcoords")					
+						if(Array.isArray(coordinates[0])){
+							firstcoords=coordinates[0]
+							if(Array.isArray(coordinates[0][0])){
+								firstcoords=coordinates[0][0]
+								if(Array.isArray(coordinates[0][0][0])){
+									firstcoords=coordinates[0][0][0]
+								}
+							}
+						}else{
+							firstcoords=coordinates
+						}
+						mymap.setView(firstcoords, 15);
+						firstpoint=true;
+					}
 						
                         if(markerIconPath!=null && markerIconPath!=""){
+							console.log("CREATING MARKER AT "+JSON.stringify(coordinates)+" - "+markerIconPath)
 							if(markerIconPath.startsWith("<svg")){
 								markerIconPath = encodeURI("data:image/svg+xml," +
-								markerIconPath
-								
-								).replace('#','%23');
+								markerIconPath).replace('#','%23');
 								//<svg xmlns='http://www.w3.org/2000/svg' width='1000' height='1000'><path d='M2,111 h300 l-242.7,176.3 92.7,-285.3 92.7,285.3 z' fill='#000000'/></svg>"
-
 							}
 							console.log(markerIconPath)
                         	var markerIcon = L.icon({
@@ -823,6 +831,7 @@ function handleGeometry(type,coordinates,query,markerIconPath){
                             marker.addTo(mymap);
                             markercollection.push(marker)
                         } else{
+							console.log("CREATING MARKER AT "+JSON.stringify(coordinates))
                             var marker = new L.marker(coordinates/*,{icon:markerIcon}*/); //opacity may be set to zero
                             marker.bindPopup(tooltip, {maxWidth : 560});
                             marker.addTo(mymap);
@@ -833,20 +842,20 @@ function handleGeometry(type,coordinates,query,markerIconPath){
 
 			}else if(type.toLowerCase()=="linestring" && coordinates!=null && Array.isArray(coordinates)){
 			if(!firstpoint && coordinates!=null && coordinates[0]!=null){
-		//console.log("Firstcoords")
-		if(Array.isArray(coordinates[0])){
-			firstcoords=coordinates[0]
-			if(Array.isArray(coordinates[0][0])){
-				firstcoords=coordinates[0][0]
-				if(Array.isArray(coordinates[0][0][0])){
-					firstcoords=coordinates[0][0][0]
+				//console.log("Firstcoords")
+				if(Array.isArray(coordinates[0])){
+					firstcoords=coordinates[0]
+					if(Array.isArray(coordinates[0][0])){
+						firstcoords=coordinates[0][0]
+						if(Array.isArray(coordinates[0][0][0])){
+							firstcoords=coordinates[0][0][0]
+						}
+					}
 				}
+				mymap.setView(firstcoords, 15);
+				firstpoint=true;
 			}
-		}
-		mymap.setView(firstcoords, 15);
-		firstpoint=true;
-	}
-						try{
+			try{
 				if(!query || $('#coordinate').val()=="" || $('#coordinate').val()=="" || !$('#whereactive').is(':checked')  || !turf.booleanDisjoint(turf.envelope(turf.lineString(coordinates)),bboxbuffer)){
 			       if(persons[pers]["style"]!=null){
                          try{
@@ -863,20 +872,20 @@ function handleGeometry(type,coordinates,query,markerIconPath){
 			}
 
 			}else if(coordinates!=null && Array.isArray(coordinates)){//&& personToWKT[pers]["type"]=="Polygon"){
-			if(!firstpoint && coordinates!=null && coordinates[0]!=null){
-		//console.log("Firstcoords")
-		if(Array.isArray(coordinates[0])){
-			firstcoords=coordinates[0]
-			if(Array.isArray(coordinates[0][0])){
-				firstcoords=coordinates[0][0]
-				if(Array.isArray(coordinates[0][0][0])){
-					firstcoords=coordinates[0][0][0]
-				}
+				if(!firstpoint && coordinates!=null && coordinates[0]!=null){
+					//console.log("Firstcoords")
+					if(Array.isArray(coordinates[0])){
+						firstcoords=coordinates[0]
+						if(Array.isArray(coordinates[0][0])){
+							firstcoords=coordinates[0][0]
+							if(Array.isArray(coordinates[0][0][0])){
+								firstcoords=coordinates[0][0][0]
+							}
+						}
+					}
+				mymap.setView(firstcoords, 15);
+				firstpoint=true;
 			}
-		}
-		mymap.setView(firstcoords, 15);
-		firstpoint=true;
-	}
 			try{
 			if(!query || $('#coordinate').val()=="" || !$('#whereactive').is(':checked') || (!turf.booleanDisjoint(turf.envelope(turf.polygon(coordinates)),bboxbuffer))){
 					if(persons[pers]["style"]!=null){
@@ -1141,9 +1150,17 @@ function gmlStringToWKT(gmlString,coordarray){
 }
 
 function getCoordArrayFromGML(gmlString,crs,switchlatlong,geojson){
-	if(gmlString.includes("posList") || gmlString.includes("pos")){
+	if(gmlString.includes("posList")){
 		firststep=gmlString.indexOf("<gml:posList")+13;
 		posliststr=gmlString.substring(gmlString.indexOf(">",firststep)+1,gmlString.indexOf("</gml:posList>")).trim();
+		//console.log("Original: "+posliststr)
+		splstr=posliststr.split(" ")
+		resultarray=importConvert(splstr,crs,switchlatlong)
+		//console.log("Converted: "+resultarray)
+		return resultarray;
+	}else if(gmlString.includes("pos")){
+		firststep=gmlString.indexOf("<gml:pos")+8;
+		posliststr=gmlString.substring(gmlString.indexOf(">",firststep)+1,gmlString.indexOf("</gml:pos>")).trim();
 		//console.log("Original: "+posliststr)
 		splstr=posliststr.split(" ")
 		resultarray=importConvert(splstr,crs,switchlatlong)
@@ -1308,22 +1325,22 @@ function exportConvert(coordinates,dest,type,geomtype){
 }
 
 function convertit(coordinates,source,dest,switchlatlong){
-	//console.log("Coordinates: "+coordinates)
+	console.log("Coordinates: "+coordinates)
 	if(source==dest){
             return coordinates;
 	}
 	resultarray=[]
-	//console.log(coordinates.length)
+	console.log(coordinates.length)
 	i=0;
 	splitted=coordinates.toString().split(",")
 	while(i<splitted.length){
 		//console.log(splitted[i]+" - "+splitted[i+1]+" - "+parseFloat(splitted[i])+" - "+parseFloat(splitted[i+1]))
 		var p=new proj4.Point(splitted[i],splitted[i+1])
-		//console.log("Point: "+p.x+" - "+p.y)
+		console.log("Point: "+p.x+" - "+p.y)
 		//console.log(source)
 		//console.log(dest)
 		res=proj4(source, dest, p);
-		//console.log("Point: "+res.x+" - "+res.y)
+		console.log("Point: "+res.x+" - "+res.y)
 		if(switchlatlong){
 			resultarray.push(res.y)
 			resultarray.push(res.x)
@@ -1333,7 +1350,7 @@ function convertit(coordinates,source,dest,switchlatlong){
 		}
 		i+=2;
 	}
-	//console.log("Resultarray: "+resultarray)
+	console.log("Resultarray: "+resultarray)
 	return resultarray
 }
 
@@ -1347,6 +1364,10 @@ function clearGraph(){
 	clearConstraints();
 	clearCoords();
 	clearMap();
+}
+
+function exportLastImport(){
+	saveTextAsFile(lastimportAsTTL,"ttl")
 }
 
 </script>
@@ -1415,6 +1436,7 @@ Load supporting Ontology:<input type="checkbox" id="supportingOntology"/></td><t
 <option value="gml">GML</option>
 <option value="kml">KML</option>
 <option value="geojson">GeoJSON</option>
-</select><br/><button id="cleargraph" onclick="clearGraph()">Delete Database</button></td></tr></table>
+</select>
+<button id="exportlastasTTL" onclick="exportLastImport()">Export last imported file as TTL</button><br/><button id="cleargraph" onclick="clearGraph()">Delete Database</button></td></tr></table>
 </body>
 </html>
