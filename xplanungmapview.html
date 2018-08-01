@@ -612,21 +612,25 @@ function uiQuery(start){
                                 persons[results[res]["person"]["value"]]["asWKT"]=results[res]["wkt"]["value"]
                                 curQueryResultTTL+="<"+results[res]["person"]["value"]+"> geo:asWKT \""+results[res]["wkt"]["value"]+"\"^^geo:wktLiteral \n ";
 			}
-			if(results[res]["gml"]!=null && !results[res]["gml"]["value"].includes("ENVELOPE")){
-                                persons[results[res]["person"]["value"]]["asGML"]=results[res]["gml"]["value"]
+			if(results[res]["gml"]!=null && !results[res]["gml"]["value"].includes("Envelope")){
+                                console.log(results[res]["gml"]["value"])
                                 curQueryResultTTL+="<"+results[res]["person"]["value"]+"> geo:asGML \""+results[res]["gml"]["value"]+"\"^^geo:gmlLiteral \n ";
+                                persons[results[res]["person"]["value"]]["asGML"]=results[res]["gml"]["value"]
+                                console.log("Added to curQueryResultTTL!!!")
+                                console.log(curQueryResultTTL)
+                                
 			}
-			if(results[res]["kml"]!=null && !results[res]["kml"]["value"].includes("ENVELOPE")){
+			if(results[res]["kml"]!=null && !results[res]["kml"]["value"].includes("Envelope")){
                                 persons[results[res]["person"]["value"]]["asKML"]=results[res]["kml"]["value"]
                                 curQueryResultTTL+="<"+results[res]["person"]["value"]+"> geo:asKML \""+results[res]["kml"]["value"]+"\"^^geo:kmlLiteral \n ";
 			}
-			if(results[res]["geojson"]!=null && !results[res]["geojson"]["value"].includes("ENVELOPE")){
+			if(results[res]["geojson"]!=null && !results[res]["geojson"]["value"].includes("Envelope")){
                                 persons[results[res]["person"]["value"]]["asGeoJSON"]=results[res]["geojson"]["value"]
                                 curQueryResultTTL+="<"+results[res]["person"]["value"]+"> geo:asGeoJSON \""+results[res]["geojson"]["value"]+"\"^^geo:geoJSONLiteral \n ";
 			}
 			
 			if(results[res]["img"]!=null){
-                persons[results[res]["person"]["value"]]["img"]=results[res]["img"]["value"]
+                                persons[results[res]["person"]["value"]]["img"]=results[res]["img"]["value"]
 			}
 		}
 		displayQueryResult(persons,!start,classTopers);
@@ -1011,6 +1015,7 @@ function exportQueryResult(tosave,exportFormat){
         if(tosave==undefined){
                 tosave=curQueryResultTTL
         }
+        console.log(tosave)
 	console.log($( "#queryexportformat option:selected" ).val())
 	if(exportFormat=="ttl" || $( "#queryexportformat option:selected" ).val()=="ttl"){
 		saveTextAsFile(tosave,"ttl")
@@ -1025,25 +1030,36 @@ function exportQueryResult(tosave,exportFormat){
 		towrite=[]
 		wrotetype=false;
 		nscounter=1;
+		waitingForGeomTag=""
+		waitingForGeomTextContent=""
 		splitt=tosave.split("\n")
 		for(spl in splitt){
 			//console.log(splitt[spl])
-			subsplit=splitt[spl].split(" ")
+			subsplit=splitt[spl].trim().split(" ")
 
 			
-			//console.log(subsplit)
+			console.log(subsplit)
 			//if(remembersub1="" || rememberremembersub1=subsplit[1]){
 			try{
+			if(splitt[spl].includes("asGML") && !splitt[spl].includes("Envelope")){
+                                console.log("ASGML: "+splitt[spl])
+                                if(waitingForGeomTag!=""){
+                                        gml+="<"+replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)+"> \n"
+                                         gml+=splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1)+"\n"
+                                        gml+="</"+replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)+">\n"
+                                        waitingForGeomTag=""
+                                        waitingForGeomTextContent=""
+                                }else{
+                                     gml+=splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1)+"\n"
+                                }
+			}
 			if(splitt[spl].includes("NamedIndividual") || splitt[spl].includes("label") || splitt[spl].includes("http://www.w3.org/2002/07/owl#")  || splitt[spl].includes("comment") || 
 			splitt[spl].includes("asWKT") || 
 			splitt[spl].includes("asGeoJSON") || 
 			splitt[spl].includes("asKML") || splitt[spl].includes("gml:id")){
 				continue;
 			}
-			if(splitt[spl].includes("asGML") && !splitt[spl].includes("Envelope")){
-                                console.log("ASGML: "+splitt[spl])
-                                gml+=splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1)+"\n"
-			}
+			console.log(splitt[spl])
 			gmlid=subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","");
 			if(curgmlid!=gmlid){
 				wrotetype=false;
@@ -1062,7 +1078,20 @@ function exportQueryResult(tosave,exportFormat){
                                     }
                                     i++
                                 }
-					gml+="<"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">"+(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))+"</"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">\n"
+                                textContent=(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""));
+                                if((textContent.split("-").length - 1)>=4){
+                                        if(waitingForGeomTag!=""){
+                                               gml+="<"+replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)+">\n"
+                                                gml+=waitingForGeomTextContent
+                                                gml+="</"+replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)+">\n"
+                                                waitingForGeomTag=""
+                                                waitingForGeomTextContent=""
+                                        }
+                                        waitingForGeomTag=subsplit[1]
+                                        waitingForGeomTextContent=textContent
+                                }else{
+					gml+="<"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">"+textContent+"</"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">\n"
+                                }
 			}
 			if(splitt[spl].includes("type")){
 					console.log("IN TYPE CLAUSE")
@@ -1080,7 +1109,7 @@ function exportQueryResult(tosave,exportFormat){
 					towrite=[]
 			}
 
-			}catch(err){}
+			}catch(err){console.log(err)}
 		}
 		gml+="</"+replaceWithNSPrefix(remembersub1.replace("<","").replace(">",""),namespaces2)+">\n"
 		gml+="</gml:FeatureCollection>"
@@ -1171,7 +1200,7 @@ function exportQueryResult(tosave,exportFormat){
 			}
 			if(curgmlid==gmlid && !wrotetype && !splitt[spl].includes("type")){
 				towrite.push(splitt[spl])
-			}else if(!splitt[spl].includes("type")){
+			}else if(!splitt[spl].includes("type") && !splitt[spl].includes("asKML")){
                                     i=0;
                                 while(i<subsplit.length){
                                     console.log("Subsplit: "+subsplit[i])
