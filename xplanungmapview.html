@@ -92,12 +92,11 @@ function getAllClasses(){
 }
 
 function exportAsTTL(){
-	currdfstore.execute(prefixList+" SELECT DISTINCT ?sub ?pred ?obj  WHERE { ?sub ?pred ?obj . } ", function(success,results){ 
+	currdfstore.execute(prefixList+" SELECT DISTINCT ?sub ?pred ?obj  WHERE { ?sub ?pred ?obj . }  ORDER BY ?sub ", function(success,results){ 
         //console.log(success,results)
 		result="";
 		tosave=""
-			switch($('#dbexportformat').val()){
-					case "ttl": for(res in results){
+            for(res in results){
 					//console.log(results[res]["obj"])
 					if(results[res]["sub"]["value"]!=undefined && results[res]["pred"]["value"]!=undefined && results[res]["obj"]["value"]!=undefined){
 					tosave+="<"+results[res]["sub"]["value"]+"> <"+results[res]["pred"]["value"]+"> ";
@@ -109,11 +108,13 @@ function exportAsTTL(){
 					}
 					
 				}
-		saveTextAsFile(tosave,"ttl");
-		break;
-					case "gml": importGML(contents); break;
-					case "kml": importKML(contents);break;
-					case "geojson": importGeoJSON(contents);break;
+                switch($('#dbexportformat').val()){
+					case "ttl":
+                                        saveTextAsFile(tosave,"ttl");
+                                        break;
+					case "gml": exportQueryResult(tosave,"gml"); break;
+					case "kml": exportQueryResult(tosave,"kml");break;
+					case "geojson": exportQueryResult(tosave,"geojson");break;
 				}
 				
 	});
@@ -984,12 +985,18 @@ function replaceWithNSPrefix(replaceString,namespaces){
         return replaceString
 }
 
-function exportQueryResult(){
+function exportQueryResult(tosave,exportFormat){
+        if(exportFormat==undefined){
+                exportFormat=$( "#queryexportformat option:selected" ).val();
+        }
+        if(tosave==undefined){
+                tosave=curQueryResultTTL
+        }
 	console.log($( "#queryexportformat option:selected" ).val())
-	if($( "#queryexportformat option:selected" ).val()=="ttl"){
-		saveTextAsFile(curQueryResultTTL,"ttl")
+	if(exportFormat=="ttl" || $( "#queryexportformat option:selected" ).val()=="ttl"){
+		saveTextAsFile(tosave,"ttl")
 	}
-	if($( "#queryexportformat option:selected" ).val()=="gml"){
+	if(exportFormat=="gml" || $( "#queryexportformat option:selected" ).val()=="gml"){
                 namespaces={}
                 namespaces2={}
                 gmlstart="<?xml version=\"1.0\"  encoding=\"utf-8\" standalone=\"yes\" ?><gml:FeatureCollection xmlns:gml=\"http://www.opengis.net/gml/3.2\" "
@@ -999,7 +1006,7 @@ function exportQueryResult(){
 		towrite=[]
 		wrotetype=false;
 		nscounter=1;
-		splitt=curQueryResultTTL.split("\n")
+		splitt=tosave.split("\n")
 		for(spl in splitt){
 			//console.log(splitt[spl])
 			subsplit=splitt[spl].split(" ")
@@ -1008,7 +1015,7 @@ function exportQueryResult(){
 			//console.log(subsplit)
 			//if(remembersub1="" || rememberremembersub1=subsplit[1]){
 			try{
-			if(splitt[spl].includes("NamedIndividual") || splitt[spl].includes("label")  || splitt[spl].includes("comment") || 
+			if(splitt[spl].includes("NamedIndividual") || splitt[spl].includes("label") || splitt[spl].includes("http://www.w3.org/2002/07/owl#")  || splitt[spl].includes("comment") || 
 			splitt[spl].includes("asWKT") || 
 			splitt[spl].includes("asGeoJSON") || 
 			splitt[spl].includes("asKML") || splitt[spl].includes("gml:id")){
@@ -1062,7 +1069,7 @@ function exportQueryResult(){
 		console.log(gml)
 		saveTextAsFile(gml,"gml")
 	}
-	if($( "#queryexportformat option:selected" ).val()=="geojson"){
+	if(exportFormat=="geojson" || $( "#queryexportformat option:selected" ).val()=="geojson"){
 		var collection = {
 			"type": "FeatureCollection",
 			"features": []
@@ -1075,9 +1082,9 @@ function exportQueryResult(){
 		console.log("GeoJSON: "+geojson["geometry"]["coordinates"])
 		geojson["geometry"]["coordinates"]=exportConvert(geojson["geometry"]["coordinates"],epsgdefs[$('#epsgqueryexport option:selected').val()],"geojson",geojson["geometry"]["type"]);
 		console.log("GeoJSON: "+geojson["geometry"]["coordinates"])
-		console.log(curQueryResultTTL)
-		if(curQueryResultTTL!=null){
-		splitt=curQueryResultTTL.split("\n")
+		console.log(tosave)
+		if(tosave!=null){
+		splitt=tosave.split("\n")
 		for(spl in splitt){
 			console.log(splitt[spl])
 			subsplit=splitt[spl].split(" ")
@@ -1104,7 +1111,7 @@ function exportQueryResult(){
 		console.log(collection)
 		saveTextAsFile(JSON.stringify(collection, null, 2),"geojson")
 	}
-	if($( "#queryexportformat option:selected" ).val()=="kml"){
+	if(exportFormat=="kml" || $( "#queryexportformat option:selected" ).val()=="kml"){
                 namespaces={}
                 namespaces2={}
 		kmlstart="<?xml version=\"1.0\"  encoding=\"utf-8\" standalone=\"yes\" ?><kml:Document xmlns:kml=\"http://www.opengis.net/kml/2.2\" "
@@ -1113,7 +1120,7 @@ function exportQueryResult(){
 		curgmlid="";
 		towrite=[]
 		wrotetype=false;
-		splitt=curQueryResultTTL.split("\n")
+		splitt=tosave.split("\n")
 		classnames={}
 		for(spl in splitt){
 			console.log(splitt[spl])
@@ -1121,7 +1128,7 @@ function exportQueryResult(){
 			console.log(subsplit)
 			//if(remembersub1="" || rememberremembersub1=subsplit[1]){
 			try{
-			if(splitt[spl].includes("NamedIndividual") || splitt[spl].includes("label") || splitt[spl].includes("gml:id") ||
+			if(splitt[spl].includes("NamedIndividual") || splitt[spl].includes("label") || splitt[spl].includes("http://www.w3.org/2002/07/owl#")  ||splitt[spl].includes("gml:id") ||
                                     splitt[spl].includes("asWKT") || 
                                     splitt[spl].includes("asGeoJSON") || 
                                     splitt[spl].includes("asGML")){
