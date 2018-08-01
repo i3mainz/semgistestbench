@@ -534,11 +534,11 @@ function uiQuery(start){
 		alert("No classes to query!")
 		return
 	}
-	queryString=prefixList+" SELECT DISTINCT ?person ?rel ?pointstyle ?linestyle ?polygonstyle ?img ?linestringImageStyle ?linestringImage ?val ?valLabel ?val2 WHERE { "
+	queryString=prefixList+" SELECT DISTINCT ?person ?rel ?pointstyle ?linestyle ?polygonstyle ?img ?linestringImageStyle ?linestringImage ?val ?valLabel ?wkt ?gml ?kml ?geojson WHERE { "
 	for(cls in classesToQuery){
 		console.log(cls)
 		if($('#whichactive').is(':checked')){
-						queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val .  OPTIONAL{?val geo:asWKT ?val2 .} OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:lineStyle ?linestringStyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}   OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle  ?linestringImageStyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .}  "
+						queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val .  OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:lineStyle ?linestringStyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}   OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle  ?linestringImageStyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .}  "
 						if(classesToQuery[cls] in constraints){
 							queryString+=constraints[classesToQuery[cls]]
 						}
@@ -549,12 +549,12 @@ function uiQuery(start){
 						}
 						queryString+="} UNION"
 		}else{
-			queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?val2 .} OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringStyle ?linestyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle ?linestringImageStyle.} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .}  } UNION "
+			queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}   OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringStyle ?linestyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle ?linestringImageStyle.} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .}  } UNION "
 		}
 	}
 	queryString=queryString.substring(0,queryString.length-6)
 	}else{
-		queryString=prefixList+" SELECT ?person ?rel ?pointstyle ?polygonstyle ?linestyle ?linestringImage ?linestringImageStyle ?img ?val ?valLabel ?val2 WHERE { ?percls rdf:type owl:Class .  OPTIONAL{?percls semgis:polygonStyle ?polygonstyle .} OPTIONAL{?percls semgis:linestringStyle ?linestyle .} OPTIONAL{?percls semgis:pointStyle ?pointstyle .} OPTIONAL{?percls semgis:image ?img .} OPTIONAL{?percls semgis:linestringImageStyle ?linestringImageStyle .} OPTIONAL{?percls semgis:linestringImage ?linestringImage .} ?person rdf:type ?percls . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?val2 .} OPTIONAL {?val rdfs:label ?valLabel . } "
+		queryString=prefixList+" SELECT ?person ?rel ?pointstyle ?polygonstyle ?linestyle ?linestringImage ?linestringImageStyle ?img ?val ?valLabel ?wkt ?gml ?kml ?geojson WHERE { ?percls rdf:type owl:Class .  OPTIONAL{?percls semgis:polygonStyle ?polygonstyle .} OPTIONAL{?percls semgis:linestringStyle ?linestyle .} OPTIONAL{?percls semgis:pointStyle ?pointstyle .} OPTIONAL{?percls semgis:image ?img .} OPTIONAL{?percls semgis:linestringImageStyle ?linestringImageStyle .} OPTIONAL{?percls semgis:linestringImage ?linestringImage .} ?person rdf:type ?percls . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL {?val rdfs:label ?valLabel . } "
 	}
 	queryString+="} ORDER BY ?person "
 	console.log(queryString)
@@ -580,6 +580,7 @@ function uiQuery(start){
                             }
                             classTopers[results[res]["val"]["value"]].push(results[res]["person"]["value"])
 			}
+			console.log(results[res]["val"]["value"])
 			if(results[res]["person"]["value"]!=undefined && results[res]["rel"]["value"]!=undefined && results[res]["val"]["value"]!=undefined){
 					curQueryResultTTL+="<"+results[res]["person"]["value"]+"> <"+results[res]["rel"]["value"]+"> ";
 					if(!results[res]["val"]["value"].includes("http") || results[res]["rel"]["value"].includes("asGML")){
@@ -607,9 +608,23 @@ function uiQuery(start){
                         if(results[res]["linestringImage"]!=null){
                             persons[results[res]["person"]["value"]]["linestringImage"]=results[res]["linestringImage"]["value"]
 			}
-			if(results[res]["val2"]!=null && !results[res]["val2"]["value"].includes("ENVELOPE")){
-                                persons[results[res]["person"]["value"]]["asWKT"]=results[res]["val2"]["value"]
+			if(results[res]["wkt"]!=null && !results[res]["wkt"]["value"].includes("ENVELOPE")){
+                                persons[results[res]["person"]["value"]]["asWKT"]=results[res]["wkt"]["value"]
+                                curQueryResultTTL+="<"+results[res]["person"]["value"]+"> geo:asWKT \""+results[res]["wkt"]["value"]+"\"^^geo:wktLiteral \n ";
 			}
+			if(results[res]["gml"]!=null && !results[res]["gml"]["value"].includes("ENVELOPE")){
+                                persons[results[res]["person"]["value"]]["asGML"]=results[res]["gml"]["value"]
+                                curQueryResultTTL+="<"+results[res]["person"]["value"]+"> geo:asGML \""+results[res]["gml"]["value"]+"\"^^geo:gmlLiteral \n ";
+			}
+			if(results[res]["kml"]!=null && !results[res]["kml"]["value"].includes("ENVELOPE")){
+                                persons[results[res]["person"]["value"]]["asKML"]=results[res]["kml"]["value"]
+                                curQueryResultTTL+="<"+results[res]["person"]["value"]+"> geo:asKML \""+results[res]["kml"]["value"]+"\"^^geo:kmlLiteral \n ";
+			}
+			if(results[res]["geojson"]!=null && !results[res]["geojson"]["value"].includes("ENVELOPE")){
+                                persons[results[res]["person"]["value"]]["asGeoJSON"]=results[res]["geojson"]["value"]
+                                curQueryResultTTL+="<"+results[res]["person"]["value"]+"> geo:asGeoJSON \""+results[res]["geojson"]["value"]+"\"^^geo:geoJSONLiteral \n ";
+			}
+			
 			if(results[res]["img"]!=null){
                 persons[results[res]["person"]["value"]]["img"]=results[res]["img"]["value"]
 			}
@@ -1021,6 +1036,9 @@ function exportQueryResult(tosave,exportFormat){
 			splitt[spl].includes("asKML") || splitt[spl].includes("gml:id")){
 				continue;
 			}
+			if(splitt[spl].includes("asGML") && !splitt[spl].includes("Envelope")){
+                                gml+=splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1)+"\n"
+			}
 			gmlid=subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","");
 			if(curgmlid!=gmlid){
 				wrotetype=false;
@@ -1084,6 +1102,7 @@ function exportQueryResult(tosave,exportFormat){
 		geojson["geometry"]["coordinates"]=exportConvert(geojson["geometry"]["coordinates"],epsgdefs[$('#epsgqueryexport option:selected').val()],"geojson",geojson["geometry"]["type"],false);
 		console.log("GeoJSON: "+geojson["geometry"]["coordinates"])
 		console.log(tosave)
+		console.log("Tooltip text: "+layer.getTooltip().getText())
 		if(tosave!=null){
 		splitt=tosave.split("\n")
 		for(spl in splitt){
@@ -1115,7 +1134,7 @@ function exportQueryResult(tosave,exportFormat){
 	if(exportFormat=="kml" || $( "#queryexportformat option:selected" ).val()=="kml"){
                 namespaces={}
                 namespaces2={}
-		kmlstart="<?xml version=\"1.0\"  encoding=\"utf-8\" standalone=\"yes\" ?><kml:Document xmlns:kml=\"http://www.opengis.net/kml/2.2\" "
+		kmlstart="<?xml version=\"1.0\"  encoding=\"utf-8\" standalone=\"yes\" ?><kml xmlns:kml=\"http://www.opengis.net/kml/2.2\" "
 		kml=""
 		remembersub1=""
 		curgmlid="";
@@ -1126,7 +1145,7 @@ function exportQueryResult(tosave,exportFormat){
 		classname=""
 		for(spl in splitt){
 			console.log(splitt[spl])
-			subsplit=splitt[spl].split(" ")
+			subsplit=splitt[spl].trim().split(" ")
 			console.log(subsplit)
 			//if(remembersub1="" || rememberremembersub1=subsplit[1]){
 			try{
@@ -1137,6 +1156,10 @@ function exportQueryResult(tosave,exportFormat){
 				continue;
 			}
 			gmlid=subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","");
+			if(splitt[spl].includes("asKML") && !splitt[spl].includes("Envelope")){
+                            classnames[classname]/*kml*/+=splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1)+"\n"
+			}
+			
 			if(curgmlid!=gmlid){
 				wrotetype=false;
 				curgmlid=gmlid;
@@ -1182,14 +1205,14 @@ function exportQueryResult(tosave,exportFormat){
 		for(cls in classnames){
                         kml+="<kml:Folder>\n<kml:name>"+cls+"</kml:name>\n"
                         kml+=classnames[cls]
-                        kml+="</kml:Folder> \n"
+                        kml+="</kml:Placemark></kml:Folder> \n"
 		}
 		//kml+="</kml:Placemark>\n</kml:Folder>\n</kml:Document>"
                 for(ns in namespaces){
                         kmlstart+=" xmlns:"+ns+"=\""+namespaces[ns]+"\" "
 		}
-		kmlstart+="> \n"
-		kml=kmlstart+kml
+		kmlstart+="><kml:Document> \n"
+		kml=kmlstart+kml+"</kml:Document></kml>"
 		console.log(kml)
 		saveTextAsFile(kml,"kml")
 	}
