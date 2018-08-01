@@ -21,7 +21,7 @@ var prefixMap={"http://www.w3.org/2002/07/owl#":"owl", "http://www.opengis.net/o
 "http://www.w3.org/XML/1998/namespace":"xml", "http://www.w3.org/2001/XMLSchema#":"xsd", "http://www.w3.org/2000/01/rdf-schema#":"rdfs" ,
  "http://www.xerleben.de/schema/2.0_1#":"xerl", "http://www.xplanung.de/xplangml/5/0#":"xplan5", "http://www.opengis.net/gml/3.2":"gml", "http://www.opengis.net/kml/2.2#":"kml" }; 
 var supportingOntologies={"AAA-Data":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/master/AAA-Data/aaa6.ttl","AAA-Data Styles":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/master/AAA-Data/aaa6_style.ttl","INSPIRE":"",
-"Xerleben":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/master/XErleben/xerleben2_1.ttl_mod.ttl","XPlanung":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/50a0bab379336362892350e4c40d81cff71e4b04/XPlanung/xplanung5_0.ttl","XPlanung Styles":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/50a0bab379336362892350e4c40d81cff71e4b04/XPlanung/xplanung5_0_style.ttl"}
+"Xerleben":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/master/XErleben/xerleben2_1.ttl_mod.ttl","XPlanung":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/da30d173d3d51614a3729627d603e5f3dd5750ef/XPlanung/xplanung5_0.ttl","XPlanung Styles":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/da30d173d3d51614a3729627d603e5f3dd5750ef/XPlanung/xplanung5_0_style.ttl"}
 var currdfstore=null;
 var wkt = new Wkt.Wkt();
 var firstcoords=[]
@@ -563,12 +563,12 @@ function uiQuery(start){
 		persons={}
 		classTopers={}
 		for(res in results){
-		console.log(results[res])
+		//console.log(results[res])
 			if(!(results[res]["person"]["value"] in persons)){
 				persons[results[res]["person"]["value"]]={}
 			}
 			if(results[res]["rel"]["value"]=="asWKT"){
-				console.log("Rel: "+results[res]["rel"]["value"]+" - "+results[res]["val"]["value"])
+				//console.log("Rel: "+results[res]["rel"]["value"]+" - "+results[res]["val"]["value"])
 			}
 			if(!(results[res]["rel"]["value"] in persons[results[res]["person"]["value"]])){
 				persons[results[res]["person"]["value"]][results[res]["rel"]["value"]]=[]
@@ -580,7 +580,7 @@ function uiQuery(start){
                             }
                             classTopers[results[res]["val"]["value"]].push(results[res]["person"]["value"])
 			}
-			console.log(results[res]["val"]["value"])
+			//console.log(results[res]["val"]["value"])
 			if(results[res]["person"]["value"]!=undefined && results[res]["rel"]["value"]!=undefined && results[res]["val"]["value"]!=undefined){
 					curQueryResultTTL+="<"+results[res]["person"]["value"]+"> <"+results[res]["rel"]["value"]+"> ";
 					if(!results[res]["val"]["value"].includes("http") || results[res]["rel"]["value"].includes("asGML")){
@@ -786,8 +786,12 @@ function isJSON (something) {
 	
 function getIconFromPath(markerIconPath){
         if(markerIconPath.startsWith("<svg")){
-                    
-                    markerIconPath = encodeURI("data:image/svg+xml," + markerIconPath).replace('#','%23');
+                    //alert(markerIconPath)
+                    markerIconPath = "data:image/svg+xml;base64," + btoa(markerIconPath);
+                    //markerIconPath = 'data:image/svg+xml;,' + markerIconPath.replace('#','%23')//"data:image/svg+xml," + 
+                    console.log(markerIconPath)
+                    //encodeURIComponent(markerIconPath).replace('#','%23');
+                    //markerIconPath = "data:image/svg+xml;base64," + btoa(markerIconPath);
                     //markerIconPath=new DOMParser().parseFromString(markerIconPath, "image/svg+xml")
                     //markerIconPath = "data:image/svg+xml," + encodeURIComponent(markerIconPath);
                     //markerIconPath=markerIconPath.replace(new RegExp("\"",'g'),"'")
@@ -836,7 +840,7 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers){
 						firstpoint=true;
 					}
 						
-                        if(markerIconPath!=null && markerIconPath!=""){
+                        if(markerIconPath!=null && markerIconPath!="" && $('#loadsvg').is(":checked")){
 							//console.log("CREATING MARKER AT "+JSON.stringify(coordinates)+" - "+markerIconPath)
                                         markerIcon=getIconFromPath(markerIconPath);
 			                var marker = new L.marker(coordinates,{icon:markerIcon}); //opacity may be set to zero
@@ -879,7 +883,7 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers){
 			       }else{
                                 polyline=L.polyline( coordinates,{color: 'blue'}).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap); 
 			       }
-			       if(persons[pers]["linestringImageStyle"]!=null && persons[pers]["linestringImage"]!=null ){
+			       if(persons[pers]["linestringImageStyle"]!=null && persons[pers]["linestringImage"]!=null && $('#loadsvg').is(":checked")){
                                     style=JSON.parse(persons[pers]["linestringImageStyle"])
                                     markerIcon=getIconFromPath(persons[pers]["linestringImage"]);
                                     decorators.push(L.polylineDecorator(polyline, {
@@ -1037,6 +1041,7 @@ function exportQueryResult(tosave,exportFormat){
 				continue;
 			}
 			if(splitt[spl].includes("asGML") && !splitt[spl].includes("Envelope")){
+                                console.log("ASGML: "+splitt[spl])
                                 gml+=splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1)+"\n"
 			}
 			gmlid=subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","");
@@ -1514,7 +1519,6 @@ function exportLastImport(){
 <button id="addconstraint" onClick="addConstraint('classeslist2','attributelist','constrainttext')">Add</button>
 <button id="clearconstraints" onclick="clearConstraints()">Clear</button></td></tr>
 <tr  valign="top" align="top"><td colspan="2"><ul id="constraints"></ul></td></tr>
-
 <tr  valign="top" align="top"><td>Query: </td><td><button id="querybutton" onclick="uiQuery()">Query</button><br/>
 <button id="queryasTTL" onclick="exportQueryResult()">Query Result as</button>
 <select id="queryexportformat">
@@ -1532,7 +1536,8 @@ Import From File:<input type="file"  id="file-input" /><br/>Format: <select id="
 <option value="geojson">GeoJSON</option>
 </select>
 CRS: <select id="epsgqueryimport"></select><br/>
-Load supporting Ontology:<select id="supportingOntologySel"></select><button id="loadSuppOnt" onclick="loadSupportingOntology()">Load</button></td><td align="right">
+Load supporting Ontology:<select id="supportingOntologySel"></select><button id="loadSuppOnt" onclick="loadSupportingOntology()">Load</button><br/>
+Load svg images: <input type="checkbox" id="loadsvg"/></td><td align="right">
 <button id="exportTTL" onclick="exportAsTTL()">Export Database as</button><select id="dbexportformat">
 <option value="ttl" selected="selected">TTL</option>
 <option value="gml">GML</option>
