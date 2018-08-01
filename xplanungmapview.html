@@ -1065,10 +1065,7 @@ function exportQueryResult(tosave,exportFormat){
 				wrotetype=false;
 				curgmlid=gmlid;
 			}
-			if(curgmlid==gmlid && !wrotetype && !splitt[spl].includes("type")){
-				towrite.push(splitt[spl])
-			}else if(!splitt[spl].includes("type")){
-                                i=0;
+			i=0;
                                 while(i<subsplit.length){
                                     console.log("Subsplit: "+subsplit[i])
                                     if(subsplit[i].includes("#") && subsplit[i].includes("<http:")  && !subsplit[i].includes("^^") && !(subsplit[i].substring(1,subsplit[i].indexOf('#')+1) in namespaces2)){
@@ -1078,6 +1075,9 @@ function exportQueryResult(tosave,exportFormat){
                                     }
                                     i++
                                 }
+			if(curgmlid==gmlid && !wrotetype && !splitt[spl].includes("type")){
+				towrite.push(splitt[spl])
+			}else if(!splitt[spl].includes("type")){
                                 textContent=(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""));
                                 if((textContent.split("-").length - 1)>=4){
                                         if(waitingForGeomTag!=""){
@@ -1127,16 +1127,18 @@ function exportQueryResult(tosave,exportFormat){
 			"features": []
 		};
 		console.log("GeoJSON: Each Layer")
-		mymap.eachLayer(function (layer) {
+		//mymap.eachLayer(function (layer) {
     // Check if layer is a marker
         // Create GeoJSON object from marker
 		try{
-        var geojson = layer.toGeoJSON();
+        //var geojson = layer.toGeoJSON();
+                var geojson={"properties":{},"geometry":{}}
 		console.log("GeoJSON: "+geojson["geometry"]["coordinates"])
-		geojson["geometry"]["coordinates"]=exportConvert(geojson["geometry"]["coordinates"],epsgdefs[$('#epsgqueryexport option:selected').val()],"geojson",geojson["geometry"]["type"],false);
+		/*geojson["geometry"]["coordinates"]=exportConvert(geojson["geometry"]["coordinates"],epsgdefs[$('#epsgqueryexport option:selected').val()],"geojson",geojson["geometry"]["type"],false);
 		console.log("GeoJSON: "+geojson["geometry"]["coordinates"])
 		console.log(tosave)
-		console.log("Tooltip text: "+layer.getTooltip().getText())
+		console.log("Tooltip text: "+layer.getTooltip().getText())*/
+		first=true;
 		if(tosave!=null){
 		splitt=tosave.split("\n")
 		for(spl in splitt){
@@ -1145,8 +1147,24 @@ function exportQueryResult(tosave,exportFormat){
 								console.log(subsplit)
 			//if(remembersub1="" || rememberremembersub1=subsplit[1]){
 			try{
+			if(splitt[spl].includes("NamedIndividual") || splitt[spl].includes("label") || splitt[spl].includes("http://www.w3.org/2002/07/owl#")  || splitt[spl].includes("comment") || 
+			splitt[spl].includes("asWKT") || 
+			splitt[spl].includes("asGML") || 
+			splitt[spl].includes("asKML") || splitt[spl].includes("gml:id")){
+				continue;
+			}
+                                if(splitt[spl].includes("asGeoJSON")){
+                                           geojson["geometry"]=JSON.parse(splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1))["geometry"]
+                                           exportConvert(geojson["geometry"]["coordinates"],epsgdefs[$('#epsgqueryexport option:selected').val()],"geojson",geojson["geometry"]["type"],false)
+                                }
 				if(splitt[spl].includes("type")){
 					console.log("IN TYPE CLAUSE")
+					if(!first && geojson!={"geometry":{},"properties":{}}){
+                                            collection["features"].push(geojson)
+                                            geojson={"geometry":{},"properties":{}}
+					}else{
+                                            first=false;
+					}
 					geojson["properties"]["id"]=subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")
 				}else if(splitt[spl].includes("label")){
 					continue;
@@ -1161,10 +1179,11 @@ function exportQueryResult(tosave,exportFormat){
         // Push GeoJSON object to collection
         collection.features.push(geojson);
 		}catch(err){console.log(err)}
-		});
+		}
+		//});
 		console.log(collection)
 		saveTextAsFile(JSON.stringify(collection, null, 2),"geojson")
-	}
+	//}
 	if(exportFormat=="kml" || $( "#queryexportformat option:selected" ).val()=="kml"){
                 namespaces={}
                 namespaces2={}
@@ -1323,41 +1342,41 @@ function getCoordArrayFromGML(gmlString,crs,switchlatlong,geojson){
 function gmlStringToKML(gmlString,coordarray){
 	wktString=""
 	if(gmlString.includes("LinearRing")){
-		wktString+="<Polygon>";
+		wktString+="<kml:Polygon>";
 	}else if(gmlString.includes("Envelope")){
-		wktString+="<Envelope>";
+		wktString+="<kml:Envelope>";
 	}else if(gmlString.includes("LineString")){
-		wktString+="<LineString>";
+		wktString+="<kml:LineString>";
 	}else if(gmlString.includes("Point")){
-		wktString+="<Point>";
+		wktString+="<kml:Point>";
 	}
 	if(gmlString.includes("posList") || gmlString.includes("pos")){
-		wktString+="<coordinates>"
+		wktString+="<kml:coordinates>"
 		i=0;
 		while(i<coordarray.length){
 			wktString+=coordarray[i]+","+coordarray[i+1]+" "
 			i+=2;
 		}
 		wktString=wktString.substring(0,wktString.length-2)
-		wktString+="</coordinates>"
+		wktString+="</kml:coordinates>"
 	}
 	if(gmlString.includes("lowerCorner")){
 		/*lowerCorner=gmlString.substring(gmlString.indexOf("<gml:lowerCorner>")+17,gmlString.indexOf("</gml:lowerCorner>")).trim();
 		upperCorner=gmlString.substring(gmlString.indexOf("<gml:upperCorner>")+17,gmlString.indexOf("</gml:upperCorner>")).trim();
 		lowersplit=lowerCorner.split(" ")
 		uppersplit=upperCorner.split(" ")*/
-		wktString+="<coordinates>"
+		wktString+="<kml:coordinates>"
 		wktString+=coordarray[0]+","+coordarray[1]+" "+coordarray[2]+","+coordarray[3]
-                wktString+="</coordinates>"
+                wktString+="</kml:coordinates>"
 	}
 	if(gmlString.includes("LinearRing")){
-		wktString+="</Polygon>";
+		wktString+="</kml:Polygon>";
 	}else if(gmlString.includes("Envelope")){
-		wktString+="</Envelope>";
+		wktString+="</kml:Envelope>";
 	}else if(gmlString.includes("LineString")){
-		wktString+="</LineString>";
+		wktString+="</kml:LineString>";
 	}else if(gmlString.includes("Point")){
-		wktString+="</Point>";
+		wktString+="</kml:Point>";
 	}
 	//console.log("WKT Result: "+wktString)
 	return wktString;
