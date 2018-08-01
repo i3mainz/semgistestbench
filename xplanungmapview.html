@@ -1074,13 +1074,14 @@ function exportQueryResult(tosave,exportFormat){
 			"type": "FeatureCollection",
 			"features": []
 		};
+		console.log("GeoJSON: Each Layer")
 		mymap.eachLayer(function (layer) {
     // Check if layer is a marker
         // Create GeoJSON object from marker
 		try{
         var geojson = layer.toGeoJSON();
 		console.log("GeoJSON: "+geojson["geometry"]["coordinates"])
-		geojson["geometry"]["coordinates"]=exportConvert(geojson["geometry"]["coordinates"],epsgdefs[$('#epsgqueryexport option:selected').val()],"geojson",geojson["geometry"]["type"]);
+		geojson["geometry"]["coordinates"]=exportConvert(geojson["geometry"]["coordinates"],epsgdefs[$('#epsgqueryexport option:selected').val()],"geojson",geojson["geometry"]["type"],false);
 		console.log("GeoJSON: "+geojson["geometry"]["coordinates"])
 		console.log(tosave)
 		if(tosave!=null){
@@ -1106,7 +1107,7 @@ function exportQueryResult(tosave,exportFormat){
 
         // Push GeoJSON object to collection
         collection.features.push(geojson);
-		}catch(err){}
+		}catch(err){console.log(err)}
 		});
 		console.log(collection)
 		saveTextAsFile(JSON.stringify(collection, null, 2),"geojson")
@@ -1122,6 +1123,7 @@ function exportQueryResult(tosave,exportFormat){
 		wrotetype=false;
 		splitt=tosave.split("\n")
 		classnames={}
+		classname=""
 		for(spl in splitt){
 			console.log(splitt[spl])
 			subsplit=splitt[spl].split(" ")
@@ -1152,16 +1154,20 @@ function exportQueryResult(tosave,exportFormat){
                                     }
                                     i++
                                 }
-					kml+="<"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">"+(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))+"</"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">\n"
+					classnames[classname]/*kml*/+="<"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">"+(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))+"</"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">\n"
 			}
 			if(splitt[spl].includes("type")){
 					console.log("IN TYPE CLAUSE")
 					if(!remembersub1==""){
-						kml+="</kml:Placemark>\n</kml:Folder>\n"
+						classnames[classname]/*kml*/+="</kml:Placemark>\n"
 					}
-					classname="<kml:Folder>\n<kml:name>"+subsplit[2].replace("<","").replace(">","")+"</kml:name>\n<kml:Placemark>\n<kml:name>"+subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")+"</kml:name>\n"
-					classnames[classname]=""
-					kml+="<kml:Folder>\n<kml:name>"+subsplit[2].replace("<","").replace(">","")+"</kml:name>\n<kml:Placemark>\n<kml:name>"+subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")+"</kml:name>\n"
+                                        classname=subsplit[2].replace("<","").replace(">","")
+					if(!(classname in classnames)){
+                                                classnames[classname]=""
+					}
+                                        classnames[classname]+="<kml:Placemark>\n<kml:name>"+subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")+"</kml:name>\n"
+					//classnames[classname]+=
+					//kml+="<kml:Folder>\n<kml:name>"+subsplit[2].replace("<","").replace(">","")+"</kml:name>\n<kml:Placemark>\n<kml:name>"+subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")+"</kml:name>\n"
 					remembersub1=subsplit[2]
 					wrotetype=true;
 					for(item in towrite){
@@ -1173,7 +1179,12 @@ function exportQueryResult(tosave,exportFormat){
 
 			}catch(err){}
 		}
-		kml+="</kml:Placemark>\n</kml:Folder>\n</kml:Document>"
+		for(cls in classnames){
+                        kml+="<kml:Folder>\n<kml:name>"+cls+"</kml:name>\n"
+                        kml+=classnames[cls]
+                        kml+="</kml:Folder> \n"
+		}
+		//kml+="</kml:Placemark>\n</kml:Folder>\n</kml:Document>"
                 for(ns in namespaces){
                         kmlstart+=" xmlns:"+ns+"=\""+namespaces[ns]+"\" "
 		}
@@ -1380,7 +1391,7 @@ function importConvert(coordinates,source,switchlatlong){
     return convertit(coordinates,source,epsgdefs["EPSG:4326"],switchlatlong)
 }
 
-function exportConvert(coordinates,dest,type,geomtype){
+function exportConvert(coordinates,dest,type,geomtype,switchlatlong){
     console.log("ExportConvert")
     coords=convertit(coordinates,epsgdefs["EPSG:4326"],dest,switchlatlong)
     console.log("Coords: "+coords)
