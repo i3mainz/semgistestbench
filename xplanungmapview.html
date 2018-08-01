@@ -20,11 +20,12 @@ var prefixMap={"http://www.w3.org/2002/07/owl#":"owl", "http://www.opengis.net/o
 , "http://www.wikidata.org/entity/":"wd", "http://xmlns.com/foaf/0.1/":"foaf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#":"rdf", 
 "http://www.w3.org/XML/1998/namespace":"xml", "http://www.w3.org/2001/XMLSchema#":"xsd", "http://www.w3.org/2000/01/rdf-schema#":"rdfs" ,
  "http://www.xerleben.de/schema/2.0_1#":"xerl", "http://www.xplanung.de/xplangml/5/0#":"xplan5", "http://www.opengis.net/gml/3.2":"gml", "http://www.opengis.net/kml/2.2#":"kml" }; 
-var supportingOntologies={"xplanung":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/24e994cb618de5ffc15d90a7f9df20aeb4f01f13/XPlanung/xplanung5_0.ttl","aaa":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/master/AAA-Data/aaa6.ttl",
+var supportingOntologies={"xplanung":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/0653be4918669e6d56b705e9bd823b34c1c1f1cd/XPlanung/xplanung5_0.ttl","aaa":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/master/AAA-Data/aaa6.ttl",
 "xerleben":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/master/XErleben/xerleben2_1.ttl_mod.ttl","inspire":""}
 var currdfstore=null;
 var wkt = new Wkt.Wkt();
 var firstcoords=[]
+var decorators=[]
 var lastimportAsTTL=""
 var bboxpoint;
 var bboxbuffer;
@@ -560,11 +561,11 @@ function uiQuery(start){
 		alert("No classes to query!")
 		return
 	}
-	queryString=prefixList+" SELECT DISTINCT ?person ?rel ?pointstyle ?linestyle ?polygonstyle ?img ?val ?valLabel ?val2 WHERE { "
+	queryString=prefixList+" SELECT DISTINCT ?person ?rel ?pointstyle ?linestyle ?polygonstyle ?img ?linestringImageStyle ?linestringImage ?val ?valLabel ?val2 WHERE { "
 	for(cls in classesToQuery){
 		console.log(cls)
 		if($('#whichactive').is(':checked')){
-						queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val .  OPTIONAL{?val geo:asWKT ?val2 .} OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:lineStyle ?linestringStyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}   OPTIONAL{<"+classesToQuery[cls]+"> xplan5:image ?img .} "
+						queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val .  OPTIONAL{?val geo:asWKT ?val2 .} OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:lineStyle ?linestringStyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}   OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle  ?linestringImageStyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .}  "
 						if(classesToQuery[cls] in constraints){
 							queryString+=constraints[classesToQuery[cls]]
 						}
@@ -575,12 +576,12 @@ function uiQuery(start){
 						}
 						queryString+="} UNION"
 		}else{
-			queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?val2 .} OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringStyle ?linestyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}  OPTIONAL{<"+classesToQuery[cls]+"> xplan5:image ?img .} } UNION "
+			queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?val2 .} OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringStyle ?linestyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle ?linestringImageStyle.} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .}  } UNION "
 		}
 	}
 	queryString=queryString.substring(0,queryString.length-6)
 	}else{
-		queryString=prefixList+" SELECT ?person ?rel ?pointstyle ?polygonstyle ?linestyle ?img ?val ?valLabel ?val2 WHERE { ?percls rdf:type owl:Class .  OPTIONAL{?percls semgis:polygonStyle ?polygonstyle .} OPTIONAL{?percls semgis:linestringStyle ?linestyle .} OPTIONAL{?percls semgis:pointStyle ?pointstyle .} OPTIONAL{?percls xplan5:image ?img .} ?person rdf:type ?percls . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?val2 .} OPTIONAL {?val rdfs:label ?valLabel . } "
+		queryString=prefixList+" SELECT ?person ?rel ?pointstyle ?polygonstyle ?linestyle ?linestringImage ?linestringImageStyle ?img ?val ?valLabel ?val2 WHERE { ?percls rdf:type owl:Class .  OPTIONAL{?percls semgis:polygonStyle ?polygonstyle .} OPTIONAL{?percls semgis:linestringStyle ?linestyle .} OPTIONAL{?percls semgis:pointStyle ?pointstyle .} OPTIONAL{?percls semgis:image ?img .} OPTIONAL{?percls semgis:linestringImageStyle ?linestringImageStyle .} OPTIONAL{?percls semgis:linestringImage ?linestringImage .} ?person rdf:type ?percls . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?val2 .} OPTIONAL {?val rdfs:label ?valLabel . } "
 	}
 	queryString+="} ORDER BY ?person "
 	console.log(queryString)
@@ -627,6 +628,12 @@ function uiQuery(start){
 			if(results[res]["linestyle"]!=null){
                             persons[results[res]["person"]["value"]]["linestringStyle"]=results[res]["linestyle"]["value"]
 			}
+			if(results[res]["linestringImageStyle"]!=null){
+                            persons[results[res]["person"]["value"]]["linestringImageStyle"]=results[res]["linestringImageStyle"]["value"]
+			}
+                        if(results[res]["linestringImage"]!=null){
+                            persons[results[res]["person"]["value"]]["linestringImage"]=results[res]["linestringImage"]["value"]
+			}
 			if(results[res]["val2"]!=null && !results[res]["val2"]["value"].includes("ENVELOPE")){
                 persons[results[res]["person"]["value"]]["asWKT"]=results[res]["val2"]["value"]
 			}
@@ -646,7 +653,7 @@ function displayQueryResult(persons,query,classTopers){
 			markerIconPath=""
 			tooltip="<html><b><a href=\""+pers+"\" target=\"_blank\">"+pers.substring(pers.indexOf("#")+1)+"</a></b><ul>"
 			Object.keys(persons[pers]).sort().forEach(function(rel) {
-				if(rel!=null && (rel.includes("asWKT") || rel.includes("asGML") || rel.includes("asKML") || rel.includes("asGeoJSON") || rel.includes("pointStyle") || rel.includes("polygonStyle") || rel.includes("linestringStyle"))){
+				if(rel!=null && (rel.includes("asWKT") || rel.includes("asGML") || rel.includes("asKML") || rel.includes("asGeoJSON") || rel.includes("pointStyle") || rel.includes("polygonStyle") || rel.includes("linestringStyle") || rel.includes("linestringImage") || rel.includes("linestringImageStyle"))){
 					}
 					else if(rel.includes("img")){
 						markerIconPath=persons[pers][rel]
@@ -789,8 +796,27 @@ function isJSON (something) {
     }
 }
 	
+function getIconFromPath(markerIconPath){
+        if(markerIconPath.startsWith("<svg")){
+                    
+                    markerIconPath = encodeURI("data:image/svg+xml," + markerIconPath).replace('#','%23');
+                    //markerIconPath=new DOMParser().parseFromString(markerIconPath, "image/svg+xml")
+                    //markerIconPath = "data:image/svg+xml," + encodeURIComponent(markerIconPath);
+                    //markerIconPath=markerIconPath.replace(new RegExp("\"",'g'),"'")
+                    //("data:image/svg+xml," +
+                   // markerIconPath).replace('#','%23');
+                //<svg xmlns='http://www.w3.org/2000/svg' width='1000' height='1000'><path d='M2,111 h300 l-242.7,176.3 92.7,-285.3 92.7,285.3 z' fill='#000000'/></svg>"
+        }
+        console.log(markerIconPath)
+        var markerIcon = L.icon({
+                iconUrl: markerIconPath,
+                iconSize: [38, 95], // size of the icon
+        });
+        return markerIcon;
+}
+	
 function handleGeometry(type,coordinates,query,markerIconPath,pers){
-	console.log("Handle Geometry "+type+" "+JSON.stringify(coordinates)+" "+query+" "+firstpoint)
+	console.log("Handle Geometry "+type+" "+JSON.stringify(coordinates)+" "+query+" "+firstpoint+" - "+persons[pers]["linestringImageStyle"]+" - "+persons[pers]["linestringImage"] )
 	try{
 	if(type.toLowerCase()=="point" && coordinates!=null && coordinates[0]!=null){
 				if(!query || $('#coordinate').val()=="" || !$('#whereactive').is(':checked')  || (!turf.booleanDisjoint(turf.envelope(turf.point(coordinates)),bboxbuffer))){
@@ -824,17 +850,7 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers){
 						
                         if(markerIconPath!=null && markerIconPath!=""){
 							//console.log("CREATING MARKER AT "+JSON.stringify(coordinates)+" - "+markerIconPath)
-							if(markerIconPath.startsWith("<svg")){
-								markerIconPath = encodeURI("data:image/svg+xml," +
-								markerIconPath).replace('#','%23');
-								//<svg xmlns='http://www.w3.org/2000/svg' width='1000' height='1000'><path d='M2,111 h300 l-242.7,176.3 92.7,-285.3 92.7,285.3 z' fill='#000000'/></svg>"
-							}
-							console.log(markerIconPath)
-                        	var markerIcon = L.icon({
-									iconUrl: markerIconPath,
-									iconSize: [38, 95], // size of the icon
-							});
-							
+                                        markerIcon=getIconFromPath(markerIconPath);
 			                var marker = new L.marker(coordinates,{icon:markerIcon}); //opacity may be set to zero
                             marker.bindPopup(tooltip, {maxWidth : 560});
                             marker.addTo(mymap);
@@ -867,15 +883,26 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers){
 				firstpoint=true;
 			}
 				if(!query || $('#coordinate').val()=="" || $('#coordinate').val()=="" || !$('#whereactive').is(':checked')  || !turf.booleanDisjoint(turf.envelope(turf.lineString(coordinates)),bboxbuffer)){
+				var polyline;
 			       if(persons[pers]["linestringStyle"]!=null){
-                                        L.polyline( coordinates,JSON.parse("{"+persons[pers]["linestringStyle"]+"}")).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap);                         
+                                        polyline=L.polyline( coordinates,JSON.parse("{"+persons[pers]["linestringStyle"]+"}")).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap);                         
 			       }else if(persons[pers]["style"]!=null){
-                                    L.polyline( coordinates,JSON.parse("{"+persons[pers]["style"]+"}")).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap); 
+                                    polyline=L.polyline( coordinates,JSON.parse("{"+persons[pers]["style"]+"}")).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap); 
 			       }else{
-			       			
-                            L.polyline( coordinates,{color: 'blue'}).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap); 
-                            
+                                polyline=L.polyline( coordinates,{color: 'blue'}).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap); 
 			       }
+			       if(persons[pers]["linestringImageStyle"]!=null && persons[pers]["linestringImage"]!=null ){
+                                    style=JSON.parse(persons[pers]["linestringImageStyle"])
+                                    markerIcon=getIconFromPath(persons[pers]["linestringImage"]);
+                                    decorators.push(L.polylineDecorator(polyline, {
+                                            patterns: [
+                                            // defines a pattern of 10px-wide dashes, repeated every 20px on the line
+                                                    {offset: style["offset"], repeat: style["repeat"], symbol: L.Symbol.marker({rotate: true, markerOptions: {
+                                                                icon: markerIcon
+                                                    }})}
+                                                ]
+                                            }).addTo(mymap));
+                                    }
 				}
 
 			}else if(coordinates!=null && Array.isArray(coordinates)){//&& personToWKT[pers]["type"]=="Polygon"){
@@ -932,6 +959,11 @@ function clearMap() {
 	for(marker in markercollection){
 		mymap.removeLayer(markercollection[marker])
 	}
+	markercollection=[]
+        for(decorator in decorators){
+		mymap.removeLayer(decorators[decorator])
+	}
+	decorators=[]
 }
 
 function clearCoords(){
@@ -1443,6 +1475,20 @@ Load supporting Ontology:<input type="checkbox" id="supportingOntology"/></td><t
 <option value="kml">KML</option>
 <option value="geojson">GeoJSON</option>
 </select>
+<svg width="400" height="110"><rect width="300" height="100" style="fill:rgb(0,0,255);stroke-width:3;stroke:rgb(0,0,0)" /></svg>
+SVG: <img src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg…%20y%3D%220.5%22%20width%3D%224%22%20height%3D%222%22%20%2F%3E%3C%2Fsvg%3E'/>
+SVG2: <img src='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 100 100" enable-background="new 0 0 100 100" xml:space="preserve" height="100px" width="100px">
+<g>
+	<path d="M28.1,36.6c4.6,1.9,12.2,1.6,20.9,1.1c8.9-0.4,19-0.9,28.9,0.9c6.3,1.2,11.9,3.1,16.8,6c-1.5-12.2-7.9-23.7-18.6-31.3   c-4.9-0.2-9.9,0.3-14.8,1.4C47.8,17.9,36.2,25.6,28.1,36.6z"/>
+	<path d="M70.3,9.8C57.5,3.4,42.8,3.6,30.5,9.5c-3,6-8.4,19.6-5.3,24.9c8.6-11.7,20.9-19.8,35.2-23.1C63.7,10.5,67,10,70.3,9.8z"/>
+	<path d="M16.5,51.3c0.6-1.7,1.2-3.4,2-5.1c-3.8-3.4-7.5-7-11-10.8c-2.1,6.1-2.8,12.5-2.3,18.7C9.6,51.1,13.4,50.2,16.5,51.3z"/>
+	<path d="M9,31.6c3.5,3.9,7.2,7.6,11.1,11.1c0.8-1.6,1.7-3.1,2.6-4.6c0.1-0.2,0.3-0.4,0.4-0.6c-2.9-3.3-3.1-9.2-0.6-17.6   c0.8-2.7,1.8-5.3,2.7-7.4c-5.2,3.4-9.8,8-13.3,13.7C10.8,27.9,9.8,29.7,9,31.6z"/>
+	<path d="M15.4,54.7c-2.6-1-6.1,0.7-9.7,3.4c1.2,6.6,3.9,13,8,18.5C13,69.3,13.5,61.8,15.4,54.7z"/>
+	<path d="M39.8,57.6C54.3,66.7,70,73,86.5,76.4c0.6-0.8,1.1-1.6,1.7-2.5c4.8-7.7,7-16.3,6.8-24.8c-13.8-9.3-31.3-8.4-45.8-7.7   c-9.5,0.5-17.8,0.9-23.2-1.7c-0.1,0.1-0.2,0.3-0.3,0.4c-1,1.7-2,3.4-2.9,5.1C28.2,49.7,33.8,53.9,39.8,57.6z"/>
+	<path d="M26.2,88.2c3.3,2,6.7,3.6,10.2,4.7c-3.5-6.2-6.3-12.6-8.8-18.5c-3.1-7.2-5.8-13.5-9-17.2c-1.9,8-2,16.4-0.3,24.7   C20.6,84.2,23.2,86.3,26.2,88.2z"/>
+	<path d="M30.9,73c2.9,6.8,6.1,14.4,10.5,21.2c15.6,3,32-2.3,42.6-14.6C67.7,76,52.2,69.6,37.9,60.7C32,57,26.5,53,21.3,48.6   c-0.6,1.5-1.2,3-1.7,4.6C24.1,57.1,27.3,64.5,30.9,73z"/>
+</g>
+</svg>'/>
 <button id="exportlastasTTL" onclick="exportLastImport()">Export last imported file as TTL</button><br/><button id="cleargraph" onclick="clearGraph()">Delete Database</button></td></tr></table>
 </body>
 </html>
