@@ -21,7 +21,7 @@ var prefixMap={"http://www.w3.org/2002/07/owl#":"owl", "http://www.opengis.net/o
 "http://www.w3.org/XML/1998/namespace":"xml", "http://www.w3.org/2001/XMLSchema#":"xsd", "http://www.w3.org/2000/01/rdf-schema#":"rdfs" ,
  "http://www.xerleben.de/schema/2.0_1#":"xerl", "http://www.xplanung.de/xplangml/5/0#":"xplan5", "http://www.opengis.net/gml/3.2":"gml", "http://www.opengis.net/kml/2.2#":"kml" }; 
 var supportingOntologies={"AAA-Data":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/master/AAA-Data/aaa6.ttl","AAA-Data Styles":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/master/AAA-Data/aaa6_style.ttl","INSPIRE":"",
-"Xerleben":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/master/XErleben/xerleben2_1.ttl_mod.ttl","XPlanung":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/0653be4918669e6d56b705e9bd823b34c1c1f1cd/XPlanung/xplanung5_0.ttl","XPlanung Styles":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/0653be4918669e6d56b705e9bd823b34c1c1f1cd/XPlanung/xplanung5_0_style.ttl"}
+"Xerleben":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/master/XErleben/xerleben2_1.ttl_mod.ttl","XPlanung":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/50a0bab379336362892350e4c40d81cff71e4b04/XPlanung/xplanung5_0.ttl","XPlanung Styles":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/50a0bab379336362892350e4c40d81cff71e4b04/XPlanung/xplanung5_0_style.ttl"}
 var currdfstore=null;
 var wkt = new Wkt.Wkt();
 var firstcoords=[]
@@ -516,6 +516,7 @@ function readRDFFile(e){
 }
 
 function uiQuery(start){
+        curQueryResultTTL=""
 	if(start){
 		getAllClasses();  
 		getAllProperties(); 
@@ -606,7 +607,7 @@ function uiQuery(start){
                             persons[results[res]["person"]["value"]]["linestringImage"]=results[res]["linestringImage"]["value"]
 			}
 			if(results[res]["val2"]!=null && !results[res]["val2"]["value"].includes("ENVELOPE")){
-                persons[results[res]["person"]["value"]]["asWKT"]=results[res]["val2"]["value"]
+                                persons[results[res]["person"]["value"]]["asWKT"]=results[res]["val2"]["value"]
 			}
 			if(results[res]["img"]!=null){
                 persons[results[res]["person"]["value"]]["img"]=results[res]["img"]["value"]
