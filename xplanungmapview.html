@@ -1182,6 +1182,90 @@ function exportQueryResult(tosave,exportFormat){
 		console.log(collection)
 		saveTextAsFile(JSON.stringify(collection, null, 2),"geojson")
 	}
+	if(exportFormat=="geojsonld" || $( "#queryexportformat option:selected" ).val()=="geojsonld"){
+		var collection = {
+			"@context": { "geojson": "https://purl.org/geojson/vocab#", "Feature": "geojson:Feature", "FeatureCollection": "geojson:FeatureCollection","GeometryCollection": "geojson:GeometryCollection",
+    "LineString": "geojson:LineString","MultiLineString": "geojson:MultiLineString","MultiPoint": "geojson:MultiPoint","MultiPolygon": "geojson:MultiPolygon","Point": "geojson:Point","Polygon": "geojson:Polygon",
+    "bbox": {
+      "@container": "@list",
+      "@id": "geojson:bbox"
+    },
+    "coordinates": {
+      "@container": "@list",
+      "@id": "geojson:coordinates"
+    },
+    "features": {
+      "@container": "@set",
+      "@id": "geojson:features"
+    },
+    "geometry": "geojson:geometry",
+    "id": "@id",
+    "properties": "geojson:properties",
+    "type": "@type",
+  },"@graph": []
+		};
+		var context=collection["@context"]
+		var graph=collection["@graph"]
+        var geojson={"type":"Feature","properties":{}}
+		var empty={"type":"Feature","properties":{}}
+		first=true;
+		if(tosave!=null){
+		lastspl1=""
+		splitt=tosave.split("\n")
+		for(spl in splitt){
+			console.log(splitt[spl])
+			subsplit=splitt[spl].trim().split(" ")
+			//console.log(subsplit)
+			//if(remembersub1="" || rememberremembersub1=subsplit[1]){
+			
+			if(splitt[spl].includes("NamedIndividual") || splitt[spl].includes("label") || splitt[spl].includes("http://www.w3.org/2002/07/owl#")  || splitt[spl].includes("comment") || 
+				splitt[spl].includes("asWKT") || 
+				splitt[spl].includes("asGML") || 
+				splitt[spl].includes("asKML") || splitt[spl].includes("gml:id")){
+				continue;
+			}
+			try{
+				if(lastspl1==""){
+					lastspl1=subsplit[0].trim()
+				}
+				else if(lastspl1!=subsplit[0].trim()){
+					if(geojson!=empty){
+						graph.push(geojson)
+						geojson={"type":"Feature","properties":{}}
+						lastspl1=subsplit[0].trim()
+					}
+				}
+                if(splitt[spl].includes("asGeoJSON")){				
+                    geojson["geometry"]=JSON.parse(splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1))["geometry"]
+                    geojson["geometry"]["coordinates"]=exportConvert(geojson["geometry"]["coordinates"],epsgdefs[$('#epsgqueryexport option:selected').val()],"geojson",geojson["geometry"]["type"],true)
+					console.log("Add converted GeoJSON geometry: "+JSON.stringify(geojson))
+                }else if(splitt[spl].includes(":type") || splitt[spl].includes("#type")  ){
+					//console.log("IN TYPE CLAUSE")
+					//console.log(splitt[spl])
+					geojson["properties"]["id"]=subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")
+				}else if(splitt[spl].includes("label")){
+					continue;
+				}else{
+					console.log(subsplit[1])
+					subl=subsplit[1].replace("<","").replace(">","")
+					context[subl.substring(subl.indexOf('#')+1)]=subl
+					console.log(JSON.stringify(context))
+					geojson["properties"][subsplit[1].replace("<","").replace(">","")]=(subsplit[2].includes("^^")?
+					subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):
+					subsplit[2].replace("<","").replace(">","").replace("\"",""))
+					//gml+="<"+subsplit[1].replace("<","").replace(">","")+">"+(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))+"</"+subsplit[1].replace("<","").replace(">","")+">\n"
+				}
+			}catch(err){console.log(err); continue;}
+		}
+		}
+		
+		/*if(geojson!=empty){
+			collection.features.push(geojson);
+		}*/
+        
+		console.log(collection)
+		saveTextAsFile(JSON.stringify(collection, null, 2),"geojson")
+	}
 	if(exportFormat=="kml" || $( "#queryexportformat option:selected" ).val()=="kml"){
                 namespaces={}
                 namespaces2={}
@@ -1578,6 +1662,7 @@ function exportLastImport(){
 <option value="gml">GML</option>
 <option value="kml">KML</option>
 <option value="geojson">GeoJSON</option>
+<option value="geojsonld">GeoJSON-LD</option>
 </select><br/>CRS: <select id="epsgqueryexport"></select></td></tr>
 </table>
 </td></tr></table><table width="60%"><tr><td colspan="2">
@@ -1595,6 +1680,7 @@ Load svg images: <input type="checkbox" id="loadsvg"/></td><td align="right">
 <option value="gml">GML</option>
 <option value="kml">KML</option>
 <option value="geojson">GeoJSON</option>
+<option value="geojsonld">GeoJSON-LD</option>
 </select>
 <button id="exportlastasTTL" onclick="exportLastImport()">Export last imported file as TTL</button><br/><button id="cleargraph" onclick="clearGraph()">Delete Database</button></td></tr></table>
 </body>
