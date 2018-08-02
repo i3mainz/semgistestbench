@@ -115,6 +115,8 @@ function exportAsTTL(){
 					case "gml": exportQueryResult(tosave,"gml"); break;
 					case "kml": exportQueryResult(tosave,"kml");break;
 					case "geojson": exportQueryResult(tosave,"geojson");break;
+					case "geojsonld": exportQueryResult(tosave,"geojsonld");break;
+					case "jsonld": exportQueryResult(tosave,"jsonld");break;
 				}
 				
 	});
@@ -167,7 +169,7 @@ function importGeoJSON(geojson,crs,switchlatlong){
 		}
 		//console.log("Ind Result: "+result)
 		geometry=data["features"][feat]["geometry"]
-		coordsconverted=getCoordArrayFromGML(JSON.stringify(geometry["coordinates"]),epsgdefs[$('#epsgqueryimport option:selected').val()],true,true)
+		coordsconverted=getCoordArrayFromGML(JSON.stringify(geometry["coordinates"]),epsgdefs[$('#epsgqueryimport option:selected').val()],true,true,true)
 		wktString=coordarraytoWKT(coordsconverted,geometry["type"])
 		//console.log(geometry)
 		wkt=wkt.read(wktString);
@@ -313,7 +315,7 @@ function walkDOM(main) {
 					if(main.firstChild!=null && main.firstChild.nextSibling!=null){						
 						xmlString = (new XMLSerializer()).serializeToString(main);					
 						//console.log("XMLString: "+xmlString)
-						coordsconverted=getCoordArrayFromGML(xmlString,epsgdefs[$('#epsgqueryimport option:selected').val()],true,false)
+						coordsconverted=getCoordArrayFromGML(xmlString,epsgdefs[$('#epsgqueryimport option:selected').val()],true,false,true)
 						result+="<"+relName+"> <http://www.opengis.net/ont/geosparql#asGML> \""+convertGMLToOtherCRS(xmlString.replace(new RegExp("\"", 'g'),"\\\"").replace(new RegExp("\n", 'g'),""),coordsconverted)+"\"^^<http://www.opengis.net/ont/geosparql#gmlLiteral> . \n "
 						//console.log(coordsconverted)
 						wkt=gmlStringToWKT(xmlString,coordsconverted)
@@ -1021,9 +1023,9 @@ function exportQueryResult(tosave,exportFormat){
 		saveTextAsFile(tosave,"ttl")
 	}
 	if(exportFormat=="gml" || $( "#queryexportformat option:selected" ).val()=="gml"){
-                namespaces={}
-                namespaces2={}
-                gmlstart="<?xml version=\"1.0\"  encoding=\"utf-8\" standalone=\"yes\" ?><gml:FeatureCollection xmlns:gml=\"http://www.opengis.net/gml/3.2\" "
+        namespaces={}
+        namespaces2={}
+        gmlstart="<?xml version=\"1.0\"  encoding=\"utf-8\" standalone=\"yes\" ?><gml:FeatureCollection xmlns:gml=\"http://www.opengis.net/gml/3.2\" "
 		gml=""
 		remembersub1=""
 		curgmlid="";
@@ -1041,19 +1043,32 @@ function exportQueryResult(tosave,exportFormat){
 			console.log(subsplit)
 			//if(remembersub1="" || rememberremembersub1=subsplit[1]){
 			try{
-			if(splitt[spl].includes("asGML") && !splitt[spl].includes("Envelope")){
-                                console.log("ASGML: "+splitt[spl])
-                                if(waitingForGeomTag!=""){
-                                        gml+="<"+replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)+"> \n"
-                                         gml+=splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1)+"\n"
-                                        gml+="</"+replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)+">\n"
-                                        waitingForGeomTag=""
-                                        waitingForGeomTextContent=""
-                                }else{
-                                     gml+=splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1)+"\n"
+						i=0;
+                                while(i<subsplit.length){
+                                    console.log("Subsplit: "+subsplit[i])
+                                    if(subsplit[i].includes("#") && subsplit[i].includes("<http:")  && !subsplit[i].includes("^^") && !(subsplit[i].substring(1,subsplit[i].indexOf('#')+1) in namespaces2)){
+                                            namespaces2[subsplit[i].substring(1,subsplit[i].indexOf('#')+1)]="n."+nscounter
+                                            namespaces["n."+nscounter]=subsplit[i].substring(1,subsplit[i].indexOf('#')+1)
+                                            nscounter++;
+                                    }
+                                    i++
                                 }
-			}
-			if(splitt[spl].includes("NamedIndividual") || splitt[spl].includes("label") || splitt[spl].includes("http://www.w3.org/2002/07/owl#")  || splitt[spl].includes("comment") || 
+			if(splitt[spl].includes("asGML") && !splitt[spl].includes("Envelope")){
+                console.log("ASGML: "+splitt[spl])
+                if(waitingForGeomTag!=""){
+                    gml+="<"+replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)+"> \n"
+					xmlString=splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1)
+					coordsconverted=getCoordArrayFromGML(xmlString,epsgdefs[$('#epsgqueryexport option:selected').val()],true,false,false)					
+					result=convertGMLToOtherCRS(xmlString,coordsconverted)
+					console.log(result)
+                    gml+=result+"\n"
+                    gml+="</"+replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)+">\n"
+                    waitingForGeomTag=""
+                    waitingForGeomTextContent=""
+                }else{
+                    gml+=splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1)+"\n"
+                }
+			}else if(splitt[spl].includes("NamedIndividual") || splitt[spl].includes("label") || splitt[spl].includes("http://www.w3.org/2002/07/owl#")  || splitt[spl].includes("comment") || 
 			splitt[spl].includes("asWKT") || 
 			splitt[spl].includes("asGeoJSON") || 
 			splitt[spl].includes("asKML") || splitt[spl].includes("gml:id")){
@@ -1065,19 +1080,10 @@ function exportQueryResult(tosave,exportFormat){
 				wrotetype=false;
 				curgmlid=gmlid;
 			}
-			i=0;
-                                while(i<subsplit.length){
-                                    console.log("Subsplit: "+subsplit[i])
-                                    if(subsplit[i].includes("#") && subsplit[i].includes("<http:")  && !subsplit[i].includes("^^") && !(subsplit[i].substring(1,subsplit[i].indexOf('#')+1) in namespaces2)){
-                                            namespaces2[subsplit[i].substring(1,subsplit[i].indexOf('#')+1)]="n."+nscounter
-                                            namespaces["n."+nscounter]=subsplit[i].substring(1,subsplit[i].indexOf('#')+1)
-                                            nscounter++;
-                                    }
-                                    i++
-                                }
+
 			if(curgmlid==gmlid && !wrotetype && !splitt[spl].includes("type")){
 				towrite.push(splitt[spl])
-			}else if(!splitt[spl].includes("type")){
+			}else if(!splitt[spl].includes("type") && !splitt[spl].includes("asGML")){
                                 textContent=(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""));
                                 if((textContent.split("-").length - 1)>=4){
                                         if(waitingForGeomTag!=""){
@@ -1093,7 +1099,7 @@ function exportQueryResult(tosave,exportFormat){
 					gml+="<"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">"+textContent+"</"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">\n"
                                 }
 			}
-			if(splitt[spl].includes("type")){
+			if(splitt[spl].includes("type") && !splitt[spl].includes("asGML")){
 					console.log("IN TYPE CLAUSE")
 					if(!remembersub1==""){
 						gml+="</"+replaceWithNSPrefix(remembersub1.replace("<","").replace(">",""),namespaces2)+">\n"
@@ -1276,8 +1282,8 @@ function exportQueryResult(tosave,exportFormat){
 		saveTextAsFile(JSON.stringify(collection, null, 2),"geojson")
 	}
 	if(exportFormat=="kml" || $( "#queryexportformat option:selected" ).val()=="kml"){
-                namespaces={}
-                namespaces2={}
+        var namespaces={}
+        var namespaces2={}
 		kmlstart="<?xml version=\"1.0\"  encoding=\"utf-8\" standalone=\"yes\" ?><kml xmlns:kml=\"http://www.opengis.net/kml/2.2\" "
 		kml=""
 		remembersub1=""
@@ -1286,6 +1292,7 @@ function exportQueryResult(tosave,exportFormat){
 		wrotetype=false;
 		splitt=tosave.split("\n")
 		classnames={}
+		nscounter=0
 		classname=""
 		for(spl in splitt){
 			console.log(splitt[spl])
@@ -1293,46 +1300,50 @@ function exportQueryResult(tosave,exportFormat){
 			console.log(subsplit)
 			//if(remembersub1="" || rememberremembersub1=subsplit[1]){
 			try{
-			if(splitt[spl].includes("NamedIndividual") || splitt[spl].includes("label") || splitt[spl].includes("http://www.w3.org/2002/07/owl#")  ||splitt[spl].includes("gml:id") ||
-                                    splitt[spl].includes("asWKT") || 
-                                    splitt[spl].includes("asGeoJSON") || 
-                                    splitt[spl].includes("asGML")){
+			
+			i=0;
+            while(i<subsplit.length){
+                if(subsplit[i].includes("#") && subsplit[i].includes("<http:")  && !subsplit[i].includes("^^") && !(subsplit[i].substring(1,subsplit[i].indexOf('#')+1) in namespaces2)){				
+                    namespaces2[subsplit[i].substring(1,subsplit[i].indexOf('#')+1)]="n."+nscounter
+                    namespaces["n."+nscounter]=subsplit[i].substring(1,subsplit[i].indexOf('#')+1)
+					nscounter++;
+                }
+                i++
+            }
+			gmlid=subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","");
+			if(splitt[spl].includes("asGML") && !splitt[spl].includes("Envelope")){
+				xmlString=splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1)
+				coordsconverted=getCoordArrayFromGML(xmlString,epsgdefs[$('#epsgqueryexport option:selected').val()],false,false,false)				
+				kmlgeo=gmlStringToKML(xmlString,coordsconverted)
+				//console.log("KMLSTRING To ADD: "+kmlgeo)
+				//coords=exportConvert(coords,epsgdefs[$('#epsgqueryexport option:selected').val()],"coords",towrite.substring(towrite.indexOf(':')+1,towrite.indexOf('>'),true))
+                classnames[classname]+=kmlgeo+"\n"
+			}
+			if(splitt[spl].includes("NamedIndividual") || splitt[spl].includes("label") || splitt[spl].includes("http://www.w3.org/2002/07/owl#")  || splitt[spl].includes("gml:id") || splitt[spl].includes("asGML") ||
+                    splitt[spl].includes("asWKT") || 
+                    splitt[spl].includes("asGeoJSON") || 
+                    splitt[spl].includes("asKML")){
 				continue;
 			}
-			gmlid=subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","");
-			if(splitt[spl].includes("asKML") && !splitt[spl].includes("Envelope")){
-                            classnames[classname]/*kml*/+=splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1)+"\n"
-			}
-			
 			if(curgmlid!=gmlid){
 				wrotetype=false;
 				curgmlid=gmlid;
 			}
 			if(curgmlid==gmlid && !wrotetype && !splitt[spl].includes("type")){
 				towrite.push(splitt[spl])
-			}else if(!splitt[spl].includes("type") && !splitt[spl].includes("asKML")){
-                                    i=0;
-                                while(i<subsplit.length){
-                                    console.log("Subsplit: "+subsplit[i])
-                                    if(subsplit[i].includes("#") && subsplit[i].includes("<http:")  && !subsplit[i].includes("^^") && !(subsplit[i].substring(1,subsplit[i].indexOf('#')+1) in namespaces2)){
-                                            namespaces2[subsplit[i].substring(1,subsplit[i].indexOf('#')+1)]="n."+nscounter
-                                            namespaces["n."+nscounter]=subsplit[i].substring(1,subsplit[i].indexOf('#')+1)
-                                            nscounter++;
-                                    }
-                                    i++
-                                }
-					classnames[classname]/*kml*/+="<"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">"+(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))+"</"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">\n"
+			}else if(!splitt[spl].includes("type") && !splitt[spl].includes("asKML")){                                   
+					classnames[classname]+="<"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">"+(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))+"</"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">\n"
 			}
 			if(splitt[spl].includes("type")){
 					console.log("IN TYPE CLAUSE")
 					if(!remembersub1==""){
-						classnames[classname]/*kml*/+="</kml:Placemark>\n"
+						classnames[classname]+="</kml:Placemark>\n"
 					}
-                                        classname=subsplit[2].replace("<","").replace(">","")
+                        classname=subsplit[2].replace("<","").replace(">","")
 					if(!(classname in classnames)){
-                                                classnames[classname]=""
+                        classnames[classname]=""
 					}
-                                        classnames[classname]+="<kml:Placemark>\n<kml:name>"+subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")+"</kml:name>\n"
+                    classnames[classname]+="<kml:Placemark>\n<kml:name>"+subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")+"</kml:name>\n"
 					//classnames[classname]+=
 					//kml+="<kml:Folder>\n<kml:name>"+subsplit[2].replace("<","").replace(">","")+"</kml:name>\n<kml:Placemark>\n<kml:name>"+subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")+"</kml:name>\n"
 					remembersub1=subsplit[2]
@@ -1347,13 +1358,13 @@ function exportQueryResult(tosave,exportFormat){
 			}catch(err){}
 		}
 		for(cls in classnames){
-                        kml+="<kml:Folder>\n<kml:name>"+cls+"</kml:name>\n"
-                        kml+=classnames[cls]
-                        kml+="</kml:Placemark></kml:Folder> \n"
+            kml+="<kml:Folder>\n<kml:name>"+cls+"</kml:name>\n"
+            kml+=classnames[cls]
+            kml+="</kml:Placemark></kml:Folder> \n"
 		}
 		//kml+="</kml:Placemark>\n</kml:Folder>\n</kml:Document>"
-                for(ns in namespaces){
-                        kmlstart+=" xmlns:"+ns+"=\""+namespaces[ns]+"\" "
+        for(ns in namespaces){
+            kmlstart+=" xmlns:"+ns+"=\""+namespaces[ns]+"\" "
 		}
 		kmlstart+="><kml:Document> \n"
 		kml=kmlstart+kml+"</kml:Document></kml>"
@@ -1397,13 +1408,19 @@ function gmlStringToWKT(gmlString,coordarray){
 	return wktString;
 }
 
-function getCoordArrayFromGML(gmlString,crs,switchlatlong,geojson){
+function getCoordArrayFromGML(gmlString,crs,switchlatlong,geojson,importOrExport){
 	if(gmlString.includes("posList")){
 		firststep=gmlString.indexOf("<gml:posList")+13;
 		posliststr=gmlString.substring(gmlString.indexOf(">",firststep)+1,gmlString.indexOf("</gml:posList>")).trim();
 		//console.log("Original: "+posliststr)
 		splstr=posliststr.split(" ")
-		resultarray=importConvert(splstr,crs,switchlatlong)
+		if(importOrExport){
+			resultarray=importConvert(splstr,crs,switchlatlong)
+		}else{
+			resultarray=convertit(splstr,epsgdefs["EPSG:4326"],crs,switchlatlong)
+			//resultarray=exportConvert(splstr,crs,switchlatlong)
+		}
+		
 		//console.log("Converted: "+resultarray)
 		return resultarray;
 	}else if(gmlString.includes("pos")){
@@ -1411,7 +1428,12 @@ function getCoordArrayFromGML(gmlString,crs,switchlatlong,geojson){
 		posliststr=gmlString.substring(gmlString.indexOf(">",firststep)+1,gmlString.indexOf("</gml:pos>")).trim();
 		//console.log("Original: "+posliststr)
 		splstr=posliststr.split(" ")
-		resultarray=importConvert(splstr,crs,switchlatlong)
+		if(importOrExport){
+			resultarray=importConvert(splstr,crs,switchlatlong)
+		}else{
+			resultarray=convertit(splstr,epsgdefs["EPSG:4326"],crs,switchlatlong)
+			//resultarray=exportConvert(splstr,crs,switchlatlong)
+		}
 		//console.log("Converted: "+resultarray)
 		return resultarray;
 	}
@@ -1424,7 +1446,12 @@ function getCoordArrayFromGML(gmlString,crs,switchlatlong,geojson){
 	}
 	if(geojson){
 		splstr=gmlString.replace(new RegExp("\\[",'g'),"").replace(new RegExp("\\]",'g'),"").trim().replace(new RegExp(" ",'g'),",").split(",");
-		resultarray=importConvert(splstr,crs,switchlatlong)
+		if(importOrExport){
+			resultarray=importConvert(splstr,crs,switchlatlong)
+		}else{
+			resultarray=convertit(splstr,epsgdefs["EPSG:4326"],crs,switchlatlong)
+			//resultarray=exportConvert(splstr,crs,switchlatlong)
+		}
 		return resultarray;
 	}
 	return null;
@@ -1480,6 +1507,43 @@ function geometryToGeoJSON(geomtype,coordinates){
             case "LinearRing": 
             case "Polygon": 
                 res["geometry"]["type"]="Polygon"
+		res["geometry"]["coordinates"]="[["
+		break;
+            case "Envelope":
+            res["geometry"]["type"]="Envelope"
+		res["geometry"]["coordinates"]="["
+		break;
+            case "LineString":
+                res["geometry"]["type"]="LineString"
+		res["geometry"]["coordinates"]="["
+		break;
+            case "Point":
+                res["geometry"]["type"]="Point"
+		res["geometry"]["coordinates"]="["
+		break;
+	}	
+	splstr=coordinates.toString().split(",")
+	i=0;
+		while(i<splstr.length){
+			res["geometry"]["coordinates"]+="["+splstr[i]+", "+splstr[i+1]+"], "
+			i+=2;
+		}
+        res["geometry"]["coordinates"]=res["geometry"]["coordinates"].substring(0,res["geometry"]["coordinates"].length-2)
+        if(geomtype=="LinearRing" || geomtype=="Polygon"){
+		res["geometry"]["coordinates"]+="]]"
+	}else{
+		res["geometry"]["coordinates"]+="]"
+	}
+	return JSON.parse(res["geometry"]["coordinates"]);
+}
+
+function geometryToKML(geomtype,coordinates){
+    res={}
+	res["geometry"]={}
+	switch(geomtype){
+        case "LinearRing": 
+        case "Polygon": 
+            res["geometry"]["type"]="Polygon"
 		res["geometry"]["coordinates"]="[["
 		break;
             case "Envelope":
@@ -1569,6 +1633,10 @@ function exportConvert(coordinates,dest,type,geomtype,switchlatlong){
         case "geojson":
            res=geometryToGeoJSON(geomtype,coords)
            console.log("Res: "+res)
+           return res; 
+		case "coords":
+           res=geometryToKML(geomtype,coords)
+           console.log("Res: "+res)
            return res;            
     }
     return null;
@@ -1621,7 +1689,8 @@ function clearGraph(){
 }
 
 function exportLastImport(){
-	saveTextAsFile(lastimportAsTTL,"ttl")
+	exportQueryResult(lastimportAsTTL,$('#lastimportexportformat').val())
+	//saveTextAsFile(lastimportAsTTL,"ttl")
 }
 
 </script>
@@ -1692,7 +1761,14 @@ Load svg images: <input type="checkbox" id="loadsvg"/></td><td align="right">
 <option value="geojson">GeoJSON</option>
 <option value="geojsonld">GeoJSON-LD</option>
 <option value="jsonld">JSON-LD</option>
-</select>
-<button id="exportlastasTTL" onclick="exportLastImport()">Export last imported file as TTL</button><br/><button id="cleargraph" onclick="clearGraph()">Delete Database</button></td></tr></table>
+</select><br/>
+<button id="exportlastasTTL" onclick="exportLastImport()">Export last imported file as</button><select id="lastimportexportformat">
+<option value="ttl" selected="selected">TTL</option>
+<option value="gml">GML</option>
+<option value="kml">KML</option>
+<option value="geojson">GeoJSON</option>
+<option value="geojsonld">GeoJSON-LD</option>
+<option value="jsonld">JSON-LD</option>
+</select><br/><button id="cleargraph" onclick="clearGraph()">Delete Database</button></td></tr></table>
 </body>
 </html>
