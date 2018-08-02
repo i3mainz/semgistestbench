@@ -1182,7 +1182,13 @@ function exportQueryResult(tosave,exportFormat){
 		console.log(collection)
 		saveTextAsFile(JSON.stringify(collection, null, 2),"geojson")
 	}
-	if(exportFormat=="geojsonld" || $( "#queryexportformat option:selected" ).val()=="geojsonld"){
+	if(exportFormat=="geojsonld" || $( "#queryexportformat option:selected" ).val()=="geojsonld" || exportFormat=="jsonld" || $( "#queryexportformat option:selected" ).val()=="jsonld"){
+		var geojsonLD=true;
+		if(exportFormat=="geojsonld"){
+			geojsonLD=true;
+		}else if(exportFormat=="jsonld"){
+			geojsonLD=true;
+		}
 		var collection = {
 			"@context": { "geojson": "https://purl.org/geojson/vocab#", "Feature": "geojson:Feature", "FeatureCollection": "geojson:FeatureCollection","GeometryCollection": "geojson:GeometryCollection",
     "LineString": "geojson:LineString","MultiLineString": "geojson:MultiLineString","MultiPoint": "geojson:MultiPoint","MultiPolygon": "geojson:MultiPolygon","Point": "geojson:Point","Polygon": "geojson:Polygon",
@@ -1237,9 +1243,12 @@ function exportQueryResult(tosave,exportFormat){
 				}
                 if(splitt[spl].includes("asGeoJSON")){				
                     geojson["geometry"]=JSON.parse(splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1))["geometry"]
-                    geojson["geometry"]["coordinates"]=exportConvert(geojson["geometry"]["coordinates"],epsgdefs[$('#epsgqueryexport option:selected').val()],"geojson",geojson["geometry"]["type"],true)
-					console.log("Add converted GeoJSON geometry: "+JSON.stringify(geojson))
-                }else if(splitt[spl].includes(":type") || splitt[spl].includes("#type")  ){
+					if(geojsonLD){
+						geojson["geometry"]["coordinates"]=exportConvert(geojson["geometry"]["coordinates"],epsgdefs[$('#epsgqueryexport option:selected').val()],"geojson",geojson["geometry"]["type"],true)
+					}else{
+						geojson["geometry"]={"@value":JSON.stringify(exportConvert(geojson["geometry"]["coordinates"],epsgdefs[$('#epsgqueryexport option:selected').val()],"geojson",geojson["geometry"]["type"],true)),"@type": "http://www.opengis.net/ont/geosparql#geoJSONLiteral"}
+					}
+				}else if(splitt[spl].includes(":type") || splitt[spl].includes("#type")  ){
 					//console.log("IN TYPE CLAUSE")
 					//console.log(splitt[spl])
 					geojson["properties"]["id"]=subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")
@@ -1663,6 +1672,7 @@ function exportLastImport(){
 <option value="kml">KML</option>
 <option value="geojson">GeoJSON</option>
 <option value="geojsonld">GeoJSON-LD</option>
+<option value="jsonld">JSON-LD</option>
 </select><br/>CRS: <select id="epsgqueryexport"></select></td></tr>
 </table>
 </td></tr></table><table width="60%"><tr><td colspan="2">
@@ -1681,6 +1691,7 @@ Load svg images: <input type="checkbox" id="loadsvg"/></td><td align="right">
 <option value="kml">KML</option>
 <option value="geojson">GeoJSON</option>
 <option value="geojsonld">GeoJSON-LD</option>
+<option value="jsonld">JSON-LD</option>
 </select>
 <button id="exportlastasTTL" onclick="exportLastImport()">Export last imported file as TTL</button><br/><button id="cleargraph" onclick="clearGraph()">Delete Database</button></td></tr></table>
 </body>
