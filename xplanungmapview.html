@@ -1126,65 +1126,62 @@ function exportQueryResult(tosave,exportFormat){
 			"type": "FeatureCollection",
 			"features": []
 		};
-		console.log("GeoJSON: Each Layer")
-		//mymap.eachLayer(function (layer) {
-    // Check if layer is a marker
-        // Create GeoJSON object from marker
-		try{
-        //var geojson = layer.toGeoJSON();
-                var geojson={"properties":{},"geometry":{}}
-		console.log("GeoJSON: "+geojson["geometry"]["coordinates"])
-		/*geojson["geometry"]["coordinates"]=exportConvert(geojson["geometry"]["coordinates"],epsgdefs[$('#epsgqueryexport option:selected').val()],"geojson",geojson["geometry"]["type"],false);
-		console.log("GeoJSON: "+geojson["geometry"]["coordinates"])
-		console.log(tosave)
-		console.log("Tooltip text: "+layer.getTooltip().getText())*/
+        var geojson={"type":"Feature","properties":{}}
+		var empty={"type":"Feature","properties":{}}
 		first=true;
 		if(tosave!=null){
+		lastspl1=""
 		splitt=tosave.split("\n")
 		for(spl in splitt){
 			console.log(splitt[spl])
-			subsplit=splitt[spl].split(" ")
-			console.log(subsplit)
+			subsplit=splitt[spl].trim().split(" ")
+			//console.log(subsplit)
 			//if(remembersub1="" || rememberremembersub1=subsplit[1]){
-			try{
+			
 			if(splitt[spl].includes("NamedIndividual") || splitt[spl].includes("label") || splitt[spl].includes("http://www.w3.org/2002/07/owl#")  || splitt[spl].includes("comment") || 
-			splitt[spl].includes("asWKT") || 
-			splitt[spl].includes("asGML") || 
-			splitt[spl].includes("asKML") || splitt[spl].includes("gml:id")){
+				splitt[spl].includes("asWKT") || 
+				splitt[spl].includes("asGML") || 
+				splitt[spl].includes("asKML") || splitt[spl].includes("gml:id")){
 				continue;
 			}
-                if(splitt[spl].includes("asGeoJSON")){
-                        geojson["geometry"]=JSON.parse(splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1))["geometry"]
-                        exportConvert(geojson["geometry"]["coordinates"],epsgdefs[$('#epsgqueryexport option:selected').val()],"geojson",geojson["geometry"]["type"],false)
-                }
-				if(splitt[spl].includes(":type") || splitt[spl].includes("#type")  ){
-					console.log("IN TYPE CLAUSE")
-					console.log(splitt[spl])
-					if(!first && geojson!={"geometry":{},"properties":{}}){
-                            collection["features"].push(geojson)
-                            geojson={"geometry":{},"properties":{}}
-					}else{
-                            first=false;
+			try{
+				if(lastspl1==""){
+					lastspl1=subsplit[0].trim()
+				}
+				else if(lastspl1!=subsplit[0].trim()){
+					if(geojson!=empty){
+						collection["features"].push(geojson)
+						geojson={"type":"Feature","properties":{}}
+						lastspl1=subsplit[0].trim()
 					}
+				}
+                if(splitt[spl].includes("asGeoJSON")){				
+                    geojson["geometry"]=JSON.parse(splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1))["geometry"]
+                    geojson["geometry"]["coordinates"]=exportConvert(geojson["geometry"]["coordinates"],epsgdefs[$('#epsgqueryexport option:selected').val()],"geojson",geojson["geometry"]["type"],true)
+					console.log("Add converted GeoJSON geometry: "+JSON.stringify(geojson))
+                }else if(splitt[spl].includes(":type") || splitt[spl].includes("#type")  ){
+					//console.log("IN TYPE CLAUSE")
+					//console.log(splitt[spl])
 					geojson["properties"]["id"]=subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")
 				}else if(splitt[spl].includes("label")){
 					continue;
 				}else{
-					geojson["properties"][subsplit[1].replace("<","").replace(">","")]=(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))
+					geojson["properties"][subsplit[1].replace("<","").replace(">","")]=(subsplit[2].includes("^^")?
+					subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):
+					subsplit[2].replace("<","").replace(">","").replace("\"",""))
 					//gml+="<"+subsplit[1].replace("<","").replace(">","")+">"+(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))+"</"+subsplit[1].replace("<","").replace(">","")+">\n"
 				}
-			}catch(err){console.log(err)}
+			}catch(err){console.log(err); continue;}
 		}
 		}
-
-        // Push GeoJSON object to collection
-        collection.features.push(geojson);
-		}catch(err){console.log(err)}
-		}
-		//});
+		
+		/*if(geojson!=empty){
+			collection.features.push(geojson);
+		}*/
+        
 		console.log(collection)
 		saveTextAsFile(JSON.stringify(collection, null, 2),"geojson")
-	//}
+	}
 	if(exportFormat=="kml" || $( "#queryexportformat option:selected" ).val()=="kml"){
                 namespaces={}
                 namespaces2={}
@@ -1453,13 +1450,15 @@ function gmlStringToGeoJSON(gmlString,coordarray){
 		upperCorner=gmlString.substring(gmlString.indexOf("<gml:upperCorner>")+17,gmlString.indexOf("</gml:upperCorner>")).trim();
 		lowersplit=lowerCorner.split(" ")
 		uppersplit=upperCorner.split(" ")*/
-		resu["geometry"]["coordinates"]+=coordarray[0]+" "+coordarray[1]+","+coordarray[2]+" "+coordarray[3]
+		resu["geometry"]["coordinates"]+="["+coordarray[0]+","+coordarray[1]+"], ["+coordarray[2]+","+coordarray[3]+"]"
 	}
 	if(gmlString.includes("LinearRing")){
 		resu["geometry"]["coordinates"]+="]]"
 	}else{
 		resu["geometry"]["coordinates"]+="]"
 	}
+	//console.log("JSON parse: "+
+	resu["geometry"]["coordinates"]=JSON.parse(resu["geometry"]["coordinates"])
 	//console.log("GeoJSON Result: "+JSON.stringify(resu))
 	return JSON.stringify(resu);
 }
@@ -1484,7 +1483,7 @@ function exportConvert(coordinates,dest,type,geomtype,switchlatlong){
 
 function convertit(coordinates,source,dest,switchlatlong){
 	console.log("Coordinates: "+coordinates)
-	if(source==dest){
+	if(source==dest && !switchlatlong){
             return coordinates;
 	}
 	resultarray=[]
@@ -1497,7 +1496,11 @@ function convertit(coordinates,source,dest,switchlatlong){
 		console.log("Point: "+p.x+" - "+p.y)
 		//console.log(source)
 		//console.log(dest)
-		res=proj4(source, dest, p);
+		if(source!=dest)
+			res=proj4(source, dest, p);
+		else{
+			res=p;
+		}
 		console.log("Point: "+res.x+" - "+res.y)
 		if(switchlatlong){
 			resultarray.push(res.y)
