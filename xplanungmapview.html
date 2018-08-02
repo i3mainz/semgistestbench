@@ -1144,7 +1144,7 @@ function exportQueryResult(tosave,exportFormat){
 		for(spl in splitt){
 			console.log(splitt[spl])
 			subsplit=splitt[spl].split(" ")
-								console.log(subsplit)
+			console.log(subsplit)
 			//if(remembersub1="" || rememberremembersub1=subsplit[1]){
 			try{
 			if(splitt[spl].includes("NamedIndividual") || splitt[spl].includes("label") || splitt[spl].includes("http://www.w3.org/2002/07/owl#")  || splitt[spl].includes("comment") || 
@@ -1153,17 +1153,18 @@ function exportQueryResult(tosave,exportFormat){
 			splitt[spl].includes("asKML") || splitt[spl].includes("gml:id")){
 				continue;
 			}
-                                if(splitt[spl].includes("asGeoJSON")){
-                                           geojson["geometry"]=JSON.parse(splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1))["geometry"]
-                                           exportConvert(geojson["geometry"]["coordinates"],epsgdefs[$('#epsgqueryexport option:selected').val()],"geojson",geojson["geometry"]["type"],false)
-                                }
-				if(splitt[spl].includes("type")){
+                if(splitt[spl].includes("asGeoJSON")){
+                        geojson["geometry"]=JSON.parse(splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1))["geometry"]
+                        exportConvert(geojson["geometry"]["coordinates"],epsgdefs[$('#epsgqueryexport option:selected').val()],"geojson",geojson["geometry"]["type"],false)
+                }
+				if(splitt[spl].includes(":type") || splitt[spl].includes("#type")  ){
 					console.log("IN TYPE CLAUSE")
+					console.log(splitt[spl])
 					if(!first && geojson!={"geometry":{},"properties":{}}){
-                                            collection["features"].push(geojson)
-                                            geojson={"geometry":{},"properties":{}}
+                            collection["features"].push(geojson)
+                            geojson={"geometry":{},"properties":{}}
 					}else{
-                                            first=false;
+                            first=false;
 					}
 					geojson["properties"]["id"]=subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")
 				}else if(splitt[spl].includes("label")){
