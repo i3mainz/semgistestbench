@@ -564,7 +564,11 @@ function uiQuery(start){
 		if($('#whichactive').is(':checked')){
 						queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val .  OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:lineStyle ?linestringStyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}   OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle  ?linestringImageStyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .}  "
 						if(classesToQuery[cls] in constraints){
-							queryString+=constraints[classesToQuery[cls]]
+                                                        if("NOT" in constraints[classesToQuery[cls]]){
+                                                                queryString+="MINUS {"+constraints[classesToQuery[cls]].replace("NOT ","")+"} ."
+                                                        }else{
+                                                                queryString+=constraints[classesToQuery[cls]]
+                                                        }
 						}
 						if("?" in constraints){
 							for(cons in constraints["?"]){
@@ -1072,6 +1076,7 @@ function addConstraint(firstpart,secondpart,thirdpart){
 			}else{
 				constraints[$( "#"+firstpart+" option:selected" ).val()]=" ?person <"+$( "#"+secondpart+" option:selected" ).val()+"> "+getLiteral($('#'+thirdpart).val())+" . ";
 			}
+			constraintclasses[$( "#"+firstpart+" option:selected" ).val()]=true;
                 		$('#constraints').html($('#constraints').html()+"<li>"+$(  "#"+firstpart+" option:selected" ).text()+" - "+$( "#"+secondpart+" option:selected" ).text()+"=\""+$('#'+thirdpart).val()+"\"</li>")
 		$('#'+thirdpart).val("")
 	}
