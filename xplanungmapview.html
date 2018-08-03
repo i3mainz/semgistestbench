@@ -8,7 +8,6 @@
   <script src="leaflet.polylinedecorator.js"></script>
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <script src="rdfstore_min.js"></script>
-  <script src="geojson-rewind.js"></script>
   <script src="proj4.js"></script>
     <script src="xml2json.js"></script>
 	    <script src="turf.min.js"></script>
@@ -31,14 +30,16 @@ var lastimportAsTTL=""
 var bboxpoint;
 var bboxbuffer;
 var constraints={}
+var constraintclasses={}
+var classesToQuery=[]
 var geoconstraints={}
 var wgs84dest = new proj4.Proj('EPSG:4326'); 
 var curQueryResultTTL=""
 var curposmarker=null;
 $( function() {
-        pol1= {"type":"Polygon","coordinates":[[[53.13836770679006,8.69724900907862],[53.138535116343085,8.697357646800267],[53.138437127878596,8.697775238951321],[53.138269718701764,8.69766659985041],[53.13836770679006,8.69724900907862]]]}
+       /* pol1= {"type":"Polygon","coordinates":[[[53.13836770679006,8.69724900907862],[53.138535116343085,8.697357646800267],[53.138437127878596,8.697775238951321],[53.138269718701764,8.69766659985041],[53.13836770679006,8.69724900907862]]]}
         pol2= {"type":"Polygon","coordinates":[[[53.13836770679006,8.69724900907862],[53.138535116343085,8.697357646800267],[53.138437127878596,8.697775238951321],[53.138269718701764,8.69766659985041],[53.13836770679006,8.69724900907862]]]}
-        console.log("TURF CONTAINS: "+turf.booleanContains(pol1,pol2))
+        console.log("TURF CONTAINS: "+turf.booleanContains(pol1,pol2))*/
         epsg=""
         for(val in epsgdefs){
             if(val=="EPSG:4326"){
@@ -321,9 +322,10 @@ function walkDOM(main) {
 							result+=" <http://www.opengis.net/ont/geosparql#asGML> rdf:type owl:DatatypeProperty . \n  "
 						}	
 					if(main.firstChild!=null && main.firstChild.nextSibling!=null){						
-						xmlString = (new XMLSerializer()).serializeToString(main);					
-						//console.log("XMLString: "+xmlString)
+						xmlString = (new XMLSerializer()).serializeToString(main);		
+						console.log("XMLString: "+xmlString)
 						coordsconverted=getCoordArrayFromGML(xmlString,epsgdefs[$('#epsgqueryimport option:selected').val()],true,false,true)
+						console.log("Coordarray: "+coordsconverted)
 						result+="<"+relName+"> <http://www.opengis.net/ont/geosparql#asGML> \""+convertGMLToOtherCRS(xmlString.replace(new RegExp("\"", 'g'),"\\\"").replace(new RegExp("\n", 'g'),""),coordsconverted)+"\"^^<http://www.opengis.net/ont/geosparql#gmlLiteral> . \n "
 						//console.log(coordsconverted)
 						try{
@@ -544,6 +546,12 @@ function uiQuery(start){
 	//console.log(bboxbuffer)
 	clearMap();
 	classesToQuery=$('#classeslist').val();
+	for(cls in constraintclasses){
+                if(!(cls in classesToQuery)){
+                    classesToQuery.push(cls)
+                }
+	}
+	//classesToQuery.concat(Object.keys(constraintclasses)
 	//console.log(classesToQuery);
 	if(!start){
 	if(classesToQuery.length==0){
@@ -578,6 +586,7 @@ function uiQuery(start){
         //console.log(success,results)
 		persons={}
 		classTopers={}
+		persToClass={}
 		for(res in results){
 		//console.log(results[res])
 			if(!(results[res]["person"]["value"] in persons)){
@@ -595,6 +604,7 @@ function uiQuery(start){
                                 classTopers[results[res]["val"]["value"]]=[]
                             }
                             classTopers[results[res]["val"]["value"]].push(results[res]["person"]["value"])
+                            persToClass[results[res]["person"]["value"]]=results[res]["val"]["value"]
 			}
 			//console.log(results[res]["val"]["value"])
 			if(results[res]["person"]["value"]!=undefined && results[res]["rel"]["value"]!=undefined && results[res]["val"]["value"]!=undefined){
@@ -649,12 +659,12 @@ function uiQuery(start){
                                 persons[results[res]["person"]["value"]]["img"]=results[res]["img"]["value"]
 			}
 		}
-		displayQueryResult(persons,!start,classTopers);
+		displayQueryResult(persons,!start,classTopers,persToClass);
 
 	});
 }
 	
-function displayQueryResult(persons,query,classTopers){
+function displayQueryResult(persons,query,classTopers,persToClass){
 	var wkt = new Wkt.Wkt();
 		firstpoint=false;
 		rest=[]
@@ -662,13 +672,18 @@ function displayQueryResult(persons,query,classTopers){
 								//console.log("GEOCONSTRAINTS!!!!")
                                 for(geocons in geoconstraints){
                                         curcons=geoconstraints[geocons]
+                                        negate=false;
+                                        if(curcons.includes("NOT")){
+                                            negate=true;
+                                            curcons=curcons.replace("NOT ","")
+                                        }
                                         constraint=curcons.split(" ")
                                         class1=constraint[0]
                                         class2=constraint[2]
                                         relation=constraint[1]
                                         console.log(class1+" - "+class2+" - "+classTopers)
                                         console.log(relation+" - "+classTopers[class1]+" - "+classTopers[class2])
-                                        applres=applyFilter(relation,classTopers[class1],classTopers[class2],persons)
+                                        applres=applyFilter(relation,classTopers[class1],classTopers[class2],persons,negate)
                                        // console.log("APPLRES: "+applres)
                                         rest=extend(rest,applres)
                                 }
@@ -676,7 +691,17 @@ function displayQueryResult(persons,query,classTopers){
                         }else{
                             rest=persons
                         }
+                clslist={}
+                tmpls=$('#classeslist').val()
+                for(elem in tmpls){
+                        clslist[tmpls[elem]]=true
+                }
 		for(pers in persons){
+                    console.log(persToClass[pers]+" - "+clslist)
+                    if(persToClass[pers] in constraintclasses && !(persToClass[pers] in clslist)){
+                                console.log("Skipping element of class "+persToClass[pers])
+                                continue;
+                       }
 			markerIconPath=""
 			tooltip="<html><b><a href=\""+pers+"\" target=\"_blank\">"+pers.substring(pers.indexOf("#")+1)+"</a></b><ul>"
 			Object.keys(persons[pers]).sort().forEach(function(rel) {
@@ -697,7 +722,9 @@ function displayQueryResult(persons,query,classTopers){
 				//console.log("Geoconstraints: "+JSON.stringify(geoconstraints))
                         //console.log("Rest: "+JSON.stringify(rest))
                         if(pers in rest){
+                         console.log("PERS Type: "+JSON.stringify(persons[pers]))
 			for(rel in persons[pers]){
+                               
 				//console.log("Geometry render loop "+rel+" - "+persons[pers][rel])
 				if(rel!=null && rel.includes("asWKT") && !persons[pers][rel].includes("ENVELOPE")){
 				//if(persons[pers]["asWKT"]!=null /*&& persons[pers]["asWKT"] in rest*/){
@@ -731,7 +758,7 @@ function displayQueryResult(persons,query,classTopers){
 }
 	
 	
-function applyFilter(functiondef,set1,set2,persons){
+function applyFilter(functiondef,set1,set2,persons,negate){
         var wkt=new Wkt.Wkt()
         var ress={}
         //turf.bbox(set2.values())
@@ -742,9 +769,9 @@ function applyFilter(functiondef,set1,set2,persons){
 					//console.log(persons[set1[elem]]["asWKT"])
 					wkt.read(persons[set1[elem]]["asWKT"])
 					curset1=wkt.toJson()
-					if(curset1.type=="Polygon"){
+					/*if(curset1.type=="Polygon"){
                                             curset1=turf.rewind(curset1)
-					}
+					}*/
                 //console.log("Curset1: "+JSON.stringify(curset1))
                 for(elem2 in set2){
                         if(set2[elem2] in ress){
@@ -752,50 +779,64 @@ function applyFilter(functiondef,set1,set2,persons){
                         }
                         wkt.read(persons[set2[elem2]]["asWKT"])
                         curset2=wkt.toJson()
-                        if(curset2.type=="Polygon"){
+                        /*if(curset2.type=="Polygon"){
                                             curset2=turf.rewind(curset2)
-			}
+			}*/
                         //console.log("Curset1: "+JSON.stringify(curset1)+"\n Curset2: "+JSON.stringify(curset2))
                         switch(functiondef){
                             case "booleanContains":
-                                    console.log("Contains? "+turf.booleanContains(curset1,curset2))
-                                    if(turf.booleanContains(curset1,curset2)){
+                                    compres=turf.booleanContains(curset1,curset2) 
+                                    console.log("Contains? "+compres+" "+negate)
+                                    if(compres|| (!compres && negate)){
+                                            ress[set1[elem]]=true
+                                            ress[set2[elem2]]=true
+                                    }
+                                    break;
+                            case "isContainedBy":
+                                    compres=turf.booleanContains(curset2,curset1)
+                                    console.log("Contained By? "+compres+" "+negate)
+                                    if(compres|| (!compres && negate)){
                                             ress[set1[elem]]=true
                                             ress[set2[elem2]]=true
                                     }
                                     break;
                             case "booleanCrosses":
-                                console.log("Crosses? "+turf.booleanCrosses(curset1,curset2))
-                                if(turf.booleanCrosses(curset1,curset2)){
+                                compres=turf.booleanCrosses(curset1,curset2)
+                                console.log("Crosses? "+compres+" "+negate)
+                                if(compres|| (!compres && negate)){
                                             ress[set1[elem]]=true
                                             ress[set2[elem2]]=true
                                 }
                                 break;
                            case "booleanDisjoint":
-                                console.log("Disjoint? "+turf.booleanDisjoint(curset1,curset2))
-                                if(turf.booleanDisjoint(curset1,curset2)){
+                                compres=turf.booleanDisjoint(curset1,curset2)
+                                console.log("Disjoint? "+compres+" "+negate)
+                                if(compres|| (!compres && negate)){
                                             ress[set1[elem]]=true
                                             ress[set2[elem2]]=true
                                             console.log(JSON.stringify(ress))
                                 }
                                 break;
                         case "booleanEquals":
-                                console.log("Equals? "+turf.booleanEquals(curset1,curset2))
-                                if(turf.booleanEquals(curset1,curset2)){
+                                compres=turf.booleanEquals(curset1,curset2)
+                                console.log("Equals? "+compres+" "+negate)
+                                if(compres|| (!compres && negate)){
                                             ress[set1[elem]]=true
                                             ress[set2[elem2]]=true
                                 }
                                 break;
                      case "booleanOverlap":
-                                console.log("Overlap? "+turf.booleanOverlap(curset1,curset2))	
-                                if(turf.booleanOverlap(curset1,curset2)){
+                                compres=turf.booleanOverlap(curset1,curset2)
+                                console.log("Overlap? "+compres+" "+negate)
+                                if(compres|| (!compres && negate)){
                                             ress[set1[elem]]=true
                                             ress[set2[elem2]]=true
                                 }
                                 break;
                     case "booleanWithin":
-				console.log("Within? "+turf.booleanWithin(curset1,curset2))
-                                if(turf.booleanWithin(curset1,curset2)){
+				compres=turf.booleanWithin(curset1,curset2)
+				console.log("Within? "+compres+" "+negate)
+                                if(compres|| (!compres && negate)){
                                             ress[set1[elem]]=true
                                            ress[set2[elem2]]=true
                                 }
@@ -1009,8 +1050,18 @@ function clearCoords(){
 function addConstraint(firstpart,secondpart,thirdpart){
 	if(!$('#'+secondpart).val()=="" && !$('#'+thirdpart).val()==""){
 	if($('#'+thirdpart).is("select")){
-                geoconstraints[$( "#"+firstpart+" option:selected" ).val()+$( "#"+secondpart+" option:selected" ).val()]=$( "#"+firstpart+" option:selected" ).val()+" "+$( "#"+secondpart+" option:selected" ).val()+" "+$('#'+thirdpart+" option:selected").val()+" ";
-		$('#constraints').html($('#constraints').html()+"<li>"+$(  "#"+firstpart+" option:selected" ).text()+" - "+$( "#"+secondpart+" option:selected" ).text()+" - "+$('#'+thirdpart+" option:selected").val()+"</li>")
+                if($('#geoconstraintnegate').is(":checked")){
+                    geoconstraints[$( "#"+firstpart+" option:selected" ).val()+$( "#"+secondpart+" option:selected" ).val()]="NOT "+$( "#"+firstpart+" option:selected" ).val()+" "+$( "#"+secondpart+" option:selected" ).val()+" "+$('#'+thirdpart+" option:selected").val()+" ";
+                    $('#constraints').html($('#constraints').html()+"<li>"+$(  "#"+firstpart+" option:selected" ).text()+" - NOT "+$( "#"+secondpart+" option:selected" ).text()+" - "+$('#'+thirdpart+" option:selected").val()+"</li>")
+                    constraintclasses[$( "#"+firstpart+" option:selected" ).val()]=true;
+                    constraintclasses[$( "#"+thirdpart+" option:selected" ).val()]=true;
+                }else{
+                    geoconstraints[$( "#"+firstpart+" option:selected" ).val()+$( "#"+secondpart+" option:selected" ).val()]=$( "#"+firstpart+" option:selected" ).val()+" "+$( "#"+secondpart+" option:selected" ).val()+" "+$('#'+thirdpart+" option:selected").val()+" ";
+                    $('#constraints').html($('#constraints').html()+"<li>"+$(  "#"+firstpart+" option:selected" ).text()+" - "+$( "#"+secondpart+" option:selected" ).text()+" - "+$('#'+thirdpart+" option:selected").val()+"</li>")
+                    constraintclasses[$( "#"+firstpart+" option:selected" ).val()]=true;
+                    constraintclasses[$( "#"+thirdpart+" option:selected" ).val()]=true;
+                }
+                
 	}else{
 			if($( "#"+firstpart+" option:selected" ).val().includes("?")){
 				if(!($( "#"+firstpart+" option:selected" ).val() in constraints)){
@@ -1036,6 +1087,7 @@ function clearConstraints(){
 	$('#constraints').html("");
 	contraints=[]
 	geoconstraints=[]
+	constraintclasses={}
 }
 
 function replaceWithNSPrefix(replaceString,namespaces){
@@ -1450,9 +1502,10 @@ function gmlStringToWKT(gmlString,coordarray){
 
 function getCoordArrayFromGML(gmlString,crs,switchlatlong,geojson,importOrExport){
 	if(gmlString.includes("posList")){
+                console.log("GMLString: "+xmlString)
 		firststep=gmlString.indexOf("<gml:posList")+13;
 		posliststr=gmlString.substring(gmlString.indexOf(">",firststep)+1,gmlString.indexOf("</gml:posList>")).trim();
-		//console.log("Original: "+posliststr)
+		console.log("Original: "+posliststr+" - "+firststep+" - "+gmlString.indexOf("</gml:posList>"))
 		splstr=posliststr.split(" ")
 		if(importOrExport){
 			resultarray=importConvert(splstr,crs,switchlatlong)
@@ -1461,7 +1514,7 @@ function getCoordArrayFromGML(gmlString,crs,switchlatlong,geojson,importOrExport
 			//resultarray=exportConvert(splstr,crs,switchlatlong)
 		}
 		
-		//console.log("Converted: "+resultarray)
+		console.log("Converted: "+resultarray)
 		return resultarray;
 	}else if(gmlString.includes("pos")){
 		firststep=gmlString.indexOf("<gml:pos")+8;
@@ -1683,18 +1736,18 @@ function exportConvert(coordinates,dest,type,geomtype,switchlatlong){
 }
 
 function convertit(coordinates,source,dest,switchlatlong){
-	console.log("Coordinates: "+coordinates)
+	//console.log("Coordinates: "+coordinates)
 	if(source==dest && !switchlatlong){
             return coordinates;
 	}
 	resultarray=[]
-	console.log(coordinates.length)
+	//console.log(coordinates.length)
 	i=0;
 	splitted=coordinates.toString().split(",")
 	while(i<splitted.length){
 		//console.log(splitted[i]+" - "+splitted[i+1]+" - "+parseFloat(splitted[i])+" - "+parseFloat(splitted[i+1]))
 		var p=new proj4.Point(splitted[i],splitted[i+1])
-		console.log("Point: "+p.x+" - "+p.y)
+		//console.log("Point: "+p.x+" - "+p.y)
 		//console.log(source)
 		//console.log(dest)
 		if(source!=dest)
@@ -1702,7 +1755,7 @@ function convertit(coordinates,source,dest,switchlatlong){
 		else{
 			res=p;
 		}
-		console.log("Point: "+res.x+" - "+res.y)
+		//console.log("Point: "+res.x+" - "+res.y)
 		if(switchlatlong){
 			resultarray.push(res.y)
 			resultarray.push(res.x)
@@ -1712,7 +1765,7 @@ function convertit(coordinates,source,dest,switchlatlong){
 		}
 		i+=2;
 	}
-	console.log("Resultarray: "+resultarray)
+	//console.log("Resultarray: "+resultarray)
 	return resultarray
 }
 
@@ -1758,18 +1811,19 @@ function exportLastImport(){
 <tr valign="top" align="top"><td>WHERE? <input type="checkbox" id="whereactive"/></td>
 <td>Coordinate: <input id="coordinate" disabled="disabled" size="30"/><button onclick="clearCoords()">Clear</button>
 <br/>Boundingboxsize (m):<input type="number" min="1" value="100" id="buffersize"/></td></tr>
-<tr valign="top" align="top"><td>Geospatial Constraints?<input type="checkbox" id="geospatialactive"/></td><td><select id="classeslist3"></select>
-<select id="geospatiallist">
+<tr valign="top" align="top"><td>Geospatial Constraints?<input type="checkbox" id="geospatialactive"/></td><td><select id="classeslist3"></select><br/>
+NOT<input type="checkbox" id="geoconstraintnegate"/><select id="geospatiallist">
 <option value="booleanContains">contains</option>
 <option value="booleanCrosses">crosses</option>
 <option value="booleanDisjoint">disjointWith</option>
 <option value="booleanEqual">equals</option>
+<option value="isContainedBy">is Contained By</option>
 <option value="booleanOverlap">overlaps</option>
 <option value="booleanWithin">within</option>
-</select><select id="classeslist4"></select><br/><button id="addgeoconstraint"  onClick="addConstraint('classeslist3','geospatiallist','classeslist4')">Add</button>
+</select><br/><select id="classeslist4"></select><br/><button id="addgeoconstraint"  onClick="addConstraint('classeslist3','geospatiallist','classeslist4')">Add</button>
 <button id="clearconstraints" onclick="clearConstraints()">Clear</button></td></tr>
 <tr  valign="top" align="top"><td>Which features?<input type="checkbox" id="whichactive"/></td>
-<td><select id="classeslist2"></select><select id="attributelist"></select><br/><input type="text" id="constrainttext"/><br/>
+<td><select id="classeslist2"></select><br/>NOT<input type="checkbox" id="constraintnegate"/><select id="attributelist"></select><br/><input type="text" id="constrainttext"/><br/>
 <button id="addconstraint" onClick="addConstraint('classeslist2','attributelist','constrainttext')">Add</button>
 <button id="clearconstraints" onclick="clearConstraints()">Clear</button></td></tr>
 <tr  valign="top" align="top"><td colspan="2"><ul id="constraints"></ul></td></tr>
