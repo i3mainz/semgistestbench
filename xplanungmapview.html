@@ -13,7 +13,7 @@
 	    <script src="turf.min.js"></script>
   
 <script>
-var epsgdefs={"EPSG:25832":"+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs","EPSG:31467":"+proj=tmerc +lat_0=0 +lon_0=9 +k=1 +x_0=3500000 +y_0=0 +ellps=bessel +datum=potsdam +units=m +no_defs","EPSG:4326":"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs","EPSG:3587":"+proj=lcc +lat_1=45.7 +lat_2=44.18333333333333 +lat_0=43.31666666666667 +lon_0=-84.36666666666666 +x_0=6000000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"}
+var epsgdefs={"EPSG:4326":"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs","EPSG:3587":"+proj=lcc +lat_1=45.7 +lat_2=44.18333333333333 +lat_0=43.31666666666667 +lon_0=-84.36666666666666 +x_0=6000000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs","EPSG:25832":"+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs","EPSG:25833":"+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs","EPSG:31467":"+proj=tmerc +lat_0=0 +lon_0=9 +k=1 +x_0=3500000 +y_0=0 +ellps=bessel +datum=potsdam +units=m +no_defs"}
 var prefixList="PREFIX owl: <http://www.w3.org/2002/07/owl#>  PREFIX geo: <http://www.opengis.net/ont/geosparql#> PREFIX wd: <http://www.wikidata.org/entity/> PREFIX foaf: <http://xmlns.com/foaf/0.1/>  PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  PREFIX xml: <http://www.w3.org/XML/1998/namespace>  PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX xerl: <http://www.xerleben.de/schema/2.0_1#> PREFIX xplan5: <http://www.xplanung.de/xplangml/5/0#> PREFIX semgis: <http://www.semgis.de/geodata#> "
 var ttlprefixList="@prefix wd: <http://www.wikidata.org/entity/> . \n @prefix foaf: <http://xmlns.com/foaf/0.1/> . \n @prefix owl: <http://www.w3.org/2002/07/owl#> . \n @prefix geo: <http://www.opengis.net/ont/geosparql#> . \n @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> . \n @prefix xml: <http://www.w3.org/XML/1998/namespace> . \n @prefix xsd: <http://www.w3.org/2001/XMLSchema#> . \n @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> . \n @prefix kml: <http://www.opengis.net/kml/2.2#> . \n @prefix gml: <http://www.opengis.net/gml/3.2#> . \n @prefix xplan5: <http://www.xplanung.de/xplangml/5/0#> . \n "
 var prefixMap={"http://www.w3.org/2002/07/owl#":"owl", "http://www.opengis.net/ont/geosparql#":"geo" 
@@ -273,6 +273,7 @@ function walkDOM(main) {
 	parentNodeName=""
 	
 	strconvertmode=false;
+	classdepth=100000
     var loop = function(main,depth,parentNodeName,parentIndName,parentRelationName,strconvertmode,toadd) {
         do {
 			//console.log(main.nodeName+" - "+depth)
@@ -287,7 +288,10 @@ function walkDOM(main) {
 					i++;
 				}
 			}
-			if(depth==3 && !main.nodeName.includes("gml:")){
+			if(main.nodeName.includes("featureMember")){
+                                classdepth=depth+1
+			}
+			if(depth==classdepth && !main.nodeName.includes("gml:")){
 				try{
 				
 				if(main.getAttribute("gml:id")==null){
@@ -300,7 +304,7 @@ function walkDOM(main) {
 				}
 				}catch(err){}
 			}
-			if(depth>3 && parentNodeName!=""){				
+			if(depth>classdepth && parentNodeName!=""){				
 				if(main.nodeName.startsWith("gml:") && !main.nodeName.includes("boundedBy")){
 					toadd=""
 					relName=""
@@ -318,13 +322,19 @@ function walkDOM(main) {
 						coordsconverted=getCoordArrayFromGML(xmlString,epsgdefs[$('#epsgqueryimport option:selected').val()],true,false,true)
 						result+="<"+relName+"> <http://www.opengis.net/ont/geosparql#asGML> \""+convertGMLToOtherCRS(xmlString.replace(new RegExp("\"", 'g'),"\\\"").replace(new RegExp("\n", 'g'),""),coordsconverted)+"\"^^<http://www.opengis.net/ont/geosparql#gmlLiteral> . \n "
 						//console.log(coordsconverted)
+						try{
 						wkt=gmlStringToWKT(xmlString,coordsconverted)
 						//console.log("WKT: "+wkt)
 						result+=" <http://www.opengis.net/ont/geosparql#asWKT> rdf:type owl:DatatypeProperty . \n <"+relName+"> <http://www.opengis.net/ont/geosparql#asWKT> \""+wkt+"\"^^<http://www.opengis.net/ont/geosparql#wktLiteral> . \n "
+						}catch(err){console.log(err)}
+						try{
 						geojson=gmlStringToGeoJSON(xmlString,coordsconverted)
 						result+=" <http://www.opengis.net/ont/geosparql#asGeoJSON> rdf:type owl:DatatypeProperty . \n <"+relName+"> <http://www.opengis.net/ont/geosparql#asGeoJSON> \""+geojson.replace(new RegExp("\"", 'g'),"\\\"")+"\"^^<http://www.opengis.net/ont/geosparql#geojsonLiteral> . \n "
+						}catch(err){console.log(err)}
+						try{
                         kml=gmlStringToKML(xmlString,coordsconverted)
 						result+=" <http://www.opengis.net/ont/geosparql#asKML> rdf:type owl:DatatypeProperty . \n <"+relName+"> <http://www.opengis.net/ont/geosparql#asKML> \""+kml.replace(new RegExp("\"", 'g'),"\\\"")+"\"^^<http://www.opengis.net/ont/geosparql#kmlLiteral> . \n "
+						}catch(err){console.log(err)}
 					}
 					end=true;
 				}else if(main.childNodes.length>1 && main.nodeName!="#text"){// && main.firstChild.nodeName!="#text")
