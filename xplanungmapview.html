@@ -11,6 +11,8 @@
   <script src="proj4.js"></script>
     <script src="xml2json.js"></script>
 	    <script src="turf.min.js"></script>
+	    <script src="jsts.js"></script>
+	    <!-- TODO: INCLUDE GEOJSON-RBUSH -->
   
 <script>
 var epsgdefs={"EPSG:4326":"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs","EPSG:3587":"+proj=lcc +lat_1=45.7 +lat_2=44.18333333333333 +lat_0=43.31666666666667 +lon_0=-84.36666666666666 +x_0=6000000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs","EPSG:25832":"+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs","EPSG:25833":"+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs","EPSG:31467":"+proj=tmerc +lat_0=0 +lon_0=9 +k=1 +x_0=3500000 +y_0=0 +ellps=bessel +datum=potsdam +units=m +no_defs"}
@@ -30,6 +32,7 @@ var lastimportAsTTL=""
 var bboxpoint;
 var bboxbuffer;
 var constraints={}
+var lastendpoint=""
 var constraintclasses={}
 var classesToQuery=[]
 var geoconstraints={}
@@ -37,9 +40,6 @@ var wgs84dest = new proj4.Proj('EPSG:4326');
 var curQueryResultTTL=""
 var curposmarker=null;
 $( function() {
-       /* pol1= {"type":"Polygon","coordinates":[[[53.13836770679006,8.69724900907862],[53.138535116343085,8.697357646800267],[53.138437127878596,8.697775238951321],[53.138269718701764,8.69766659985041],[53.13836770679006,8.69724900907862]]]}
-        pol2= {"type":"Polygon","coordinates":[[[53.13836770679006,8.69724900907862],[53.138535116343085,8.697357646800267],[53.138437127878596,8.697775238951321],[53.138269718701764,8.69766659985041],[53.13836770679006,8.69724900907862]]]}
-        console.log("TURF CONTAINS: "+turf.booleanContains(pol1,pol2))*/
         epsg=""
         for(val in epsgdefs){
             if(val=="EPSG:4326"){
@@ -52,8 +52,6 @@ $( function() {
         $("#epsgqueryimport").html(epsg);
 	  document.getElementById('file-input')
 	  .addEventListener('change', readRDFFile, false);
-         // document.getElementById('importfrom')
-	 // .addEventListener('change', displayImport, false);
 	  rdfstore.create(function(err, store) {
 		if(currdfstore==null){
 				currdfstore=store;			
@@ -273,7 +271,7 @@ function getLiteral(value){
 }
 
 
-function walkDOM(main) {
+function walkDOM(main,file) {
     var arr = [];
 	var result=ttlprefixList
 	depth=0
@@ -304,9 +302,26 @@ function walkDOM(main) {
 				if(main.getAttribute("gml:id")==null){
 								uuid=generateUUID()
 								result+="<"+main.namespaceURI+"#"+main.localName+"> rdf:type owl:Class . \n <"+main.namespaceURI+"#"+uuid+"> rdf:type <"+main.namespaceURI+"#"+main.localName+"> .  \n"
+								result+="<"+main.namespaceURI+"#"+uuid+"> <http://www.semgis.de/geodata#hasOrigin> <"+main.namespaceURI+"#"+uuid+"_origin> . \n"
+								if(file!=null){
+                                                                        result+="<"+main.namespaceURI+"#"+uuid+"_origin> <http://www.semgis.de/geodata#value> \""+file+"\"^^<http://www.w3.org/2001/XMLSchema#string> . \n "
+								}
+								result+="<"+main.namespaceURI+"#"+uuid+"_origin> <http://www.semgis.de/geodata#originType> \""+$('#importfrom').val()+"\"^^<http://www.w3.org/2001/XMLSchema#string> . \n "
+								var d = new Date();
+                                                                var n = d.toISOString();
+                                                                result+="<"+main.namespaceURI+"#"+uuid+"_origin> <http://www.semgis.de/geodata#importTime> \""+d.toISOString()+"\"^^<http://www.w3.org/2001/XMLSchema#string> . \n "
 								parentNodeName=main.namespaceURI+"#"+uuid
 				}else{
 								result+="<"+main.namespaceURI+"#"+main.localName+"> rdf:type owl:Class . \n  <"+main.namespaceURI+"#"+main.getAttribute("gml:id")+"> rdf:type <"+main.namespaceURI+"#"+main.localName+"> . \n"
+								uuid=main.getAttribute("gml:id")
+								result+="<"+main.namespaceURI+"#"+uuid+"> <http://www.semgis.de/geodata#hasOrigin> <"+main.namespaceURI+"#"+uuid+"_origin> . \n "
+								if(file!=null){
+                                                                        result+="<"+main.namespaceURI+"#"+uuid+"_origin> <http://www.semgis.de/geodata#value> \""+file+"\"^^<http://www.w3.org/2001/XMLSchema#string> . \n "
+								}
+                                                                result+="<"+main.namespaceURI+"#"+uuid+"_origin> <http://www.semgis.de/geodata#originType> \""+$('#importfrom').val()+"\"^^<http://www.w3.org/2001/XMLSchema#string> . \n "
+                                                                var d = new Date();
+                                                                var n = d.toISOString();
+                                                                result+="<"+main.namespaceURI+"#"+uuid+"_origin> <http://www.semgis.de/geodata#importTime> \""+d.toISOString()+"\"^^<http://www.w3.org/2001/XMLSchema#string> . \n "
 								parentNodeName=main.namespaceURI+"#"+main.getAttribute("gml:id")
 				}
 				}catch(err){}
@@ -499,22 +514,23 @@ function loadSupportingOntology(){
 		});
 }
 
-function importFromString(contents){
+function importFromString(contents,file){
         switch($('#queryimportformat').val()){
-					case "aaa": contents=walkDOM(new DOMParser().parseFromString(contents, "text/xml")); break;
 					case "geojson": contents=importGeoJSON(contents);break;
-					case "gml": contents=walkDOM(new DOMParser().parseFromString(contents, "text/xml")); break;
-					case "inspire": contents=walkDOM(new DOMParser().parseFromString(contents, "text/xml")); break;
+					case "gml": contents=walkDOM(new DOMParser().parseFromString(contents, "text/xml"),file); break;
 					case "kml": contents=walkDOMKML(new DOMParser().parseFromString(contents, "text/xml")); break;
 					case "ttl":  break;
-					case "xplanung": contents=walkDOM(new DOMParser().parseFromString(contents, "text/xml")); break;	
 		}
-		currdfstore.load('text/turtle', contents, function(s,d){
+		if($('#choosedatabase').val()!="remote"){
+				currdfstore.load('text/turtle', contents, function(s,d){
 				//console.log(s,d);
 				markercollection=[]
 				firstpoint=false;
 				uiQuery(true)
 				});
+		}else if($('#choosedatabase').val()!="remote"){
+                        remoteSPARQLImport($('#sparqlendpointurl').val(),contents,$('#choosegraph').val())
+		}
 }
 
 function readRDFFile(e){
@@ -534,7 +550,7 @@ function readRDFFile(e){
 		if(currdfstore==null){
 				currdfstore=store;			
 		}
-		importFromString(contents)
+		importFromString(contents,file)
 		});
 	};	
 	text=reader.readAsText(file);    
@@ -592,13 +608,26 @@ function uiQuery(start){
 	}
 	queryString+="} ORDER BY ?person "
 	console.log(queryString)
+	resultss={}
+	if($('#choosedatabase').val()=="remote"){
+                console.log("REMOTE SPARQL Query: "+queryString)
+                remoteSPARQLQuery($('#sparqlendpointurl').val(),queryString)
+	}else{
 	currdfstore.execute(queryString, function(success,results){ 
         //console.log(success,results)
+                    handleResults(results,start)
+	});
+	}
+}
+
+
+function handleResults(results,start){
+                curQueryResultTTL=""
 		persons={}
 		classTopers={}
 		persToClass={}
 		for(res in results){
-		//console.log(results[res])
+		console.log(results[res])
 			if(!(results[res]["person"]["value"] in persons)){
 				persons[results[res]["person"]["value"]]={}
 			}
@@ -670,8 +699,6 @@ function uiQuery(start){
 			}
 		}
 		displayQueryResult(persons,!start,classTopers,persToClass);
-
-	});
 }
 	
 function displayQueryResult(persons,query,classTopers,persToClass){
@@ -713,12 +740,19 @@ function displayQueryResult(persons,query,classTopers,persToClass){
                                 continue;
                        }
 			markerIconPath=""
-			tooltip="<html><b><a href=\""+pers+"\" target=\"_blank\">"+pers.substring(pers.indexOf("#")+1)+"</a></b><ul>"
+			tooltipstart="<html>";
+			tooltip="<b><a href=\""+pers+"\" target=\"_blank\">"+pers.substring(pers.indexOf("#")+1)+"</a></b><ul>"
 			Object.keys(persons[pers]).sort().forEach(function(rel) {
-				if(rel!=null && (rel.includes("asWKT") || rel.includes("asGML") || rel.includes("asKML") || rel.includes("asGeoJSON") || rel.includes("pointStyle") || rel.includes("polygonStyle") || rel.includes("linestringStyle") || rel.includes("linestringImage") || rel.includes("linestringImageStyle"))){
+				if(rel!=null && (rel.includes("asWKT") || rel.includes("asGML") || rel.includes("asKML") || rel.includes("asGeoJSON") || rel.includes("pointStyle") || rel.includes("polygonStyle") || rel.includes("linestringStyle") ||  rel.includes("linestringImageStyle"))){
 					}
-					else if(rel.includes("img")){
+					else if(rel.includes("img") || rel.includes("linestringImage") ){
 						markerIconPath=persons[pers][rel]
+						if(markerIconPath.includes("<svg")){
+                                                    tooltipstart+=markerIconPath
+						}else{
+                                                        tooltipstart+="<img src=\""+persons[pers][rel]+"\"/>"
+						}
+						//tooltip+="<li>hasImage "+markerIconPath+"</li>"
 					}else{
 						for(val in persons[pers][rel]){
 							tooltip+="<li><a href=\""+rel+"\" target=\"_blank\">"+rel.substring(rel.lastIndexOf("#")+1)+"</a> - "
@@ -731,15 +765,16 @@ function displayQueryResult(persons,query,classTopers,persToClass){
 				});
 				//console.log("Geoconstraints: "+JSON.stringify(geoconstraints))
                         //console.log("Rest: "+JSON.stringify(rest))
+                        tooltip=tooltipstart+tooltip;
                         if(pers in rest){
                          console.log("PERS Type: "+JSON.stringify(persons[pers]))
 			for(rel in persons[pers]){
                                
-				//console.log("Geometry render loop "+rel+" - "+persons[pers][rel])
+				console.log("Geometry render loop "+rel+" - "+persons[pers][rel])
 				if(rel!=null && rel.includes("asWKT") && !persons[pers][rel].includes("ENVELOPE")){
 				//if(persons[pers]["asWKT"]!=null /*&& persons[pers]["asWKT"] in rest*/){
 					try{
-						//console.log(persons[pers][rel])
+						console.log(persons[pers][rel])
 						/*if(Array.isArray(persons[pers][rel])){
 							wkt.read(persons[pers][rel][0]);
 						}else{
@@ -1807,8 +1842,43 @@ function importFromURL(){
       }});
 }
 
+function checkSPARQLEndpoint(){
+        lastendpoint=$('#sparqlendpointurl').val()
+        console.log($('#sparqlendpointurl').val())
+        $.get({url: $('#sparqlendpointurl').val(),async: true, success: function(result){
+                console.log(result)
+		importFromString(result,null)
+        },error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+      }});
+      
+     /* var SPARQLendpoint = {
+
+    getData: function (query) {
+
+        var endpointUrl = 'http://localhost:7200/repositories/myRepo',
+
+            settings = {
+                headers: { Accept: 'application/sparql-results+json'},
+                data: { query: query },
+                dataType: 'jsonp'
+            };
+
+        $.ajax(endpointUrl, settings).then(function (data) {
+            $('body').append(($('<pre>').text(JSON.stringify(data))));
+            console.log(data);
+        });
+
+    });
+
+    }*/
+
+}
+
+
 function importFromTextInput(){
-        importFromString($('#text-input').val())
+        importFromString($('#text-input').val(),null)
 }
 
 function displayImport(){
@@ -1820,13 +1890,54 @@ function displayImport(){
         }
 }
 
+function databaseType(){
+        switch ($('#choosedatabase').val()) {
+                case "inmemory": $('#databasediv').html(""); break;
+                case "local": $('#databasediv').html("");  break;
+                case "remote": $('#databasediv').html("<input type=\"url\" id=\"sparqlendpointurl\" value=\""+lastendpoint+"\"/><button id=\"importfromurl\" onclick=\"checkSPARQLEndpoint()\">Check</button><br/>"); break;
+        }
+}
+
+function remoteSPARQLQuery(endpoint,query){
+            $.ajax({
+                url: endpoint,
+                accepts: {json: "application/sparql-results+json"},
+                data: {query: query},
+                dataType: "json", success: function(result){
+				console.log(result)
+				handleResults(result)
+                }});
+}
+
+function remoteSPARQLImport(endpoint,data,graph){
+            queryStrring=prefixList+" INSERT DATA { "
+           queryString+=data
+           queryString+="}"
+            $.ajax({
+                url: endpoint,
+                accepts: {json: "application/sparql-results+json"},
+                data: {query: queryString},
+                dataType: "json", success: function(result){
+				console.log(result)
+				handleResults(result)
+                }});
+}
+
+function getOrigins(){
+	currdfstore.execute(prefixList+" SELECT DISTINCT ?origval WHERE {?ind rdf:type ?cls . ?ind  semgis:hasOrigin ?orig . ?orig semgis:value ?origval . }} ORDER BY ?cls", function(success,results){ 
+        //console.log(success,results)
+		result=[];
+                result.push(results[res]["origvalue"]["value"])
+	});
+}
+
 </script>
 
 </head>
 <body>
-<h2 align="center">XPlanung Mapview based on LinkedData</h2>
-<table height="80%" width="100%" align="top" valign="top"><tr><td width="80%" height="80%" align="top" valign="top" >
-<div id="mapid" style="height:90%" width="80%">
+<h3 align="center">XPlanung Mapview based on LinkedData</h3>
+<table border=0 height="70%" width="100%" align="top" valign="top"><tr><td width="80%" height="70%" align="top" valign="top" >
+<div id="mapid" style="height:100%" width="80%">
 <script>
 
 	var mymap = L.map('mapid').setView([51.505, -0.09], 13);
@@ -1840,8 +1951,8 @@ function displayImport(){
 	}).addTo(mymap);
 
 </script>
-</div></td><td align="top" valign="top" width="20%" height="70%" ><h3>Searching in the database</h3><table height="100%"><tr  valign="top" align="top">
-<td>WHAT? </td><td><select id="classeslist" multiple  size=15 style="height: 70%;"></select></td></tr>
+</div></td><td align="top" valign="top" width="20%" height="70%" ><table height="100%"><tr  valign="top" align="top">
+<td>WHAT? </td><td><select id="classeslist" multiple  size=15 ></select></td></tr>
 <tr valign="top" align="top"><td>WHERE? <input type="checkbox" id="whereactive"/></td>
 <td>Coordinate: <input id="coordinate" disabled="disabled" size="30"/><button onclick="clearCoords()">Clear</button>
 <br/>Boundingboxsize (m):<input type="number" min="1" value="100" id="buffersize"/></td></tr>
@@ -1861,18 +1972,9 @@ NOT<input type="checkbox" id="geoconstraintnegate"/><select id="geospatiallist">
 <button id="addconstraint" onClick="addConstraint('classeslist2','attributelist','constrainttext')">Add</button>
 <button id="clearconstraints" onclick="clearConstraints()">Clear</button></td></tr>
 <tr  valign="top" align="top"><td colspan="2"><ul id="constraints"></ul></td></tr>
-<tr  valign="top" align="top"><td>Query: </td><td><button id="querybutton" onclick="uiQuery()">Query</button><br/>
-<button id="queryasTTL" onclick="exportQueryResult()">Query Result as</button>
-<select id="queryexportformat">
-<option value="ttl" selected="selected">TTL</option>
-<option value="gml">GML</option>
-<option value="kml">KML</option>
-<option value="geojson">GeoJSON</option>
-<option value="geojsonld">GeoJSON-LD</option>
-<option value="jsonld">JSON-LD</option>
-</select><br/>CRS: <select id="epsgqueryexport"></select></td></tr>
+<tr  valign="top" align="top"><td>Query: </td><td><button id="querybutton" onclick="uiQuery()">Query</button></td></tr>
 </table>
-</td></tr></table><table width="60%"><tr><td colspan="2">
+</td></tr></table><table width="70%" border=0 cellspacing="0"><tr><th>Importing Data</th><th>Exporting Data</th><th>Options</th></tr><tr><td>
 Import From <select id="importfrom" onChange="displayImport()"><option value="file" selected="selected">File</option><option value="textinput">Textinput</option><option value="url">URL</option></select>
 <div id="importdiv"><input type="file"  id="file-input" /><br/></div>
 Format: <select id="queryimportformat">
@@ -1883,8 +1985,9 @@ Format: <select id="queryimportformat">
 </select>
 CRS: <select id="epsgqueryimport"></select><br/>
 Load supporting Ontology:<select id="supportingOntologySel"></select><button id="loadSuppOnt" onclick="loadSupportingOntology()">Load</button><br/>
-Load svg images: <input type="checkbox" id="loadsvg"/></td><td align="right">
-<button id="exportTTL" onclick="exportAsTTL()">Export Database as</button><select id="dbexportformat">
+Load svg images: <input type="checkbox" id="loadsvg"/>Qualityanalysis:<input type="checkbox" id="qualityanalysis"/></td><td align="right">
+<button id="exportTTL" onclick="exportAsTTL()">Export Database as</button>
+<select id="dbexportformat">
 <option value="ttl" selected="selected">TTL</option>
 <option value="gml">GML</option>
 <option value="kml">KML</option>
@@ -1892,13 +1995,31 @@ Load svg images: <input type="checkbox" id="loadsvg"/></td><td align="right">
 <option value="geojsonld">GeoJSON-LD</option>
 <option value="jsonld">JSON-LD</option>
 </select><br/>
-<button id="exportlastasTTL" onclick="exportLastImport()">Export last imported file as</button><select id="lastimportexportformat">
+<button id="exportlastasTTL" onclick="exportLastImport()">Export last imported file as</button>
+<select id="lastimportexportformat">
 <option value="ttl" selected="selected">TTL</option>
 <option value="gml">GML</option>
 <option value="kml">KML</option>
 <option value="geojson">GeoJSON</option>
 <option value="geojsonld">GeoJSON-LD</option>
 <option value="jsonld">JSON-LD</option>
-</select><br/><button id="cleargraph" onclick="clearGraph()">Delete Database</button></td></tr></table>
+</select><br/>
+<button id="queryasTTL" onclick="exportQueryResult()">Query Result as</button>
+<select id="queryexportformat">
+<option value="ttl" selected="selected">TTL</option>
+<option value="gml">GML</option>
+<option value="kml">KML</option>
+<option value="geojson">GeoJSON</option>
+<option value="geojsonld">GeoJSON-LD</option>
+<option value="jsonld">JSON-LD</option>
+</select><br/>CRS: <select id="epsgqueryexport"></select></td>
+<td>Database Type: 
+<select id="choosedatabase" onchange="databaseType()">
+<option value="inmemory" selected="selected">In Memory Database</option>
+<option value="local">Local Database</option>
+<option value="remote">Remote Database</option>
+</select><div id="databasediv"></div>
+Current Graph: <select id="choosegraph"><option value="default" selected="selected">Default</option></select><br/>
+<button id="cleargraph" onclick="clearGraph()">Delete Database</button></td></tr></table>
 </body>
 </html>
