@@ -52,6 +52,8 @@ $( function() {
         $("#epsgqueryimport").html(epsg);
 	  document.getElementById('file-input')
 	  .addEventListener('change', readRDFFile, false);
+         // document.getElementById('importfrom')
+	 // .addEventListener('change', displayImport, false);
 	  rdfstore.create(function(err, store) {
 		if(currdfstore==null){
 				currdfstore=store;			
@@ -497,6 +499,24 @@ function loadSupportingOntology(){
 		});
 }
 
+function importFromString(contents){
+        switch($('#queryimportformat').val()){
+					case "aaa": contents=walkDOM(new DOMParser().parseFromString(contents, "text/xml")); break;
+					case "geojson": contents=importGeoJSON(contents);break;
+					case "gml": contents=walkDOM(new DOMParser().parseFromString(contents, "text/xml")); break;
+					case "inspire": contents=walkDOM(new DOMParser().parseFromString(contents, "text/xml")); break;
+					case "kml": contents=walkDOMKML(new DOMParser().parseFromString(contents, "text/xml")); break;
+					case "ttl":  break;
+					case "xplanung": contents=walkDOM(new DOMParser().parseFromString(contents, "text/xml")); break;	
+		}
+		currdfstore.load('text/turtle', contents, function(s,d){
+				//console.log(s,d);
+				markercollection=[]
+				firstpoint=false;
+				uiQuery(true)
+				});
+}
+
 function readRDFFile(e){
 	console.log(e)
 	var file = e.target.files[0];
@@ -514,21 +534,7 @@ function readRDFFile(e){
 		if(currdfstore==null){
 				currdfstore=store;			
 		}
-		switch($('#queryimportformat').val()){
-					case "aaa": contents=walkDOM(new DOMParser().parseFromString(contents, "text/xml")); break;
-					case "geojson": contents=importGeoJSON(contents);break;
-					case "gml": contents=walkDOM(new DOMParser().parseFromString(contents, "text/xml")); break;
-					case "inspire": contents=walkDOM(new DOMParser().parseFromString(contents, "text/xml")); break;
-					case "kml": contents=walkDOMKML(new DOMParser().parseFromString(contents, "text/xml")); break;
-					case "ttl":  break;
-					case "xplanung": contents=walkDOM(new DOMParser().parseFromString(contents, "text/xml")); break;	
-		}
-		currdfstore.load('text/turtle', contents, function(s,d){
-				//console.log(s,d);
-				markercollection=[]
-				firstpoint=false;
-				uiQuery(true)
-				});
+		importFromString(contents)
 		});
 	};	
 	text=reader.readAsText(file);    
@@ -1791,6 +1797,29 @@ function exportLastImport(){
 	//saveTextAsFile(lastimportAsTTL,"ttl")
 }
 
+function importFromURL(){
+        $.ajax({url: $('#url-input').val(),async: true, success: function(result){
+				console.log(result)
+				importFromString(result)
+        },error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+      }});
+}
+
+function importFromTextInput(){
+        importFromString($('#text-input').val())
+}
+
+function displayImport(){
+        switch ($('#importfrom').val()) {
+                case "file": $('#importdiv').html("<input type=\"file\"  id=\"file-input\" /><br/>"); 	  document.getElementById('file-input')
+	  .addEventListener('change', readRDFFile, false); break;
+                case "url": $('#importdiv').html("<input type=\"url\"  id=\"url-input\" /><button id=\"importfromurl\" onclick=\"importFromURL()\">Load</button><br/>"); break;
+                case "textinput": $('#importdiv').html("<textarea id=\"text-input\"/><button id=\"importfromurl\" onclick=\"importFromTextInput()\">Load</button><br/>"); break;
+        }
+}
+
 </script>
 
 </head>
@@ -1844,7 +1873,9 @@ NOT<input type="checkbox" id="geoconstraintnegate"/><select id="geospatiallist">
 </select><br/>CRS: <select id="epsgqueryexport"></select></td></tr>
 </table>
 </td></tr></table><table width="60%"><tr><td colspan="2">
-Import From File:<input type="file"  id="file-input" /><br/>Format: <select id="queryimportformat">
+Import From <select id="importfrom" onChange="displayImport()"><option value="file" selected="selected">File</option><option value="textinput">Textinput</option><option value="url">URL</option></select>
+<div id="importdiv"><input type="file"  id="file-input" /><br/></div>
+Format: <select id="queryimportformat">
 <option value="ttl" selected="selected">TTL</option>
 <option value="gml">GML</option>
 <option value="kml">KML</option>
