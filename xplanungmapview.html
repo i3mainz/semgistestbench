@@ -2,16 +2,20 @@
 <head><title>XPlanung Mapview based on LinkedData</title>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-<script src="wicket.js" type="text/javascript"></script>
+<script src="js/wicket.js" type="text/javascript"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
-  <script src="leaflet.polylinedecorator.js"></script>
+<script src="https://unpkg.com/shp-write@latest/shpwrite.js"></script>
+  <script src="js/leaflet.polylinedecorator.js"></script>
+     <script src="js/leaflet_fullscreen.js"></script>
+   <script src="js/leaflet_legend.js"></script>
+      <script src="js/leaflet_easyprint.js"></script>
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-  <script src="rdfstore_min.js"></script>
-  <script src="proj4.js"></script>
-    <script src="xml2json.js"></script>
-	    <script src="turf.min.js"></script>
-	    <script src="jsts.js"></script>
+  <script src="js/rdfstore_min.js"></script>
+   <script src="https://unpkg.com/shpjs@latest/dist/shp.js"></script>
+  <script src="js/proj4.js"></script>
+	    <script src="js/turf.min.js"></script>
+	    <script src="js/jsts.js"></script>
 	    <!-- TODO: INCLUDE GEOJSON-RBUSH -->
   
 <script>
@@ -520,6 +524,9 @@ function importFromString(contents,file){
 					case "gml": contents=walkDOM(new DOMParser().parseFromString(contents, "text/xml"),file); break;
 					case "kml": contents=walkDOMKML(new DOMParser().parseFromString(contents, "text/xml")); break;
 					case "ttl":  break;
+					case "shp":  shp(file).then(function(geojson){
+                                                contents=importGeoJSON(contents);
+                                        });break;
 		}
 		if($('#choosedatabase').val()!="remote"){
 				currdfstore.load('text/turtle', contents, function(s,d){
@@ -1262,7 +1269,7 @@ function exportQueryResult(tosave,exportFormat){
 		console.log(gml)
 		saveTextAsFile(gml,"gml")
 	}
-	if(exportFormat=="geojson" || $( "#queryexportformat option:selected" ).val()=="geojson"){
+	if(exportFormat=="geojson" || exportFormat=="shp" ){
 		var collection = {
 			"type": "FeatureCollection",
 			"features": []
@@ -1296,16 +1303,20 @@ function exportQueryResult(tosave,exportFormat){
 						lastspl1=subsplit[0].trim()
 					}
 				}
+                if(!("properties" in geojson)){
+                                                geojson["properties"]={}
+					}
                 if(splitt[spl].includes("asGeoJSON")){				
                     geojson["geometry"]=JSON.parse(splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1))["geometry"]
                     geojson["geometry"]["coordinates"]=exportConvert(geojson["geometry"]["coordinates"],epsgdefs[$('#epsgqueryexport option:selected').val()],"geojson",geojson["geometry"]["type"],true)
                     if(geojson["geometry"]["type"]=="Polygon"){
-                            geojson=turf.rewind(geojson["geometry"])
+                            geojson["geometry"]=turf.rewind(geojson["geometry"])
                     }
 					//console.log("Add converted GeoJSON geometry: "+JSON.stringify(geojson))
                 }else if(splitt[spl].includes(":type") || splitt[spl].includes("#type")  ){
 					//console.log("IN TYPE CLAUSE")
 					//console.log(splitt[spl])
+
 					geojson["properties"]["id"]=subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")
 				}else if(splitt[spl].includes("label")){
 					continue;
@@ -1324,9 +1335,14 @@ function exportQueryResult(tosave,exportFormat){
 		}*/
         
 		console.log(collection)
-		saveTextAsFile(JSON.stringify(collection, null, 2),"geojson")
+		if(exportFormat=="geojson"){
+                    saveTextAsFile(JSON.stringify(collection, null, 2),"geojson")
+		}else if(exportFormat=="shp"){
+                    shpwrite.download(collection, null);
+		}
+		
 	}
-	if(exportFormat=="geojsonld" || $( "#queryexportformat option:selected" ).val()=="geojsonld" || exportFormat=="jsonld" || $( "#queryexportformat option:selected" ).val()=="jsonld"){
+	if(exportFormat=="geojsonld"  || exportFormat=="jsonld" ){
 		var geojsonLD=true;
 		if(exportFormat=="geojsonld"){
 			geojsonLD=true;
@@ -1954,8 +1970,9 @@ function getOrigins(){
 <div id="mapid" style="height:100%" width="80%">
 <script>
 
-	var mymap = L.map('mapid').setView([51.505, -0.09], 13);
-
+	var mymap = L.map('mapid'/*,{ zoomControl:false }*/).setView([51.505, -0.09], 13);
+/*var zoomFS = new L.Control.ZoomFS(); 
+mymap.addControl(zoomFS);*/
 	var layer = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
 		maxZoom: 18,
 		attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
@@ -1996,6 +2013,8 @@ Format: <select id="queryimportformat">
 <option value="gml">GML</option>
 <option value="kml">KML</option>
 <option value="geojson">GeoJSON</option>
+<option value="shp">Shapefile</option>
+<option value="shpzip">Shapefile (zipped)</option>
 </select>
 CRS: <select id="epsgqueryimport"></select><br/>
 Load supporting Ontology:<select id="supportingOntologySel"></select><button id="loadSuppOnt" onclick="loadSupportingOntology()">Load</button><br/>
@@ -2008,6 +2027,7 @@ Load svg images: <input type="checkbox" id="loadsvg"/>Qualityanalysis:<input typ
 <option value="geojson">GeoJSON</option>
 <option value="geojsonld">GeoJSON-LD</option>
 <option value="jsonld">JSON-LD</option>
+<option value="shp">Shapefile</option>
 </select><br/>
 <button id="exportlastasTTL" onclick="exportLastImport()">Export last imported file as</button>
 <select id="lastimportexportformat">
@@ -2017,6 +2037,7 @@ Load svg images: <input type="checkbox" id="loadsvg"/>Qualityanalysis:<input typ
 <option value="geojson">GeoJSON</option>
 <option value="geojsonld">GeoJSON-LD</option>
 <option value="jsonld">JSON-LD</option>
+<option value="shp">Shapefile</option>
 </select><br/>
 <button id="queryasTTL" onclick="exportQueryResult()">Query Result as</button>
 <select id="queryexportformat">
@@ -2026,6 +2047,7 @@ Load svg images: <input type="checkbox" id="loadsvg"/>Qualityanalysis:<input typ
 <option value="geojson">GeoJSON</option>
 <option value="geojsonld">GeoJSON-LD</option>
 <option value="jsonld">JSON-LD</option>
+<option value="shp">Shapefile</option>
 </select><br/>CRS: <select id="epsgqueryexport"></select></td>
 <td>Database Type: 
 <select id="choosedatabase" onchange="databaseType()">
