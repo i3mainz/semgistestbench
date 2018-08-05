@@ -1833,13 +1833,27 @@ function exportLastImport(){
 }
 
 function importFromURL(){
-        $.ajax({url: $('#url-input').val(),async: true, success: function(result){
+        $.ajax({url: "https://cors.io/?"+$('#url-input').val(),async: true, success: function(result){
 				console.log(result)
-				importFromString(result)
+				importFromString(result,$('#url-input').val())
         },error: function (xhr, ajaxOptions, thrownError) {
             alert(xhr.status);
             alert(thrownError);
       }});
+}
+
+function calculateDataQualityMetrics(person,ind){
+        dqresult=""
+        var reader = new jsts.io.WKTReader();
+        var geom = reader.read('POLYGON ((80 300, 280 300, 280 80, 80 80, 80 300), (260 280, 180 200, 100 280, 100 100, 260 100, 260 280))');        
+        console.log(geom.isValid());
+        console.log(geom.isSimple());
+        if(geom.isValid()){
+                dqresult+="<"+ind+"> dq:hasMeasurement <"+ind+"_validity> . \n  <"+ind+"_validity> dq:value \"\"^^xsd:boolean . \n "
+        }
+        if(geom.isSimple()){
+                dqresult+="<"+ind+"> dq:hasMeasurement <"+ind+"_validity> . \n  <"+ind+"_simple> dq:value \"\"^^xsd:boolean . \n "
+        }
 }
 
 function checkSPARQLEndpoint(){
