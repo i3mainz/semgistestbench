@@ -1274,6 +1274,13 @@ function exportQueryResult(tosave,exportFormat){
 			"type": "FeatureCollection",
 			"features": []
 		};
+		var options={ "folder":"result",
+                        types: {
+                            point: 'result_points',
+                            polygon: 'result_polygons',
+                            line: 'result_lines'
+                    }
+                    }
         var geojson={"type":"Feature","properties":{}}
 		var empty={"type":"Feature","properties":{}}
 		first=true;
@@ -1321,9 +1328,16 @@ function exportQueryResult(tosave,exportFormat){
 				}else if(splitt[spl].includes("label")){
 					continue;
 				}else{
-					geojson["properties"][subsplit[1].replace("<","").replace(">","")]=(subsplit[2].includes("^^")?
+				if(exportFormat=="shp"){
+                                        geojson["properties"][subsplit[1].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")]=(subsplit[2].includes("^^")?
 					subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):
 					subsplit[2].replace("<","").replace(">","").replace("\"",""))
+				}else{
+                                        geojson["properties"][subsplit[1].replace("<","").replace(">","")]=(subsplit[2].includes("^^")?
+					subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):
+					subsplit[2].replace("<","").replace(">","").replace("\"",""))
+				}
+					
 					//gml+="<"+subsplit[1].replace("<","").replace(">","")+">"+(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))+"</"+subsplit[1].replace("<","").replace(">","")+">\n"
 				}
 			}catch(err){console.log(err); continue;}
@@ -1338,7 +1352,7 @@ function exportQueryResult(tosave,exportFormat){
 		if(exportFormat=="geojson"){
                     saveTextAsFile(JSON.stringify(collection, null, 2),"geojson")
 		}else if(exportFormat=="shp"){
-                    shpwrite.download(collection, null);
+                    shpwrite.download(collection, options);
 		}
 		
 	}
