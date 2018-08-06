@@ -117,6 +117,9 @@ currdfstore.execute(query, function(success,results){
              //   console.log(results[res]["subject"]["value"])
             if("value" in results[res]["subject"] && !(results[res]["subject"]["value"].includes("_:"))){
                         ress[results[res]["subject"]["value"]]={"super":("supertype" in results[res] &&  results[res]["supertype"]!=null && "value" in results[res]["supertype"] && results[res]["supertype"]["value"]!=null?results[res]["supertype"]["value"]:"http://www.w3.org/2002/07/owl#Thing"),"count":""}//results[res]["indidivualc"]["value"]}
+                        if(results[res]["supertype"]!=null && !(results[res]["supertype"]["value"] in classeswithinstances)){
+                                classeswithinstances[results[res]["supertype"]["value"]]=true
+                        }
            }
         }
         var tree={ "plugins": ["search", "types","sort"],"search": {}, "core": { "data" :[]}}
@@ -137,9 +140,9 @@ currdfstore.execute(query, function(success,results){
         }*/
         tree["core"]["types"]={"file" : {"icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif"},"default" : {"icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif","valid_children" : ["default"]}}
         console.log(JSON.stringify(tree))
-       /* try{
+       try{
             $('#jstree').jstree("destroy");
-        }catch(err){}*/
+        }catch(err){}
         $('#jstree').jstree(tree);
         /*$('#jstree').on('select_node.jstree', function (e, data) {
             var i, j, r = [];
@@ -1955,6 +1958,7 @@ function clearGraph(){
 	$('#classeslist3').html("")
 	$('#classeslist4').html("")
 	$('#attributelist').html("")
+	$("#jstree").jstree("destroy");
 	clearConstraints();
 	clearCoords();
 	clearMap();
