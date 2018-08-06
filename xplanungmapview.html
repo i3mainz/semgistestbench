@@ -111,6 +111,8 @@ console.log(query)
 currdfstore.execute(query, function(success,results){
       // console.log(results)
         ress={}
+        var tree={ "plugins": ["search", "types","sort"],"search": {}, "core": { "data" :[]}}
+        tree["core"]["data"].push({ "id" : "http://www.w3.org/2002/07/owl#Thing", "icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif","parent" : "#", "text" : "owl:Thing" })
         for(res in results){
            // console.log(results[res])
             //if("value" in results[res]["subject"])
@@ -122,8 +124,8 @@ currdfstore.execute(query, function(success,results){
                         }
            }
         }
-        var tree={ "plugins": ["search", "types","sort"],"search": {}, "core": { "data" :[]}}
-        tree["core"]["data"].push({ "id" : "http://www.w3.org/2002/07/owl#Thing", "icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif","parent" : "#", "text" : "owl:Thing" })
+
+        
         //clsMap={}
         //superMap={}
         for(cls in ress){
@@ -920,7 +922,7 @@ function applyFilter(functiondef,set1,set2,persons,negate){
         var wkt=new Wkt.Wkt()
         var ress={}
         //turf.bbox(set2.values())
-        /console.log("ApplyFilter")
+        //console.log("ApplyFilter")
         for(elem in set1){			
                 if(!(set1[elem] in ress)){
 					//console.log(persons[set1[elem]])
@@ -2003,27 +2005,6 @@ function checkSPARQLEndpoint(){
             alert(xhr.status);
             alert(thrownError);
       }});
-      
-     /* var SPARQLendpoint = {
-
-    getData: function (query) {
-
-        var endpointUrl = 'http://localhost:7200/repositories/myRepo',
-
-            settings = {
-                headers: { Accept: 'application/sparql-results+json'},
-                data: { query: query },
-                dataType: 'jsonp'
-            };
-
-        $.ajax(endpointUrl, settings).then(function (data) {
-            $('body').append(($('<pre>').text(JSON.stringify(data))));
-            console.log(data);
-        });
-
-    });
-
-    }*/
 
 }
 
@@ -2076,7 +2057,7 @@ function remoteSPARQLImport(endpoint,data,graph){
 
 function getOrigins(){
 /*?orig semgis:value ?origval . */
-	currdfstore.execute(prefixList+" SELECT DISTINCT ?orig ?origval WHERE {?ind rdf:type ?cls . ?ind  <http://www.semgis.de/geodata#hasOrigin> ?orig . ?orig <http://www.semgis.de/geodata#value> ?origval . } ORDER BY ?cls", function(success,results){ 
+	currdfstore.execute(prefixList+" SELECT DISTINCT ?orig ?origval WHERE {?ind rdf:type ?cls . ?ind  <http://www.semgis.de/geodata#hasOrigin> ?orig . ?orig <http://www.semgis.de/geodata#value> ?origval . }", function(success,results){ 
         console.log(success,results)
                 reshtml=""
 		for(res in results){
@@ -2084,6 +2065,18 @@ function getOrigins(){
 		}
 		$('#origin').html(reshtml);
 	});
+}
+
+function originQuery(){
+        origvalue=$('#origin').val()
+/*?orig semgis:value ?origval . */
+        indlist={}
+        queryString=prefixList+" SELECT ?person ?rel ?pointstyle ?polygonstyle ?linestyle ?linestringImage ?linestringImageStyle ?img ?val ?valLabel ?wkt ?gml ?kml ?geojson WHERE { ?percls rdf:type owl:Class . ?person  <http://www.semgis.de/geodata#hasOrigin> <"+origvalue+"> . OPTIONAL{?percls semgis:polygonStyle ?polygonstyle .} OPTIONAL{?percls semgis:linestringStyle ?linestyle .} OPTIONAL{?percls semgis:pointStyle ?pointstyle .} OPTIONAL{?percls semgis:image ?img .} OPTIONAL{?percls semgis:linestringImageStyle ?linestringImageStyle .} OPTIONAL{?percls semgis:linestringImage ?linestringImage .} ?person rdf:type ?percls . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL {?val rdfs:label ?valLabel . } }"
+	currdfstore.execute(queryString, function(success,results){ 
+        console.log(success,results)
+                handleResults(results,false)	
+	});
+	
 }
 
 </script>
@@ -2137,7 +2130,7 @@ NOT<input type="checkbox" id="geoconstraintnegate"/><select id="geospatiallist">
 <button id="addconstraint" onClick="addConstraint('classeslist2','attributelist','constrainttext')">Add</button>
 <button id="clearconstraints" onclick="clearConstraints()">Clear</button></td></tr>
 <tr  valign="top" align="top"><td colspan="2"><ul id="constraints"></ul></td></tr>
-<tr  valign="top" align="top"><td>Query: </td><td><button id="querybutton" onclick="uiQuery()">Query</button><button id="classhierarchy" onclick="getClassHierarchy({})">Class Hierarchy</button></td></tr>
+<tr  valign="top" align="top"><td>Query: </td><td><button id="querybutton" onclick="uiQuery()">Query</button><button id="classhierarchy" onclick="getClassHierarchy({})">Class Hierarchy</button><button id="originQuery" onclick="originQuery()">Origin Query</button> </td></tr>
 </table>
 </td></tr></table><table width="70%" border=0 cellspacing="0"><tr><th>Importing Data</th><th>Exporting Data</th><th>Options</th></tr><tr><td>
 Import From <select id="importfrom" onChange="displayImport()"><option value="file" selected="selected">File</option><option value="textinput">Textinput</option><option value="url">URL</option></select>
