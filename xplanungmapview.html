@@ -29,7 +29,7 @@ var prefixMap={"http://www.w3.org/2002/07/owl#":"owl", "http://www.opengis.net/o
 "http://www.w3.org/XML/1998/namespace":"xml", "http://www.w3.org/2001/XMLSchema#":"xsd", "http://www.w3.org/2000/01/rdf-schema#":"rdfs" ,
  "http://www.xerleben.de/schema/2.0_1#":"xerl", "http://www.xplanung.de/xplangml/5/0#":"xplan5", "http://www.opengis.net/gml/3.2":"gml", "http://www.opengis.net/kml/2.2#":"kml" }; 
 var supportingOntologies={"AAA-Data":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/0dc433aa7ff7db5cd122537a134e840a35f50027/AAA-Data/aaa6.ttl","AAA-Data Styles":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/0dc433aa7ff7db5cd122537a134e840a35f50027/AAA-Data/aaa6_style.ttl","INSPIRE":"",
-"Xerleben":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/master/XErleben/xerleben2_1.ttl_mod.ttl","XPlanung":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/0dc433aa7ff7db5cd122537a134e840a35f50027/XPlanung/xplanung5_0.ttl","XPlanung Styles":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/0dc433aa7ff7db5cd122537a134e840a35f50027/XPlanung/xplanung5_0_style.ttl"}
+"XErleben":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/master/XErleben/xerleben2_1.ttl_mod.ttl","XPlanung":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/0dc433aa7ff7db5cd122537a134e840a35f50027/XPlanung/xplanung5_0.ttl","XPlanung Styles":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/0dc433aa7ff7db5cd122537a134e840a35f50027/XPlanung/xplanung5_0_style.ttl"}
 var currdfstore=null;
 var wkt = new Wkt.Wkt();
 var firstcoords=[]
@@ -71,6 +71,7 @@ $( function() {
 	  if(curposmarker!=null){
 			mymap.removeLayer(curposmarker);
 	  }
+	  
 	$('#coordinate').val("["+e.latlng.lat + ", " + e.latlng.lng+"]");
 	 bboxpoint=turf.point(JSON.parse("["+e.latlng.lat + ", " + e.latlng.lng+"]"));
 	curposmarker= new L.marker(e.latlng).addTo(mymap);
@@ -132,7 +133,18 @@ currdfstore.execute(query, function(success,results){
             //clsMap[cls]=true;
             //superMap[ress[cls]["super"]]=true;
             if(Object.keys(classeswithinstances).length==0 || (Object.keys(classeswithinstances).length>0 && cls in classeswithinstances)){
-                    tree["core"]["data"].push({ "id" : cls, "parent" : (ress[cls]["super"].includes("_:")?"#":ress[cls]["super"]), "icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif", "text" : cls.substring(cls.indexOf('#')+1)+(ress[cls]["count"]!=""?"("+ress[cls]["count"]+")":"") })
+					prefix=cls.substring(0,cls.lastIndexOf('#')+1);
+					console.log("PREFIX: "+prefix)
+					addpref=""
+					if(prefix in prefixMap){
+						addpref=prefixMap[prefix]+":"
+					}
+					/*	result+="<option value=\""+results[res]["cls"]["value"]+"\">"+((results[res]["clsLabel"]!=null && results[res]["clsLabel"]["value"]!=null)?
+						addpref+results[res]["clsLabel"]["value"]:addpref+results[res]["cls"]["value"].substring(results[res]["cls"]["value"].lastIndexOf('#')+1))+"</option>"
+						resultlist[results[res]["cls"]["value"]]=true*/
+                    tree["core"]["data"].push({ "id" : cls, "parent" : (ress[cls]["super"].includes("_:")?"#":ress[cls]["super"]), 
+					"icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif", 
+					"text" : addpref+cls.substring(cls.lastIndexOf('#')+1)+(ress[cls]["count"]!=""?"("+ress[cls]["count"]+")":"") })
             }
         }
         /*for(cls in superMap){
@@ -141,11 +153,21 @@ currdfstore.execute(query, function(success,results){
                 }
         }*/
         tree["core"]["types"]={"file" : {"icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif"},"default" : {"icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif","valid_children" : ["default"]}}
-        console.log(JSON.stringify(tree))
+        tree["plugins"]=["checkbox","search","sort","state","types"]
+		console.log(JSON.stringify(tree))
        try{
             $('#jstree').jstree("destroy");
         }catch(err){}
         $('#jstree').jstree(tree);
+		var to = false;
+		$('#classsearch').keyup(function () {
+		console.log("KEY UP")
+    if(to) { clearTimeout(to); }
+    to = setTimeout(function () {
+      var v = $('#classsearch').val();
+      $('#jstree').jstree(true).search(v,false,true);
+    }, 250);
+  });
         /*$('#jstree').on('select_node.jstree', function (e, data) {
             var i, j, r = [];
             for(i = 0, j = data.selected.length; i < j; i++) {
@@ -2108,7 +2130,7 @@ mymap.addControl(zoomFS);*/
 
 </script>
 </div></td><td align="top" valign="top" width="20%" height="70%" ><table height="100%"><tr  valign="top" align="top">
-<td>WHAT? </td><td><div class="myScrollableBlock">
+<td>WHAT? </td><td>Search:<input type="text" id="classsearch"/></td><tr><td colspan="2"><div class="myScrollableBlock">
 <div id="jstree"></div>
 </div><!--<select id="classeslist" multiple  size=15 ></select>--></td></tr>
 <tr valign="top" align="top"><td>WHERE? <input type="checkbox" id="whereactive"/></td>
@@ -2129,10 +2151,9 @@ NOT<input type="checkbox" id="geoconstraintnegate"/><select id="geospatiallist">
 <td><select id="classeslist2"></select><br/>NOT<input type="checkbox" id="constraintnegate"/><select id="attributelist"></select><br/><input type="text" id="constrainttext"/><br/>
 <button id="addconstraint" onClick="addConstraint('classeslist2','attributelist','constrainttext')">Add</button>
 <button id="clearconstraints" onclick="clearConstraints()">Clear</button></td></tr>
-<tr  valign="top" align="top"><td colspan="2"><ul id="constraints"></ul></td></tr>
 <tr  valign="top" align="top"><td>Query: </td><td><button id="querybutton" onclick="uiQuery()">Query</button><button id="classhierarchy" onclick="getClassHierarchy({})">Class Hierarchy</button><button id="originQuery" onclick="originQuery()">Origin Query</button> </td></tr>
 </table>
-</td></tr></table><table width="70%" border=0 cellspacing="0"><tr><th>Importing Data</th><th>Exporting Data</th><th>Options</th></tr><tr><td>
+</td></tr></table><table width="100%" border=0 cellspacing="0"><tr><th>Importing Data</th><th>Exporting Data</th><th>Options</th><th>Constraints</th></tr><tr><td>
 Import From <select id="importfrom" onChange="displayImport()"><option value="file" selected="selected">File</option><option value="textinput">Textinput</option><option value="url">URL</option></select>
 <div id="importdiv"><input type="file"  id="file-input" /><br/></div>
 Format: <select id="queryimportformat">
@@ -2145,7 +2166,7 @@ Format: <select id="queryimportformat">
 </select>
 CRS: <select id="epsgqueryimport"></select><br/>
 Load supporting Ontology:<select id="supportingOntologySel"></select><button id="loadSuppOnt" onclick="loadSupportingOntology()">Load</button><br/>
-Load svg images: <input type="checkbox" id="loadsvg"/>Qualityanalysis:<input type="checkbox" id="qualityanalysis"/></td><td align="right">
+Load svg images: <input type="checkbox" id="loadsvg"/>Qualityanalysis:<input type="checkbox" id="qualityanalysis"/></td><td>
 <button id="exportTTL" onclick="exportAsTTL()">Export Database as</button>
 <select id="dbexportformat">
 <option value="ttl" selected="selected">TTL</option>
@@ -2183,6 +2204,6 @@ Load svg images: <input type="checkbox" id="loadsvg"/>Qualityanalysis:<input typ
 <option value="remote">Remote Database</option>
 </select><div id="databasediv"></div>
 Current Graph: <select id="choosegraph"><option value="default" selected="selected">Default</option></select><br/>
-<button id="cleargraph" onclick="clearGraph()">Delete Database</button></td></tr></table>
+<button id="cleargraph" onclick="clearGraph()">Delete Database</button></td><td width="25%" border=1><ul id="constraints"></ul></td></tr></table>
 </body>
 </html>
