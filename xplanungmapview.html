@@ -17,6 +17,7 @@
    <script src="https://unpkg.com/shpjs@latest/dist/shp.js"></script>
   <script src="js/proj4.js"></script>
 	    <script src="js/turf.min.js"></script>
+		<script src="js/leaflet.pattern.js"></script>
 	    <script src="js/jsts.js"></script>
 	    <!-- TODO: INCLUDE GEOJSON-RBUSH -->
   
@@ -28,8 +29,11 @@ var prefixMap={"http://www.w3.org/2002/07/owl#":"owl", "http://www.opengis.net/o
 , "http://www.wikidata.org/entity/":"wd", "http://xmlns.com/foaf/0.1/":"foaf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#":"rdf", 
 "http://www.w3.org/XML/1998/namespace":"xml", "http://www.w3.org/2001/XMLSchema#":"xsd", "http://www.w3.org/2000/01/rdf-schema#":"rdfs" ,
  "http://www.xerleben.de/schema/2.0_1#":"xerl", "http://www.xplanung.de/xplangml/5/0#":"xplan5", "http://www.opengis.net/gml/3.2":"gml", "http://www.opengis.net/kml/2.2#":"kml" }; 
-var supportingOntologies={"AAA-Data":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/698716924dee60def18c8a6feea5794264bbd4c8/AAA-Data/aaa6.ttl","AAA-Data Styles":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/698716924dee60def18c8a6feea5794264bbd4c8/AAA-Data/aaa6_style.ttl","INSPIRE":"",
-"XErleben":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/master/XErleben/xerleben2_1.ttl_mod.ttl","XPlanung":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/698716924dee60def18c8a6feea5794264bbd4c8/XPlanung/xplanung5_0.ttl","XPlanung Styles":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/3b441359357bba4c5594bb75dfd38686f536a5cc/XPlanung/xplanung5_0_style.ttl"}
+var supportingOntologies={"AAA-Data":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/2756ba833cabe61968e548df02bd886064908a69/AAA-Data/aaa6.ttl",
+"AAA-Data Styles":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/2756ba833cabe61968e548df02bd886064908a69/AAA-Data/aaa6_style.ttl","INSPIRE":"",
+"XErleben":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/master/XErleben/xerleben2_1.ttl_mod.ttl",
+"XPlanung":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/2756ba833cabe61968e548df02bd886064908a69/XPlanung/xplanung5_0.ttl",
+"XPlanung Styles":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/2756ba833cabe61968e548df02bd886064908a69/XPlanung/xplanung5_0_style.ttl"}
 var currdfstore=null;
 var wkt = new Wkt.Wkt();
 var firstcoords=[]
@@ -700,8 +704,8 @@ function uiQuery(start){
 	sel=$("#jstree").jstree("get_selected",true)
 	classesToQuery=[]
 	for(s in sel){
-                console.log(s)
-                classesToQuery.push(sel[s]["id"])
+        //console.log(s)
+        classesToQuery.push(sel[s]["id"])
 	}
 	
 	console.log(classesToQuery)
@@ -718,11 +722,11 @@ function uiQuery(start){
 		alert("No classes to query!")
 		return
 	}
-	queryString=prefixList+" SELECT DISTINCT ?person ?rel ?pointstyle ?linestyle ?polygonstyle ?img ?linestringImageStyle ?linestringImage ?val ?valLabel ?wkt ?gml ?kml ?geojson WHERE { "
+	queryString=prefixList+" SELECT DISTINCT ?person ?rel ?pointstyle ?linestyle ?polygonstyle ?hatch ?img ?linestringImageStyle ?linestringImage ?val ?valLabel ?wkt ?gml ?kml ?geojson WHERE { "
 	for(cls in classesToQuery){
 		console.log(cls)
 		if($('#whichactive').is(':checked')){
-						queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val .  OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:lineStyle ?linestringStyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}   OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle  ?linestringImageStyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .}  "
+						queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val .  OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:lineStyle ?linestringStyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}   OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle  ?linestringImageStyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:hatch  ?hatch .}  "
 						if(classesToQuery[cls] in constraints){
                                                         if("NOT" in constraints[classesToQuery[cls]]){
                                                                 queryString+="MINUS {"+constraints[classesToQuery[cls]].replace("NOT ","")+"} ."
@@ -737,12 +741,12 @@ function uiQuery(start){
 						}
 						queryString+="} UNION"
 		}else{
-			queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}   OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringStyle ?linestyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle ?linestringImageStyle.} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .}  } UNION "
+			queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}   OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringStyle ?linestyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle ?linestringImageStyle.} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:hatch  ?hatch .} } UNION "
 		}
 	}
 	queryString=queryString.substring(0,queryString.length-6)
 	}else{
-		queryString=prefixList+" SELECT ?person ?rel ?pointstyle ?polygonstyle ?linestyle ?linestringImage ?linestringImageStyle ?img ?val ?valLabel ?wkt ?gml ?kml ?geojson WHERE { ?percls rdf:type owl:Class .  OPTIONAL{?percls semgis:polygonStyle ?polygonstyle .} OPTIONAL{?percls semgis:linestringStyle ?linestyle .} OPTIONAL{?percls semgis:pointStyle ?pointstyle .} OPTIONAL{?percls semgis:image ?img .} OPTIONAL{?percls semgis:linestringImageStyle ?linestringImageStyle .} OPTIONAL{?percls semgis:linestringImage ?linestringImage .} ?person rdf:type ?percls . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL {?val rdfs:label ?valLabel . } "
+		queryString=prefixList+" SELECT ?person ?rel ?pointstyle ?polygonstyle ?linestyle ?linestringImage ?linestringImageStyle ?hatch ?img ?val ?valLabel ?wkt ?gml ?kml ?geojson WHERE { ?percls rdf:type owl:Class .  OPTIONAL{?percls semgis:polygonStyle ?polygonstyle .} OPTIONAL{?percls semgis:linestringStyle ?linestyle .} OPTIONAL{?percls semgis:pointStyle ?pointstyle .} OPTIONAL{?percls semgis:image ?img .} OPTIONAL{?percls semgis:linestringImageStyle ?linestringImageStyle .} OPTIONAL{?percls semgis:linestringImage ?linestringImage .} OPTIONAL{ ?person semgis:hatch  ?hatch .} ?person rdf:type ?percls . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL {?val rdfs:label ?valLabel . } "
 	}
 	queryString+="} ORDER BY ?person "
 	console.log(queryString)
@@ -760,7 +764,7 @@ function uiQuery(start){
 
 
 function handleResults(results,start){
-                curQueryResultTTL=""
+        curQueryResultTTL=""
 		persons={}
 		classTopers={}
 		persToClass={}
@@ -831,7 +835,10 @@ function handleResults(results,start){
                                 persons[results[res]["person"]["value"]]["asGeoJSON"]=results[res]["geojson"]["value"]
                                 curQueryResultTTL+="<"+results[res]["person"]["value"]+"> geo:asGeoJSON \""+results[res]["geojson"]["value"]+"\"^^geo:geoJSONLiteral \n ";
 			}
-			
+			if(results[res]["hatch"]!=null){
+					console.log("HATCH: "+results[res]["hatch"])
+                                persons[results[res]["person"]["value"]]["hatch"]=results[res]["hatch"]["value"]
+			}
 			if(results[res]["img"]!=null){
                                 persons[results[res]["person"]["value"]]["img"]=results[res]["img"]["value"]
 			}
@@ -880,7 +887,7 @@ function displayQueryResult(persons,query,classTopers,persToClass){
 			tooltipstart="<html>";
 			tooltip="<b><a href=\""+pers+"\" target=\"_blank\">"+pers.substring(pers.indexOf("#")+1)+"</a></b><ul>"
 			Object.keys(persons[pers]).sort().forEach(function(rel) {
-				if(rel!=null && (rel.includes("asWKT") || rel.includes("asGML") || rel.includes("asKML") || rel.includes("asGeoJSON") || rel.includes("pointStyle") || rel.includes("polygonStyle") || rel.includes("linestringStyle") ||  rel.includes("linestringImageStyle"))){
+				if(rel!=null && (rel.includes("asWKT") || rel.includes("asGML") || rel.includes("hatch") || rel.includes("asKML") || rel.includes("asGeoJSON") || rel.includes("pointStyle") || rel.includes("polygonStyle") || rel.includes("linestringStyle") ||  rel.includes("linestringImageStyle"))){
 					}
 					else if(rel.includes("img") || rel.includes("linestringImage") ){
 						markerIconPath=persons[pers][rel]
@@ -911,7 +918,7 @@ function displayQueryResult(persons,query,classTopers,persToClass){
 				if(rel!=null && rel.includes("asWKT") && !persons[pers][rel].includes("ENVELOPE")){
 				//if(persons[pers]["asWKT"]!=null /*&& persons[pers]["asWKT"] in rest*/){
 					try{
-						console.log(persons[pers][rel])
+						//console.log(persons[pers][rel])
 						/*if(Array.isArray(persons[pers][rel])){
 							wkt.read(persons[pers][rel][0]);
 						}else{
@@ -928,9 +935,9 @@ function displayQueryResult(persons,query,classTopers,persToClass){
 						}else{
 							wkt.read(persons[pers][rel]);
 						}
-
+						console.log("HATCH: "+JSON.stringify(persons[pers]["hatch"]))
 						geom=wkt.toJson();
-						handleGeometry(geom["type"],geom["coordinates"],query,markerIconPath,pers)
+						handleGeometry(geom["type"],geom["coordinates"],query,markerIconPath,pers,persons[pers]["hatch"])
 					}catch(err){console.log(err)}//}
 				}
 		}
@@ -1072,8 +1079,8 @@ function extend(obj, src) {
     return obj;
 }
 	
-function handleGeometry(type,coordinates,query,markerIconPath,pers){
-	//console.log("Handle Geometry "+type+" "+JSON.stringify(coordinates)+" "+query+" "+firstpoint+" - "+persons[pers]["linestringImageStyle"]+" - "+persons[pers]["linestringImage"] )
+function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch){
+	console.log("Handle Geometry "+type+" "+JSON.stringify(coordinates)+" "+query+" "+firstpoint+" - "+persons[pers]["linestringImageStyle"]+" - "+persons[pers]["linestringImage"]+" - "+hatch )
 	try{
 	if(type.toLowerCase()=="point" && coordinates!=null && coordinates[0]!=null){
 				if(!query || $('#coordinate').val()=="" || !$('#whereactive').is(':checked')  || (!turf.booleanDisjoint(turf.envelope(turf.point(coordinates)),bboxbuffer))){
@@ -1182,16 +1189,41 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers){
 
 			if(!query || $('#coordinate').val()=="" || !$('#whereactive').is(':checked') || (!turf.booleanDisjoint(turf.envelope(turf.polygon(coordinates)),bboxbuffer))){
 				//console.log("CREATING POLYGON AT "+JSON.stringify(coordinates)+" - "+persons[pers]["style"]+" - "+persons[pers]["polygonStyle"])
+					stripes=null
+				 if(hatch!=null){
+				   //JSON.parse(hatch)
+						stripes = new L.StripePattern(); 
+						stripes.addTo(mymap);
+				  }else{
+						stripes=null
+				  }
 				 if(persons[pers]["polygonStyle"]!=null){
-                                        L.polyline( coordinates,JSON.parse("{"+persons[pers]["polygonStyle"]+"}")).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap);                         
+						console.log("Person Style: "+"{"+persons[pers]["polygonStyle"]+"}")
+				 		jsonstyle=JSON.parse("{"+persons[pers]["polygonStyle"]+"}")
+						console.log("Person Style: "+jsonstyle)
+						if(stripes!=null)
+							jsonstyle["fillPattern"]=stripes
+                        L.polyline( coordinates,jsonstyle).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap);                         
 			       }else if(persons[pers]["style"]!=null){
-                                poly=L.polygon(coordinates,JSON.parse("{"+persons[pers]["style"]+"}"));
+								jsonstyle=JSON.parse("{"+persons[pers]["style"]+"}")
+								if(stripes!=null)
+									jsonstyle["fillPattern"]=stripes
+								console.log("PATTERN STYLE: "+JSON.stringify(jsonstyle))
+                                poly=L.polygon(coordinates,jsonstyle);
                                 poly.bindPopup(tooltip, {maxWidth : 560}).addTo( mymap);
 			       }else{
-                            poly=L.polygon( coordinates,{color: 'red',opacity:0.4});
+							jsonstyle={color: 'red',opacity:0.4}
+				   			if(stripes!=null)
+								jsonstyle["fillPattern"]=stripes
+                            poly=L.polygon( coordinates,jsonstyle);
                                 poly.bindPopup(tooltip, {maxWidth : 560}).addTo( mymap);
                            
 			       }
+				   if(hatch!=null){
+				   //JSON.parse(hatch)
+						var stripes = new L.StripePattern(); 
+
+				   }
 
 				/*var divIcon = L.divIcon({ 
 					html: "<span style='color:blue;'>polytext</span>"
