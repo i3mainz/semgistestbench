@@ -8,7 +8,7 @@
 <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
 <script src="js/shpwrite.js"></script>
   <script src="js/leaflet.polylinedecorator.js"></script>
-     <script src="js/leaflet_fullscreen.js"></script>
+     <script src="js/leaflet.fullscreen.js"></script>
    <script src="js/leaflet_legend.js"></script>
       <script src="js/leaflet_easyprint.js"></script>
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -22,6 +22,7 @@
 	    <!-- TODO: INCLUDE GEOJSON-RBUSH -->
   
 <script>
+var revision="5fc58dad2c1260fc1d2da3883e8c652c2686bd70"
 var epsgdefs={"EPSG:4326":"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs","EPSG:3587":"+proj=lcc +lat_1=45.7 +lat_2=44.18333333333333 +lat_0=43.31666666666667 +lon_0=-84.36666666666666 +x_0=6000000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs","EPSG:25832":"+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs","EPSG:25833":"+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs","EPSG:31467":"+proj=tmerc +lat_0=0 +lon_0=9 +k=1 +x_0=3500000 +y_0=0 +ellps=bessel +datum=potsdam +units=m +no_defs"}
 var prefixList="PREFIX owl: <http://www.w3.org/2002/07/owl#>  PREFIX geo: <http://www.opengis.net/ont/geosparql#> PREFIX wd: <http://www.wikidata.org/entity/> PREFIX foaf: <http://xmlns.com/foaf/0.1/>  PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  PREFIX xml: <http://www.w3.org/XML/1998/namespace>  PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX xerl: <http://www.xerleben.de/schema/2.0_1#> PREFIX xplan5: <http://www.xplanung.de/xplangml/5/0#> PREFIX semgis: <http://www.semgis.de/geodata#> "
 var ttlprefixList="@prefix wd: <http://www.wikidata.org/entity/> . \n @prefix foaf: <http://xmlns.com/foaf/0.1/> . \n @prefix owl: <http://www.w3.org/2002/07/owl#> . \n @prefix geo: <http://www.opengis.net/ont/geosparql#> . \n @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> . \n @prefix xml: <http://www.w3.org/XML/1998/namespace> . \n @prefix xsd: <http://www.w3.org/2001/XMLSchema#> . \n @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> . \n @prefix kml: <http://www.opengis.net/kml/2.2#> . \n @prefix gml: <http://www.opengis.net/gml/3.2#> . \n @prefix xplan5: <http://www.xplanung.de/xplangml/5/0#> . \n "
@@ -29,11 +30,11 @@ var prefixMap={"http://www.w3.org/2002/07/owl#":"owl", "http://www.opengis.net/o
 , "http://www.wikidata.org/entity/":"wd", "http://xmlns.com/foaf/0.1/":"foaf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#":"rdf", 
 "http://www.w3.org/XML/1998/namespace":"xml", "http://www.w3.org/2001/XMLSchema#":"xsd", "http://www.w3.org/2000/01/rdf-schema#":"rdfs" ,
  "http://www.xerleben.de/schema/2.0_1#":"xerl", "http://www.xplanung.de/xplangml/5/0#":"xplan5", "http://www.opengis.net/gml/3.2":"gml", "http://www.opengis.net/kml/2.2#":"kml" }; 
-var supportingOntologies={"AAA-Data":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/2756ba833cabe61968e548df02bd886064908a69/AAA-Data/aaa6.ttl",
-"AAA-Data Styles":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/2756ba833cabe61968e548df02bd886064908a69/AAA-Data/aaa6_style.ttl","INSPIRE":"",
-"XErleben":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/master/XErleben/xerleben2_1.ttl_mod.ttl",
-"XPlanung":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/2756ba833cabe61968e548df02bd886064908a69/XPlanung/xplanung5_0.ttl",
-"XPlanung Styles":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/2756ba833cabe61968e548df02bd886064908a69/XPlanung/xplanung5_0_style.ttl"}
+var supportingOntologies={"AAA-Data":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/"+revision+"/AAA-Data/aaa6.ttl",
+"AAA-Data Styles":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/"+revision+"/AAA-Data/aaa6_style.ttl","INSPIRE":"",
+"XErleben":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/"+revision+"/XErleben/xerleben2_1.ttl_mod.ttl",
+"XPlanung":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/"+revision+"/XPlanung/xplanung5_0.ttl",
+"XPlanung Styles":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/"+revision+"/XPlanung/xplanung5_0_style.ttl"}
 var currdfstore=null;
 var wkt = new Wkt.Wkt();
 var firstcoords=[]
@@ -726,7 +727,7 @@ function uiQuery(start){
 	for(cls in classesToQuery){
 		console.log(cls)
 		if($('#whichactive').is(':checked')){
-						queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val .  OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:lineStyle ?linestringStyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}   OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle  ?linestringImageStyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:hatch  ?hatch .}  "
+						queryString+="{{?person rdf:type <"+classesToQuery[cls]+"> .}UNION{?person rdfs:subClassOf* <"+classesToQuery[cls]+"> .} ?person ?rel ?val .  OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:lineStyle ?linestringStyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}   OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle  ?linestringImageStyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:hatch  ?hatch .}  "
 						if(classesToQuery[cls] in constraints){
                                                         if("NOT" in constraints[classesToQuery[cls]]){
                                                                 queryString+="MINUS {"+constraints[classesToQuery[cls]].replace("NOT ","")+"} ."
@@ -741,7 +742,7 @@ function uiQuery(start){
 						}
 						queryString+="} UNION"
 		}else{
-			queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}   OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringStyle ?linestyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle ?linestringImageStyle.} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:hatch  ?hatch .} } UNION "
+			queryString+="{ {?person rdf:type <"+classesToQuery[cls]+"> .}UNION{?person rdfs:subClassOf* <"+classesToQuery[cls]+"> .} ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}   OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringStyle ?linestyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle ?linestringImageStyle.} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:hatch  ?hatch .} } UNION "
 		}
 	}
 	queryString=queryString.substring(0,queryString.length-6)
@@ -840,7 +841,7 @@ function handleResults(results,start){
                                 persons[results[res]["person"]["value"]]["hatch"]=results[res]["hatch"]["value"]
 			}
 			if(results[res]["img"]!=null){
-                                persons[results[res]["person"]["value"]]["img"]=results[res]["img"]["value"]
+                    persons[results[res]["person"]["value"]]["img"]=results[res]["img"]["value"]
 			}
 		}
 		displayQueryResult(persons,!start,classTopers,persToClass);
@@ -1065,10 +1066,17 @@ function getIconFromPath(markerIconPath){
                 //<svg xmlns='http://www.w3.org/2000/svg' width='1000' height='1000'><path d='M2,111 h300 l-242.7,176.3 92.7,-285.3 92.7,285.3 z' fill='#000000'/></svg>"
         }
         console.log(markerIconPath)
-        var markerIcon = L.icon({
-                iconUrl: markerIconPath,
-                iconSize: [38, 95], // size of the icon
-        });
+		var markerIcon = L.divIcon({ 
+			className: 'label',
+			iconSize: [14, 14],
+			html: "<div style=\" opacity: 1.0;\">"+markerIconPath+"</div>"
+								//"/>"//'>svg//"<div style=\"transform:scale(10.0)\">"+svg+"</div>"//test
+						})
+		//L.marker(poly.getBounds().getCenter(), {icon:divIcon}).addTo(mymap);
+        /*var markerIcon = L.divIcon({
+                html: "
+                iconSize: [16, 16], // size of the icon
+        });*/
         return markerIcon;
 }
 
@@ -1080,7 +1088,7 @@ function extend(obj, src) {
 }
 	
 function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch){
-	console.log("Handle Geometry "+type+" "+JSON.stringify(coordinates)+" "+query+" "+firstpoint+" - "+persons[pers]["linestringImageStyle"]+" - "+persons[pers]["linestringImage"]+" - "+hatch )
+	console.log("Handle Geometry "+type+" "+JSON.stringify(coordinates)+" "+query+" "+firstpoint+" - "+persons[pers]["linestringImageStyle"]+" - "+persons[pers]["image"]+" - "+hatch )
 	try{
 	if(type.toLowerCase()=="point" && coordinates!=null && coordinates[0]!=null){
 				if(!query || $('#coordinate').val()=="" || !$('#whereactive').is(':checked')  || (!turf.booleanDisjoint(turf.envelope(turf.point(coordinates)),bboxbuffer))){
@@ -1114,7 +1122,7 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch){
 						
                         if(markerIconPath!=null && markerIconPath!="" && $('#loadsvg').is(":checked")){
 							//console.log("CREATING MARKER AT "+JSON.stringify(coordinates)+" - "+markerIconPath)
-                                        markerIcon=getIconFromPath(markerIconPath);
+                            markerIcon=getIconFromPath(markerIconPath);
 			                var marker = new L.marker(coordinates,{icon:markerIcon}); //opacity may be set to zero
                             marker.bindPopup(tooltip, {maxWidth : 560});
                             marker.addTo(mymap);
@@ -1203,7 +1211,7 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch){
 						console.log("Person Style: "+jsonstyle)
 						if(stripes!=null)
 							jsonstyle["fillPattern"]=stripes
-                        L.polyline( coordinates,jsonstyle).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap);                         
+                        poly=L.polygon( coordinates,jsonstyle).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap);                         
 			       }else if(persons[pers]["style"]!=null){
 								jsonstyle=JSON.parse("{"+persons[pers]["style"]+"}")
 								if(stripes!=null)
@@ -1216,13 +1224,28 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch){
 				   			if(stripes!=null)
 								jsonstyle["fillPattern"]=stripes
                             poly=L.polygon( coordinates,jsonstyle);
-                                poly.bindPopup(tooltip, {maxWidth : 560}).addTo( mymap);
-                           
+                                poly.bindPopup(tooltip, {maxWidth : 560}).addTo( mymap);                        
 			       }
-				   if(hatch!=null){
-				   //JSON.parse(hatch)
-						var stripes = new L.StripePattern(); 
-
+				   if(persons[pers]["img"]!=null){
+						console.log("semgis:image <div style='background-image: url(\"data:image/svg+xml;utf8,"+persons[pers]["img"]+"\")\"></div>)")
+						svg=persons[pers]["img"]
+						console.log("<img src=\"data:image/svg+xml;utf8,"+svg+"\"/>")
+						//<svg xmlns='http://www.w3.org/2000/svg' version='1.1'><Circle  color='#610c10'  stroke-width='1' cx='-3.0' cy='0' r='2.5' /><Text  fill='#610c10' size='4' x='-3.0' y='1.0' >G</text></svg>
+						ico=L.icon({iconUrl: "data:image/svg+xml;utf8,"+svg})
+						var divIcon = L.divIcon({ 
+								className: 'label',
+								iconSize: [14, 14],
+								html: "<div style=\" opacity: 1.0;\"><svg xmlns='http://www.w3.org/2000/svg' version='1.1'><circle  color='#610c10' stroke='black'  stroke-width='1' fill='none' cx='10.0' cy='10' r='10'   /><text  fill='#610c10' size='4' x='4' y='15'>G</text></svg></div>"
+								//"/>"//'>svg//"<div style=\"transform:scale(10.0)\">"+svg+"</div>"//test
+						})
+						marker=L.marker(poly.getBounds().getCenter(), {icon:divIcon});
+						marker.addTo(mymap);
+						markercollection.push(marker)
+					}
+				   //poly.bindTooltip("my tooltip",{"permanent":true}).addTo(map);
+				   /*label = new L.Tooltip()
+					label.setContent("static label")
+					label.setLatLng(poly.getB	
 				   }
 
 				/*var divIcon = L.divIcon({ 
@@ -2128,6 +2151,7 @@ function getOrigins(){
                         reshtml+="<option value=\""+results[res]["orig"]["value"]+"\">"+results[res]["origval"]["value"]+"</option>"
 		}
 		$('#origin').html(reshtml);
+		$('#originresources').html(reshtml);
 	});
 }
 
@@ -2150,6 +2174,14 @@ function originQuery(){
   height: 250px;
   overflow: auto;
 }
+.fullscreen-icon { background-image: url(icon-fullscreen.png); }
+.leaflet-retina .fullscreen-icon { background-image: url(icon-fullscreen-2x.png); background-size: 26px 26px; }
+/* one selector per rule as explained here : http://www.sitepoint.com/html5-full-screen-api/ */
+.leaflet-container:-webkit-full-screen { width: 100% !important; height: 100% !important; z-index: 99999; }
+.leaflet-container:-ms-fullscreen { width: 100% !important; height: 100% !important; z-index: 99999; }
+.leaflet-container:full-screen { width: 100% !important; height: 100% !important; z-index: 99999; }
+.leaflet-container:fullscreen { width: 100% !important; height: 100% !important; z-index: 99999; }
+.leaflet-pseudo-fullscreen { position: fixed !important; width: 100% !important; height: 100% !important; top: 0px !important; left: 0px !important; z-index: 99999; }
 </style>
 </head>
 <body>
@@ -2158,7 +2190,7 @@ function originQuery(){
 <div id="mapid" style="height:100%" width="80%">
 <script>
 
-	var mymap = L.map('mapid'/*,{ zoomControl:false }*/).setView([51.505, -0.09], 13);
+	var mymap = L.map('mapid',{fullscreenControl: true,fullscreenControlOptions: {position: 'topleft'}}).setView([51.505, -0.09], 13);
 	var layer = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
 		maxZoom: 18,
 		attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
@@ -2189,6 +2221,8 @@ NOT<input type="checkbox" id="geoconstraintnegate"/><select id="geospatiallist">
 <tr  valign="top" align="top"><td>Which features?<input type="checkbox" id="whichactive"/></td>
 <td><select id="classeslist2"></select><br/>NOT<input type="checkbox" id="constraintnegate"/><select id="attributelist"></select><br/><input type="text" id="constrainttext"/><br/>
 <button id="addconstraint" onClick="addConstraint('classeslist2','attributelist','constrainttext')">Add</button>
+<button id="clearconstraints" onclick="clearConstraints()">Clear</button></td></tr>
+<tr><td>Which resource?<input type="checkbox" id="resourceactive"/></td><td><select id="originresources"></select><button id="addgeoconstraint"  onClick="addConstraint('classeslist3','geospatiallist','classeslist4')">Add</button>
 <button id="clearconstraints" onclick="clearConstraints()">Clear</button></td></tr>
 <tr  valign="top" align="top"><td>Query: </td><td><button id="querybutton" onclick="uiQuery()">Query</button><button id="classhierarchy" onclick="getClassHierarchy({})">Class Hierarchy</button><button id="originQuery" onclick="originQuery()">Origin Query</button> </td></tr>
 </table>
