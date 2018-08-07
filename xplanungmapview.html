@@ -13,9 +13,11 @@
       <script src="js/leaflet_easyprint.js"></script>
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+  <link rel="stylesheet" href="https://cdn.rawgit.com/aratcliffe/Leaflet.print/master/dist/leaflet.print.css"/>
   <script src="js/rdfstore_min.js"></script>
    <script src="https://unpkg.com/shpjs@latest/dist/shp.js"></script>
   <script src="js/proj4.js"></script>
+  <script src="https://cdn.rawgit.com/aratcliffe/Leaflet.print/master/dist/leaflet.print.js"</script>
 	    <script src="js/turf.min.js"></script>
 		<script src="js/leaflet.pattern.js"></script>
 	    <script src="js/jsts.js"></script>
@@ -88,8 +90,10 @@ $( function() {
 
 function getClassHierarchy(classeswithinstances){
 console.log(JSON.stringify(classeswithinstances))
+// ?subject a owl:Class . NOT{ ?subject rdfs:subClassOf <http://www.xplanung.de/xplangml/5/0#> } .
+//?subject a owl:Class . } UNION 
 // (COUNT(?individual) AS ?individualc )
- query= `PREFIX owl: <http://www.w3.org/2002/07/owl#>
+query= `PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 SELECT DISTINCT ?subject ?label ?supertype
@@ -113,9 +117,21 @@ WHERE {
         ?subject != owl:Ontology) )
 } ORDER BY ?subject
 `
+/*query=`PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT DISTINCT ?subject ?label ?supertype
+WHERE {
+	?subject a owl:Class .
+	?subject rdfs:subClassOf ?supertype .
+	?supertype rdfs:subClassOf* <http://www.opengis.net/ont/geosparql#Feature> .
+	OPTIONAL { ?subject rdfs:subClassOf ?supertype } .
+    OPTIONAL { ?subject rdfs:label ?label }.
+}
+`*/
 console.log(query)
 currdfstore.execute(query, function(success,results){
-      // console.log(results)
+		 console.log(results)
         ress={}
         var tree={ "plugins": ["search", "types","sort"],"search": {}, "core": { "data" :[]}}
         tree["core"]["data"].push({ "id" : "http://www.w3.org/2002/07/owl#Thing", "icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif","parent" : "#", "text" : "owl:Thing" })
@@ -173,26 +189,6 @@ currdfstore.execute(query, function(success,results){
       $('#jstree').jstree(true).search(v,false,true);
     }, 250);
   });
-        /*$('#jstree').on('select_node.jstree', function (e, data) {
-            var i, j, r = [];
-            for(i = 0, j = data.selected.length; i < j; i++) {
-            r.push(data.instance.get_node(data.selected[i]).text);
-            }
-            $('#event_result').html('Selected: ' + r.join(', '));
-        });
-        $('#jstree').on('deselect_node.jstree', function (e, data) {
-            var i, j, r = [];
-            for(i = 0, j = data.selected.length; i < j; i++) {
-                    r.push(data.instance.get_node(data.selected[i]).text);
-            }
-            $('#event_result').html('Selected: ' + r.join(', '));
-        });*/
-  // create the instance
- // .jstree();
-        /*bind("select_node.jstree", function(evt, data){
-                console.log(data)
-        });*/
-        //console.log(JSON.stringify(ress))
 });
 }
 
@@ -639,6 +635,9 @@ function loadSupportingOntology(){
 				ress=result;
 				currdfstore.load('text/turtle', ress, function(s,d){
                                     $('#loadSupp').disabled=false;
+									getAllClasses();  
+				getAllProperties(); 
+				getOrigins();
 				});
 			}});
 		});
@@ -660,7 +659,10 @@ function importFromString(contents,file){
 				//console.log(s,d);
 				markercollection=[]
 				firstpoint=false;
-				uiQuery(true)
+				getAllClasses();  
+				getAllProperties(); 
+				getOrigins();
+				//uiQuery(true)
 				});
 		}else if($('#choosedatabase').val()!="remote"){
                         remoteSPARQLImport($('#sparqlendpointurl').val(),contents,$('#choosegraph').val())
@@ -727,7 +729,7 @@ function uiQuery(start){
 	for(cls in classesToQuery){
 		console.log(cls)
 		if($('#whichactive').is(':checked')){
-						queryString+="{{?person rdf:type <"+classesToQuery[cls]+"> .}UNION{?person rdfs:subClassOf* <"+classesToQuery[cls]+"> .} ?person ?rel ?val .  OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:lineStyle ?linestringStyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}   OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle  ?linestringImageStyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:hatch  ?hatch .}  "
+						queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val .  OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:lineStyle ?linestringStyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}   OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle  ?linestringImageStyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:hatch  ?hatch .}  "
 						if(classesToQuery[cls] in constraints){
                                                         if("NOT" in constraints[classesToQuery[cls]]){
                                                                 queryString+="MINUS {"+constraints[classesToQuery[cls]].replace("NOT ","")+"} ."
@@ -742,7 +744,7 @@ function uiQuery(start){
 						}
 						queryString+="} UNION"
 		}else{
-			queryString+="{ {?person rdf:type <"+classesToQuery[cls]+"> .}UNION{?person rdfs:subClassOf* <"+classesToQuery[cls]+"> .} ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}   OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringStyle ?linestyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle ?linestringImageStyle.} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:hatch  ?hatch .} } UNION "
+			queryString+="{ ?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}   OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringStyle ?linestyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle ?linestringImageStyle.} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:hatch  ?hatch .} } UNION "
 		}
 	}
 	queryString=queryString.substring(0,queryString.length-6)
@@ -2174,8 +2176,8 @@ function originQuery(){
   height: 250px;
   overflow: auto;
 }
-.fullscreen-icon { background-image: url(icon-fullscreen.png); }
-.leaflet-retina .fullscreen-icon { background-image: url(icon-fullscreen-2x.png); background-size: 26px 26px; }
+.fullscreen-icon { background-image: url(https://raw.githubusercontent.com/brunob/leaflet.fullscreen/master/icon-fullscreen.png); }
+.leaflet-retina .fullscreen-icon { background-image: url(https://raw.githubusercontent.com/brunob/leaflet.fullscreen/master/icon-fullscreen.png); background-size: 26px 26px; }
 /* one selector per rule as explained here : http://www.sitepoint.com/html5-full-screen-api/ */
 .leaflet-container:-webkit-full-screen { width: 100% !important; height: 100% !important; z-index: 99999; }
 .leaflet-container:-ms-fullscreen { width: 100% !important; height: 100% !important; z-index: 99999; }
@@ -2198,6 +2200,17 @@ function originQuery(){
 			'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
 		id: 'mapbox.streets'
 	}).addTo(mymap);
+	/*var printProvider = L.print.provider({
+   method: 'GET',
+   url: ' http://path/to/mapfish/print',
+   autoLoad: true,
+   dpi: 90
+});
+
+var printControl = L.control.print({
+   provider: printProvider
+});        
+mymap.addControl(printControl);*/
 
 </script>
 </div></td><td align="top" valign="top" width="20%" height="70%" ><table height="100%"><tr  valign="top" align="top">
