@@ -17,7 +17,7 @@
   <script src="js/rdfstore_min.js"></script>
    <script src="https://unpkg.com/shpjs@latest/dist/shp.js"></script>
   <script src="js/proj4.js"></script>
-  <script src="https://cdn.rawgit.com/aratcliffe/Leaflet.print/master/dist/leaflet.print.js"</script>
+  <script src="https://cdn.rawgit.com/aratcliffe/Leaflet.print/master/dist/leaflet.print.js"></script>
 	    <script src="js/turf.min.js"></script>
 		<script src="js/leaflet.pattern.js"></script>
 	    <script src="js/jsts.js"></script>
@@ -117,6 +117,7 @@ WHERE {
         ?subject != owl:Ontology) )
 } ORDER BY ?subject
 `
+
 /*query=`PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -129,9 +130,10 @@ WHERE {
     OPTIONAL { ?subject rdfs:label ?label }.
 }
 `*/
+//} UNION { ?individual a ?subject . } .
 console.log(query)
 currdfstore.execute(query, function(success,results){
-		 console.log(results)
+      // console.log(results)
         ress={}
         var tree={ "plugins": ["search", "types","sort"],"search": {}, "core": { "data" :[]}}
         tree["core"]["data"].push({ "id" : "http://www.w3.org/2002/07/owl#Thing", "icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif","parent" : "#", "text" : "owl:Thing" })
@@ -189,6 +191,26 @@ currdfstore.execute(query, function(success,results){
       $('#jstree').jstree(true).search(v,false,true);
     }, 250);
   });
+        /*$('#jstree').on('select_node.jstree', function (e, data) {
+            var i, j, r = [];
+            for(i = 0, j = data.selected.length; i < j; i++) {
+            r.push(data.instance.get_node(data.selected[i]).text);
+            }
+            $('#event_result').html('Selected: ' + r.join(', '));
+        });
+        $('#jstree').on('deselect_node.jstree', function (e, data) {
+            var i, j, r = [];
+            for(i = 0, j = data.selected.length; i < j; i++) {
+                    r.push(data.instance.get_node(data.selected[i]).text);
+            }
+            $('#event_result').html('Selected: ' + r.join(', '));
+        });*/
+  // create the instance
+ // .jstree();
+        /*bind("select_node.jstree", function(evt, data){
+                console.log(data)
+        });*/
+        //console.log(JSON.stringify(ress))
 });
 }
 
@@ -888,16 +910,18 @@ function displayQueryResult(persons,query,classTopers,persToClass){
                        }
 			markerIconPath=""
 			tooltipstart="<html>";
-			tooltip="<b><a href=\""+pers+"\" target=\"_blank\">"+pers.substring(pers.indexOf("#")+1)+"</a></b><ul>"
+			console.log(persons[pers])
+			typestr=Object.keys(persons[pers]["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"][0])[0]
+			tooltip="<b><a href=\""+pers+"\" target=\"_blank\">"+typestr.substring(typestr.indexOf("#")+1)+" ("+pers.substring(pers.indexOf("#")+1)+")</a></b><ul>"
 			Object.keys(persons[pers]).sort().forEach(function(rel) {
-				if(rel!=null && (rel.includes("asWKT") || rel.includes("asGML") || rel.includes("hatch") || rel.includes("asKML") || rel.includes("asGeoJSON") || rel.includes("pointStyle") || rel.includes("polygonStyle") || rel.includes("linestringStyle") ||  rel.includes("linestringImageStyle"))){
+				if(rel!=null && (rel.includes("asWKT") || rel.includes("asGML") || rel.includes("type") || rel.includes("hatch") || rel.includes("asKML") || rel.includes("asGeoJSON") || rel.includes("pointStyle") || rel.includes("polygonStyle") || rel.includes("linestringStyle") ||  rel.includes("linestringImageStyle"))){
 					}
 					else if(rel.includes("img") || rel.includes("linestringImage") ){
 						markerIconPath=persons[pers][rel]
 						if(markerIconPath.includes("<svg")){
-                                                    tooltipstart+=markerIconPath
+                            tooltipstart+="<div style=\"height: 25px;width=25px;\">"+markerIconPath+"</div>"
 						}else{
-                                                        tooltipstart+="<img src=\""+persons[pers][rel]+"\"/>"
+                            tooltipstart+="<img width=\"16\" height=\"16\" src=\""+persons[pers][rel]+"\"/>"
 						}
 						//tooltip+="<li>hasImage "+markerIconPath+"</li>"
 					}else{
@@ -1053,32 +1077,18 @@ function isJSON (something) {
 }
 	
 function getIconFromPath(markerIconPath){
-        if(markerIconPath.startsWith("<svg")){
-                    //alert(markerIconPath)
-                    markerIconPath = "data:image/svg+xml;base64," + btoa(markerIconPath);
-                    //markerIconPath = 'data:image/svg+xml;,' + markerIconPath.replace('#','%23')//"data:image/svg+xml," + 
-                    console.log(markerIconPath)
-                    //encodeURIComponent(markerIconPath).replace('#','%23');
-                    //markerIconPath = "data:image/svg+xml;base64," + btoa(markerIconPath);
-                    //markerIconPath=new DOMParser().parseFromString(markerIconPath, "image/svg+xml")
-                    //markerIconPath = "data:image/svg+xml," + encodeURIComponent(markerIconPath);
-                    //markerIconPath=markerIconPath.replace(new RegExp("\"",'g'),"'")
-                    //("data:image/svg+xml," +
-                   // markerIconPath).replace('#','%23');
-                //<svg xmlns='http://www.w3.org/2000/svg' width='1000' height='1000'><path d='M2,111 h300 l-242.7,176.3 92.7,-285.3 92.7,285.3 z' fill='#000000'/></svg>"
-        }
         console.log(markerIconPath)
-		var markerIcon = L.divIcon({ 
+        if(markerIconPath.startsWith("<svg")){
+			var markerIcon = L.divIcon({ 
 			className: 'label',
 			iconSize: [14, 14],
 			html: "<div style=\" opacity: 1.0;\">"+markerIconPath+"</div>"
-								//"/>"//'>svg//"<div style=\"transform:scale(10.0)\">"+svg+"</div>"//test
-						})
-		//L.marker(poly.getBounds().getCenter(), {icon:divIcon}).addTo(mymap);
-        /*var markerIcon = L.divIcon({
-                html: "
-                iconSize: [16, 16], // size of the icon
-        });*/
+			})
+        }else{
+			var markerIcon = L.icon({ 
+			iconUrl: markerIconPath,
+			});
+		}
         return markerIcon;
 }
 
@@ -1234,31 +1244,11 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch){
 						console.log("<img src=\"data:image/svg+xml;utf8,"+svg+"\"/>")
 						//<svg xmlns='http://www.w3.org/2000/svg' version='1.1'><Circle  color='#610c10'  stroke-width='1' cx='-3.0' cy='0' r='2.5' /><Text  fill='#610c10' size='4' x='-3.0' y='1.0' >G</text></svg>
 						ico=L.icon({iconUrl: "data:image/svg+xml;utf8,"+svg})
-						var divIcon = L.divIcon({ 
-								className: 'label',
-								iconSize: [14, 14],
-								html: "<div style=\" opacity: 1.0;\"><svg xmlns='http://www.w3.org/2000/svg' version='1.1'><circle  color='#610c10' stroke='black'  stroke-width='1' fill='none' cx='10.0' cy='10' r='10'   /><text  fill='#610c10' size='4' x='4' y='15'>G</text></svg></div>"
-								//"/>"//'>svg//"<div style=\"transform:scale(10.0)\">"+svg+"</div>"//test
-						})
+						divIcon=getIconFromPath(svg)
 						marker=L.marker(poly.getBounds().getCenter(), {icon:divIcon});
 						marker.addTo(mymap);
 						markercollection.push(marker)
 					}
-				   //poly.bindTooltip("my tooltip",{"permanent":true}).addTo(map);
-				   /*label = new L.Tooltip()
-					label.setContent("static label")
-					label.setLatLng(poly.getB	
-				   }
-
-				/*var divIcon = L.divIcon({ 
-					html: "<span style='color:blue;'>polytext</span>"
-						})
-				    L.marker(poly.getBounds().getCenter(), {icon:divIcon}).addTo(mymap);*/
-				   //poly.bindTooltip("my tooltip",{"permanent":true}).addTo(map);
-				   /*label = new L.Tooltip()
-					label.setContent("static label")
-					label.setLatLng(poly.getBounds().getCenter())
-					mymap.showLabel(label);*/
 
 			}
 
