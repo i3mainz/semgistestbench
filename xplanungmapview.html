@@ -179,7 +179,7 @@ currdfstore.execute(query, function(success,results){
         }*/
         tree["core"]["types"]={"file" : {"icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif"},"default" : {"icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif","valid_children" : ["default"]}}
         tree["plugins"]=["checkbox","search","sort","state","types"]
-        tree["checkbox"]={"cascade":"down","three_state":false}
+        tree["checkbox"]={"cascade":"","three_state":false}
 		console.log(JSON.stringify(tree))
        try{
             $('#jstree').jstree("destroy");
@@ -823,7 +823,7 @@ function uiQuery(start){
 	}
 	queryString=queryString.substring(0,queryString.length-6)
 	}else{
-		queryString=prefixList+" SELECT ?person ?rel ?pointstyle ?polygonstyle ?linestyle ?linestringImage ?linestringImageStyle ?hatch ?img ?val ?valLabel ?wkt ?wkt2 ?gml ?kml ?geojson WHERE { ?percls rdf:type owl:Class .  OPTIONAL{?percls semgis:polygonStyle ?polygonstyle .} OPTIONAL{?percls semgis:linestringStyle ?linestyle .} OPTIONAL{?percls semgis:pointStyle ?pointstyle .} OPTIONAL{?percls semgis:image ?img .} OPTIONAL{?percls semgis:linestringImageStyle ?linestringImageStyle .} OPTIONAL{?percls semgis:linestringImage ?linestringImage .} OPTIONAL{ ?person semgis:hatch  ?hatch .} ?person rdf:type ?percls . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val ?abc ?val2. ?val2 geo:asWKT ?wkt2 .}  OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL {?val rdfs:label ?valLabel . } "
+		queryString=prefixList+" SELECT DISTINCT ?person ?rel ?pointstyle ?polygonstyle ?linestyle ?linestringImage ?linestringImageStyle ?hatch ?img ?val ?valLabel ?wkt ?wkt2 ?gml ?kml ?geojson WHERE { ?percls rdf:type owl:Class .  OPTIONAL{?percls semgis:polygonStyle ?polygonstyle .} OPTIONAL{?percls semgis:linestringStyle ?linestyle .} OPTIONAL{?percls semgis:pointStyle ?pointstyle .} OPTIONAL{?percls semgis:image ?img .} OPTIONAL{?percls semgis:linestringImageStyle ?linestringImageStyle .} OPTIONAL{?percls semgis:linestringImage ?linestringImage .} OPTIONAL{ ?person semgis:hatch  ?hatch .} ?person rdf:type ?percls . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val ?abc ?val2. ?val2 geo:asWKT ?wkt2 .}  OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL {?val rdfs:label ?valLabel . } "
 	}
 	queryString+="} ORDER BY ?person "
 	console.log(queryString)
@@ -968,8 +968,13 @@ function displayQueryResult(persons,query,classTopers,persToClass){
 			markerIconPath=""
 			tooltipstart="<html>";
 			console.log(persons[pers])
-			typestr=Object.keys(persons[pers]["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"][0])[0]
-			tooltip="<b><a href=\""+pers+"\" target=\"_blank\">"+typestr.substring(typestr.indexOf("#")+1)+" ("+pers.substring(pers.indexOf("#")+1)+")</a></b><ul>"
+			typestr=""
+			for(cls in persons[pers]["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]){
+                                tp=persons[pers]["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"][cls][Object.keys(persons[pers]["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"][cls])[0]]
+                                typestr+=tp.substring(tp.indexOf('#')+1)+", "
+			}
+			typestr=typestr.substring(0,typestr.length-2)
+			tooltip="<b><a href=\""+pers+"\" target=\"_blank\">"+pers.substring(pers.indexOf('#')+1)+" ("+typestr+")</a></b><ul>"
 			Object.keys(persons[pers]).sort().forEach(function(rel) {
 				if(rel!=null && (rel.includes("asWKT") || rel.includes("asGML") || rel.includes("type") || rel.includes("hatch") || rel.includes("asKML") || rel.includes("asGeoJSON") || rel.includes("pointStyle") || rel.includes("polygonStyle") || rel.includes("linestringStyle") ||  rel.includes("linestringImageStyle"))){
 					}
