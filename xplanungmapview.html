@@ -179,6 +179,7 @@ currdfstore.execute(query, function(success,results){
         }*/
         tree["core"]["types"]={"file" : {"icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif"},"default" : {"icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif","valid_children" : ["default"]}}
         tree["plugins"]=["checkbox","search","sort","state","types"]
+        tree["checkbox"]={"cascade":"down","three_state":false}
 		console.log(JSON.stringify(tree))
        try{
             $('#jstree').jstree("destroy");
@@ -420,6 +421,8 @@ function getLiteral(value){
 
 
 function walkDOM(main,file,importdate) {
+        var propToRanges={}
+        var propToDomains={}
     var arr = [];
 	var result=ttlprefixList
 	depth=0
@@ -427,7 +430,7 @@ function walkDOM(main,file,importdate) {
 	
 	strconvertmode=false;
 	classdepth=100000
-    var loop = function(main,depth,parentNodeName,parentIndName,parentRelationName,strconvertmode,toadd) {
+    var loop = function(main,depth,parentNodeName,parentIndName,parentRelationName,strconvertmode,toadd,curclass) {
         do {
 			//console.log(main.nodeName+" - "+depth)
             arr.push(main);
@@ -451,6 +454,7 @@ function walkDOM(main,file,importdate) {
 				if(main.getAttribute("gml:id")==null){
 								uuid=generateUUID()
 								result+="<"+main.namespaceURI+"#"+main.localName+"> rdf:type owl:Class . \n <"+main.namespaceURI+"#"+uuid+"> rdf:type <"+main.namespaceURI+"#"+main.localName+"> .  \n"
+								curclass=main.namespaceURI+"#"+main.localName
 								//console.log("HAS ORIGIN BEFORE")
                                                                 insertid=(!(file.includes("http"))?file.substring(0,file.lastIndexOf('.')):file)+"_"+(importdate.getTime())
                                                                 //console.log("HAS ORIGIN: "+"<"+main.namespaceURI+"#"+uuid+"> <http://www.semgis.de/geodata#hasOrigin> <"+main.namespaceURI+"#"+insertid+"> . \n")
@@ -463,6 +467,7 @@ function walkDOM(main,file,importdate) {
 								parentNodeName=main.namespaceURI+"#"+uuid
 				}else{
 								result+="<"+main.namespaceURI+"#"+main.localName+"> rdf:type owl:Class . \n  <"+main.namespaceURI+"#"+main.getAttribute("gml:id")+"> rdf:type <"+main.namespaceURI+"#"+main.localName+"> . \n"
+								curclass=main.namespaceURI+"#"+main.localName
 								//console.log("HAS ORIGIN BEFORE")
 								insertid=(!(file.includes("http"))?file.substring(0,file.lastIndexOf('.')):file)+"_"+(importdate.getTime())
 								//console.log("HAS ORIGIN: "+"<"+main.namespaceURI+"#"+uuid+"> <http://www.semgis.de/geodata#hasOrigin> <"+main.namespaceURI+"#"+insertid+"> . \n")
@@ -519,19 +524,64 @@ function walkDOM(main,file,importdate) {
 					result+=" "+(main.firstChild.nextSibling.nodeName.includes(":")?main.firstChild.nextSibling.nodeName:"<"+main.firstChild.nextSibling.nodeName+">")+" rdf:type owl:Class . \n "
 					parentIndName=main.namespaceURI+"#"+uuid
 					parentRelationName=main.nodeName
+					if(!(main.namespaceURI+"#"+main.localName in propToRanges)){
+                                                propToRanges[main.namespaceURI+"#"+main.localName]={}
+					}
+					propToRanges[main.namespaceURI+"#"+main.localName][main.firstChild.nextSibling.nodeName]=true
+					if(!(main.namespaceURI+"#"+main.localName in propToDomains)){
+                                                propToDomains[main.namespaceURI+"#"+main.localName]={}
+					}
+					propToDomains[main.namespaceURI+"#"+main.localName][curclass]=true
 					//parentNodeName=main.getAttribute("gml:id")
 				}else if(main.childNodes.length==1 && main.firstChild.nodeName=="#text"){
+                                        lit=getLiteral(main.firstChild.nodeValue)
 					result+="<"+main.namespaceURI+"#"+main.localName+"> rdf:type owl:DatatypeProperty . \n <"+parentNodeName.replace(new RegExp(" ", 'g'),"_")+"> <"+main.namespaceURI+"#"+main.localName+"> "+getLiteral(main.firstChild.nodeValue)+" . \n"
+					if(!(main.namespaceURI+"#"+main.localName in propToRanges)){
+                                                propToRanges[main.namespaceURI+"#"+main.localName]={}
+					}
+					propToRanges[main.namespaceURI+"#"+main.localName][lit.substring(lit.indexOf("^^")+2)]=true
+					if(!(main.namespaceURI+"#"+main.localName in propToDomains)){
+                                                propToDomains[main.namespaceURI+"#"+main.localName]={}
+					}
+					propToDomains[main.namespaceURI+"#"+main.localName][curclass]=true
 					end=true;
 				}
 			}
             if(!end && main.hasChildNodes())
-                loop(main.firstChild,depth+1,parentNodeName,parentIndName,parentRelationName,strconvertmode,toadd);
+                loop(main.firstChild,depth+1,parentNodeName,parentIndName,parentRelationName,strconvertmode,toadd,curclass);
 			
         }
         while (main = main.nextSibling);
     }
-    loop(main,depth,parentNodeName,"","",strconvertmode,"");
+    loop(main,depth,parentNodeName,"","",strconvertmode,"","");
+   /* for(propp in propToRanges){
+            result+=" <"+propp+"> rdfs:range  "
+            if(Object.keys(propToRanges[propp]).length==1){
+                for(range in propToDomains[propp]){
+                    result+=" < "+propToRanges[propp][range]+"> . \n"
+                    }
+            }else if(Object.keys(propToRanges[propp]).length>1){
+                result+=" [ rdf:type owl:Class ; owl:unionOf ( "
+                for(range in propToRanges[propp]){
+                    result+=" <"+propToRanges[propp][range]+"> "
+                }
+                 result+=" )] . \n"
+            }
+    }
+    for(propp in propToDomains){
+            result+=" <"+propp+"> rdfs:domain "
+            if(Object.keys(propToDomains[propp]).length==1){
+                for(range in propToDomains[propp]){
+                    result+=" < "+propToDomains[propp][range]+"> . \n"
+                }
+            }else if(Object.keys(propToDomains[propp]).length>1){
+                result+=" [ rdf:type owl:Class ; owl:unionOf ( "
+                for(range in propToDomains[propp]){
+                    result+=" <"+propToDomains[propp][range]+"> "
+                }
+                 result+=" )] . \n"
+            }
+    }*/
 	//console.log(result)
 	lastimportAsTTL=result;
     return result;
@@ -749,11 +799,11 @@ function uiQuery(start){
 		alert("No classes to query!")
 		return
 	}
-	queryString=prefixList+" SELECT DISTINCT ?person ?rel ?pointstyle ?linestyle ?polygonstyle ?hatch ?img ?linestringImageStyle ?linestringImage ?val ?valLabel ?wkt ?gml ?kml ?geojson WHERE { "
+	queryString=prefixList+" SELECT DISTINCT ?person ?rel ?pointstyle ?linestyle ?polygonstyle ?hatch ?img ?linestringImageStyle ?linestringImage ?val ?valLabel ?wkt ?wkt2 ?gml ?kml ?geojson WHERE { "
 	for(cls in classesToQuery){
 		console.log(cls)
 		if($('#whichactive').is(':checked')){
-						queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val .  OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:lineStyle ?linestringStyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}   OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle  ?linestringImageStyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:hatch  ?hatch .}  "
+						queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val .  OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val ?abc ?val2. ?val2 geo:asWKT ?wkt2 .}  OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:lineStyle ?linestringStyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}   OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle  ?linestringImageStyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:hatch  ?hatch .}  "
 						if(classesToQuery[cls] in constraints){
                                                         if("NOT" in constraints[classesToQuery[cls]]){
                                                                 queryString+="MINUS {"+constraints[classesToQuery[cls]].replace("NOT ","")+"} ."
@@ -768,12 +818,12 @@ function uiQuery(start){
 						}
 						queryString+="} UNION"
 		}else{
-			queryString+="{ ?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}   OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringStyle ?linestyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle ?linestringImageStyle.} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:hatch  ?hatch .} } UNION "
+			queryString+="{ ?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val ?abc ?val2. ?val2 geo:asWKT ?wkt2 .}  OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}   OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringStyle ?linestyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle ?linestringImageStyle.} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:hatch  ?hatch .} } UNION "
 		}
 	}
 	queryString=queryString.substring(0,queryString.length-6)
 	}else{
-		queryString=prefixList+" SELECT ?person ?rel ?pointstyle ?polygonstyle ?linestyle ?linestringImage ?linestringImageStyle ?hatch ?img ?val ?valLabel ?wkt ?gml ?kml ?geojson WHERE { ?percls rdf:type owl:Class .  OPTIONAL{?percls semgis:polygonStyle ?polygonstyle .} OPTIONAL{?percls semgis:linestringStyle ?linestyle .} OPTIONAL{?percls semgis:pointStyle ?pointstyle .} OPTIONAL{?percls semgis:image ?img .} OPTIONAL{?percls semgis:linestringImageStyle ?linestringImageStyle .} OPTIONAL{?percls semgis:linestringImage ?linestringImage .} OPTIONAL{ ?person semgis:hatch  ?hatch .} ?person rdf:type ?percls . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL {?val rdfs:label ?valLabel . } "
+		queryString=prefixList+" SELECT ?person ?rel ?pointstyle ?polygonstyle ?linestyle ?linestringImage ?linestringImageStyle ?hatch ?img ?val ?valLabel ?wkt ?wkt2 ?gml ?kml ?geojson WHERE { ?percls rdf:type owl:Class .  OPTIONAL{?percls semgis:polygonStyle ?polygonstyle .} OPTIONAL{?percls semgis:linestringStyle ?linestyle .} OPTIONAL{?percls semgis:pointStyle ?pointstyle .} OPTIONAL{?percls semgis:image ?img .} OPTIONAL{?percls semgis:linestringImageStyle ?linestringImageStyle .} OPTIONAL{?percls semgis:linestringImage ?linestringImage .} OPTIONAL{ ?person semgis:hatch  ?hatch .} ?person rdf:type ?percls . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val ?abc ?val2. ?val2 geo:asWKT ?wkt2 .}  OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL {?val rdfs:label ?valLabel . } "
 	}
 	queryString+="} ORDER BY ?person "
 	console.log(queryString)
@@ -845,6 +895,10 @@ function handleResults(results,start){
 			if(results[res]["wkt"]!=null && !results[res]["wkt"]["value"].includes("ENVELOPE")){
                                 persons[results[res]["person"]["value"]]["asWKT"]=results[res]["wkt"]["value"]
                                 curQueryResultTTL+="<"+results[res]["person"]["value"]+"> geo:asWKT \""+results[res]["wkt"]["value"]+"\"^^geo:wktLiteral \n ";
+			}
+			else if(results[res]["wkt2"]!=null && !results[res]["wkt2"]["value"].includes("ENVELOPE")){
+                                persons[results[res]["person"]["value"]]["asWKT"]=results[res]["wkt2"]["value"]
+                                curQueryResultTTL+="<"+results[res]["person"]["value"]+"> geo:asWKT \""+results[res]["wkt2"]["value"]+"\"^^geo:wktLiteral \n ";
 			}
 			if(results[res]["gml"]!=null && !results[res]["gml"]["value"].includes("Envelope")){
                                 console.log(results[res]["gml"]["value"])
@@ -944,8 +998,9 @@ function displayQueryResult(persons,query,classTopers,persToClass){
                          //console.log("PERS Type: "+JSON.stringify(persons[pers]))
 			for(rel in persons[pers]){
                                
-				//console.log("Geometry render loop "+rel+" - "+persons[pers][rel])
+				
 				if(rel!=null && rel.includes("asWKT") && !persons[pers][rel].includes("ENVELOPE")){
+				console.log("Geometry render loop "+rel+" - "+persons[pers][rel])
 				//if(persons[pers]["asWKT"]!=null /*&& persons[pers]["asWKT"] in rest*/){
 					try{
 						//console.log(persons[pers][rel])
@@ -965,6 +1020,7 @@ function displayQueryResult(persons,query,classTopers,persToClass){
 						}else{
 							wkt.read(persons[pers][rel]);
 						}
+						
 						console.log("HATCH: "+JSON.stringify(persons[pers]["hatch"]))
 						geom=wkt.toJson();
 						handleGeometry(geom["type"],geom["coordinates"],query,markerIconPath,pers,persons[pers]["hatch"],layergroups,persToClass[pers])
