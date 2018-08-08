@@ -1039,16 +1039,12 @@ function displayQueryResult(persons,query,classTopers,persToClass){
 		mymap.removeControl(layercontrol);
 	}
         overlayMaps={}
-	for(layer in layergroups){
+        Object.keys(layergroups).sort().forEach(function(layer) {
 		overlayMaps[layer.substring(layer.indexOf('#')+1)]=L.layerGroup(layergroups[layer])
-	}
-        for(layer in overlayMaps){
+	});
+	for(layer in overlayMaps){
                 mymap.addLayer(overlayMaps[layer])
-		/*for(lay in layergroups[layer]){
-			mymap.addLayer(layergroups[layer][lay])//.addTo(mymap)
-		}*/
-	}
-
+        }
 	layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(mymap);
 
 }
