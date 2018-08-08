@@ -40,7 +40,9 @@ var supportingOntologies={"AAA-Data":"https://cdn.rawgit.com/i3mainz/SemGISOntol
 var currdfstore=null;
 var wkt = new Wkt.Wkt();
 var firstcoords=[]
+var overlayMaps={}
 var decorators=[]
+var layercontrol=null;
 var lastimportAsTTL=""
 var bboxpoint;
 var bboxbuffer;
@@ -872,6 +874,7 @@ function handleResults(results,start){
 }
 	
 function displayQueryResult(persons,query,classTopers,persToClass){
+	var layergroups={}
 	var wkt = new Wkt.Wkt();
 		firstpoint=false;
 		rest=[]
@@ -964,12 +967,25 @@ function displayQueryResult(persons,query,classTopers,persToClass){
 						}
 						console.log("HATCH: "+JSON.stringify(persons[pers]["hatch"]))
 						geom=wkt.toJson();
-						handleGeometry(geom["type"],geom["coordinates"],query,markerIconPath,pers,persons[pers]["hatch"])
+						handleGeometry(geom["type"],geom["coordinates"],query,markerIconPath,pers,persons[pers]["hatch"],layergroups,persToClass[pers])
 					}catch(err){console.log(err)}//}
 				}
 		}
 		}
 		tooltip+="</ul></html>"
+	}
+	overlayMaps={}
+	for(layer in layergroups){
+		overlayMaps[layer.substring(layer.indexOf('#')+1)]=L.layerGroup(layergroups[layer])
+	}
+	if(layercontrol!=null){
+		mymap.removeControl(layercontrol);
+	}
+	layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(mymap);
+	for(layer in layergroups){
+		for(lay in layergroups[layer]){
+			mymap.addLayer(layergroups[layer][lay])//.addTo(mymap)
+		}
 	}
 }
 	
@@ -1099,8 +1115,11 @@ function extend(obj, src) {
     return obj;
 }
 	
-function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch){
+function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch,layergroups,geomclass){
 	console.log("Handle Geometry "+type+" "+JSON.stringify(coordinates)+" "+query+" "+firstpoint+" - "+persons[pers]["linestringImageStyle"]+" - "+persons[pers]["image"]+" - "+hatch )
+	if(!(geomclass in layergroups)){
+		layergroups[geomclass]=[]
+	}
 	try{
 	if(type.toLowerCase()=="point" && coordinates!=null && coordinates[0]!=null){
 				if(!query || $('#coordinate').val()=="" || !$('#whereactive').is(':checked')  || (!turf.booleanDisjoint(turf.envelope(turf.point(coordinates)),bboxbuffer))){
@@ -1137,14 +1156,16 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch){
                             markerIcon=getIconFromPath(markerIconPath);
 			                var marker = new L.marker(coordinates,{icon:markerIcon}); //opacity may be set to zero
                             marker.bindPopup(tooltip, {maxWidth : 560});
-                            marker.addTo(mymap);
+                           // marker.addTo(mymap);
                             markercollection.push(marker)
+							layergroups[geomclass].push(marker)
                         } else{
 							//console.log("CREATING MARKER AT "+JSON.stringify(coordinates))
                             var marker = new L.marker(coordinates/*,{icon:markerIcon}*/); //opacity may be set to zero
                             marker.bindPopup(tooltip, {maxWidth : 560});
-                            marker.addTo(mymap);
+                            //marker.addTo(mymap);
                             markercollection.push(marker)
+							layergroups[geomclass].push(marker)
                         }
 				}
 
@@ -1169,11 +1190,14 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch){
 				if(!query || $('#coordinate').val()=="" || $('#coordinate').val()=="" || !$('#whereactive').is(':checked')  || !turf.booleanDisjoint(turf.envelope(turf.lineString(coordinates)),bboxbuffer)){
 				var polyline;
 			       if(persons[pers]["linestringStyle"]!=null){
-                                        polyline=L.polyline( coordinates,JSON.parse("{"+persons[pers]["linestringStyle"]+"}")).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap);                         
+                            polyline=L.polyline( coordinates,JSON.parse("{"+persons[pers]["linestringStyle"]+"}")).bindPopup(tooltip, {maxWidth : 560})//.addTo( mymap);   
+							layergroups[geomclass].push(polyline)										
 			       }else if(persons[pers]["style"]!=null){
-                                    polyline=L.polyline( coordinates,JSON.parse("{"+persons[pers]["style"]+"}")).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap); 
+                                    polyline=L.polyline( coordinates,JSON.parse("{"+persons[pers]["style"]+"}")).bindPopup(tooltip, {maxWidth : 560})//.addTo( mymap); 
+									layergroups[geomclass].push(polyline)
 			       }else{
-                                polyline=L.polyline( coordinates,{color: 'blue'}).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap); 
+                                polyline=L.polyline( coordinates,{color: 'blue'}).bindPopup(tooltip, {maxWidth : 560})//.addTo( mymap); 
+								layergroups[geomclass].push(polyline)
 			       }
 			       if(persons[pers]["linestringImageStyle"]!=null && persons[pers]["linestringImage"]!=null && $('#loadsvg').is(":checked")){
                                     style=JSON.parse(persons[pers]["linestringImageStyle"])
@@ -1185,7 +1209,7 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch){
                                                                 icon: markerIcon
                                                     }})}
                                                 ]
-                                            }).addTo(mymap));
+                                            }));//.addTo(mymap));
                                     }
 				}
 
@@ -1223,20 +1247,23 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch){
 						console.log("Person Style: "+jsonstyle)
 						if(stripes!=null)
 							jsonstyle["fillPattern"]=stripes
-                        poly=L.polygon( coordinates,jsonstyle).bindPopup(tooltip, {maxWidth : 560}).addTo( mymap);                         
+                        poly=L.polygon( coordinates,jsonstyle).bindPopup(tooltip, {maxWidth : 560})//.addTo( mymap); 
+						layergroups[geomclass].push(poly)                        
 			       }else if(persons[pers]["style"]!=null){
 								jsonstyle=JSON.parse("{"+persons[pers]["style"]+"}")
 								if(stripes!=null)
 									jsonstyle["fillPattern"]=stripes
 								console.log("PATTERN STYLE: "+JSON.stringify(jsonstyle))
                                 poly=L.polygon(coordinates,jsonstyle);
-                                poly.bindPopup(tooltip, {maxWidth : 560}).addTo( mymap);
+                                poly.bindPopup(tooltip, {maxWidth : 560})//.addTo( mymap);
+								layergroups[geomclass].push(poly)
 			       }else{
 							jsonstyle={color: 'red',opacity:0.4}
 				   			if(stripes!=null)
 								jsonstyle["fillPattern"]=stripes
                             poly=L.polygon( coordinates,jsonstyle);
-                                poly.bindPopup(tooltip, {maxWidth : 560}).addTo( mymap);                        
+                                poly.bindPopup(tooltip, {maxWidth : 560})//.addTo( mymap); 
+							layergroups[geomclass].push(poly)								
 			       }
 				   if(persons[pers]["img"]!=null){
 						console.log("semgis:image <div style='background-image: url(\"data:image/svg+xml;utf8,"+persons[pers]["img"]+"\")\"></div>)")
@@ -1246,8 +1273,9 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch){
 						ico=L.icon({iconUrl: "data:image/svg+xml;utf8,"+svg})
 						divIcon=getIconFromPath(svg)
 						marker=L.marker(poly.getBounds().getCenter(), {icon:divIcon});
-						marker.addTo(mymap);
+						//marker.addTo(mymap);
 						markercollection.push(marker)
+						layergroups[geomclass].push(marker)
 					}
 
 			}
@@ -2190,6 +2218,9 @@ function originQuery(){
 			'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
 		id: 'mapbox.streets'
 	}).addTo(mymap);
+	var baseMaps = {
+    "BaseMap": layer
+	};
 	/*var printProvider = L.print.provider({
    method: 'GET',
    url: ' http://path/to/mapfish/print',
