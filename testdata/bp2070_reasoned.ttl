@@ -2225,13 +2225,6 @@ xsd:date rdf:type rdfs:Datatype .
                                                                       <http://www.opengis.net/ont/geosparql#asWKT> "ENVELOPE(3 4,7 9)"^^<http://www.opengis.net/ont/geosparql#wktLiteral> .
 
 
-###  http://www.opengis.net/gml/3.2#bc1b939f-bc8d-4dcc-86e8-688bbf075165
-<http://www.opengis.net/gml/3.2#bc1b939f-bc8d-4dcc-86e8-688bbf075165> rdf:type owl:NamedIndividual ,
-                                                                               <http://www.opengis.net/gml/3.2#Envelope> ;
-                                                                      <http://www.opengis.net/ont/geosparql#asGML> "<gml:Envelope xmlns:gml=\"http://www.opengis.net/gml/3.2\" srsName=\"EPSG:31467\"><gml:lowerCorner>3479803.693 5889666.837</gml:lowerCorner><gml:upperCorner>3479803.693 5889666.837</gml:upperCorner></gml:Envelope>"^^<file:/home/timo/xmlschemas/examples/gmlLiteral> ;
-                                                                      rdfs:label "bc1b939f-bc8d-4dcc-86e8-688bbf075165"@en .
-
-
 ###  http://www.opengis.net/gml/3.2#bc9d72c6-c2d7-4089-a125-ac11b47fe63e
 <http://www.opengis.net/gml/3.2#bc9d72c6-c2d7-4089-a125-ac11b47fe63e> rdf:type owl:NamedIndividual ,
                                                                                <http://www.opengis.net/gml/3.2#Envelope> ;
@@ -2502,13 +2495,6 @@ xsd:date rdf:type rdfs:Datatype .
                                                                       <http://www.opengis.net/ont/geosparql#asWKT> "ENVELOPE(3 4,8 0)"^^<http://www.opengis.net/ont/geosparql#wktLiteral> .
 
 
-###  http://www.opengis.net/gml/3.2#ce475e06-4278-4e18-8a69-324c382ceea5
-<http://www.opengis.net/gml/3.2#ce475e06-4278-4e18-8a69-324c382ceea5> rdf:type owl:NamedIndividual ,
-                                                                               <http://www.opengis.net/gml/3.2#Envelope> ;
-                                                                      <http://www.opengis.net/ont/geosparql#asGML> "<gml:Envelope xmlns:gml=\"http://www.opengis.net/gml/3.2\" srsName=\"EPSG:31467\"><gml:lowerCorner>3479310.819 5889194.887</gml:lowerCorner><gml:upperCorner>3480266.396 5890075.477</gml:upperCorner></gml:Envelope>"^^<file:/home/timo/xmlschemas/examples/gmlLiteral> ;
-                                                                      rdfs:label "ce475e06-4278-4e18-8a69-324c382ceea5"@en .
-
-
 ###  http://www.opengis.net/gml/3.2#cebf9c49-d600-4c8e-96d4-e11f978d2c64
 <http://www.opengis.net/gml/3.2#cebf9c49-d600-4c8e-96d4-e11f978d2c64> rdf:type owl:NamedIndividual ,
                                                                                <http://www.opengis.net/gml/3.2#Envelope> ;
@@ -2660,13 +2646,6 @@ xsd:date rdf:type rdfs:Datatype .
                                                                       <http://www.opengis.net/ont/geosparql#asGeoJSON> "{\"geometry\":{\"type\":\"Envelope\",\"coordinates\":[[3,4],[7,8]]}}"^^<http://www.opengis.net/ont/geosparql#geojsonLiteral> ;
                                                                       <http://www.opengis.net/ont/geosparql#asKML> "<kml:Envelope><kml:coordinates>3,4 7,8</kml:coordinates></kml:Envelope>"^^<http://www.opengis.net/ont/geosparql#kmlLiteral> ;
                                                                       <http://www.opengis.net/ont/geosparql#asWKT> "ENVELOPE(3 4,7 8)"^^<http://www.opengis.net/ont/geosparql#wktLiteral> .
-
-
-###  http://www.opengis.net/gml/3.2#e217c65b-bfce-43b0-b83b-ad6a320b4225
-<http://www.opengis.net/gml/3.2#e217c65b-bfce-43b0-b83b-ad6a320b4225> rdf:type owl:NamedIndividual ,
-                                                                               <http://www.opengis.net/gml/3.2#Envelope> ;
-                                                                      <http://www.opengis.net/ont/geosparql#asGML> "<gml:Envelope xmlns:gml=\"http://www.opengis.net/gml/3.2\" srsName=\"EPSG:31467\"><gml:lowerCorner>3480022.367 5889753.311</gml:lowerCorner><gml:upperCorner>3480069.789 5889803.47</gml:upperCorner></gml:Envelope>"^^<file:/home/timo/xmlschemas/examples/gmlLiteral> ;
-                                                                      rdfs:label "e217c65b-bfce-43b0-b83b-ad6a320b4225"@en .
 
 
 ###  http://www.opengis.net/gml/3.2#e2305c00-1a3f-476c-97ad-fc8e6c90cc7d
@@ -3083,13 +3062,6 @@ xsd:date rdf:type rdfs:Datatype .
                                                                       <http://www.opengis.net/ont/geosparql#asWKT> "ENVELOPE(3 4,7 9)"^^<http://www.opengis.net/ont/geosparql#wktLiteral> .
 
 
-###  http://www.opengis.net/gml/3.2#00affc96-2636-4dd6-a790-8819007a7ec8
-<http://www.opengis.net/gml/3.2#00affc96-2636-4dd6-a790-8819007a7ec8> rdf:type owl:NamedIndividual ,
-                                                                               <http://www.opengis.net/gml/3.2#Envelope> ;
-                                                                      <http://www.opengis.net/ont/geosparql#asGML> "<gml:Envelope xmlns:gml=\"http://www.opengis.net/gml/3.2\" srsName=\"EPSG:31467\"><gml:lowerCorner>3478519.018 5890062.087</gml:lowerCorner><gml:upperCorner>3479404.523 5890556.764</gml:upperCorner></gml:Envelope>"^^<file:/home/timo/xmlschemas/examples/gmlLiteral> ;
-                                                                      rdfs:label "00affc96-2636-4dd6-a790-8819007a7ec8"@en .
-
-
 ###  http://www.opengis.net/gml/3.2#00dc7e4f-b9f9-4615-ba44-ae40b119ef55
 <http://www.opengis.net/gml/3.2#00dc7e4f-b9f9-4615-ba44-ae40b119ef55> rdf:type owl:NamedIndividual ,
                                                                                <http://www.opengis.net/gml/3.2#Envelope> ;
@@ -3387,13 +3359,6 @@ xsd:date rdf:type rdfs:Datatype .
                                                                       <http://www.opengis.net/ont/geosparql#asWKT> "ENVELOPE(3 4,7 8)"^^<http://www.opengis.net/ont/geosparql#wktLiteral> .
 
 
-###  http://www.opengis.net/gml/3.2#17ee8794-753f-4f9a-92bb-9c0b89ac01c3
-<http://www.opengis.net/gml/3.2#17ee8794-753f-4f9a-92bb-9c0b89ac01c3> rdf:type owl:NamedIndividual ,
-                                                                               <http://www.opengis.net/gml/3.2#Envelope> ;
-                                                                      <http://www.opengis.net/ont/geosparql#asGML> "<gml:Envelope xmlns:gml=\"http://www.opengis.net/gml/3.2\" srsName=\"EPSG:31467\"><gml:lowerCorner>3480117.998 5889833.621</gml:lowerCorner><gml:upperCorner>3480117.998 5889833.621</gml:upperCorner></gml:Envelope>"^^<file:/home/timo/xmlschemas/examples/gmlLiteral> ;
-                                                                      rdfs:label "17ee8794-753f-4f9a-92bb-9c0b89ac01c3"@en .
-
-
 ###  http://www.opengis.net/gml/3.2#187848c7-b3b5-4499-9a67-fd52a472d7a1
 <http://www.opengis.net/gml/3.2#187848c7-b3b5-4499-9a67-fd52a472d7a1> rdf:type owl:NamedIndividual ,
                                                                                <http://www.opengis.net/gml/3.2#Envelope> ;
@@ -3457,13 +3422,6 @@ xsd:date rdf:type rdfs:Datatype .
                                                                       <http://www.opengis.net/ont/geosparql#asWKT> "ENVELOPE(3 4,7 8)"^^<http://www.opengis.net/ont/geosparql#wktLiteral> .
 
 
-###  http://www.opengis.net/gml/3.2#2da6cf90-a5f3-4a1e-b5ff-8eee4234a7e8
-<http://www.opengis.net/gml/3.2#2da6cf90-a5f3-4a1e-b5ff-8eee4234a7e8> rdf:type owl:NamedIndividual ,
-                                                                               <http://www.opengis.net/gml/3.2#Envelope> ;
-                                                                      <http://www.opengis.net/ont/geosparql#asGML> "<gml:Envelope xmlns:gml=\"http://www.opengis.net/gml/3.2\" srsName=\"EPSG:31467\"><gml:lowerCorner>3480384.704 5889637.196</gml:lowerCorner><gml:upperCorner>3480507.188 5889819.524</gml:upperCorner></gml:Envelope>"^^<file:/home/timo/xmlschemas/examples/gmlLiteral> ;
-                                                                      rdfs:label "2da6cf90-a5f3-4a1e-b5ff-8eee4234a7e8"@en .
-
-
 ###  http://www.opengis.net/gml/3.2#2f7a8229-9d3b-42d8-96b9-9b69e7f559e3
 <http://www.opengis.net/gml/3.2#2f7a8229-9d3b-42d8-96b9-9b69e7f559e3> rdf:type owl:NamedIndividual ,
                                                                                <http://www.opengis.net/gml/3.2#Envelope> ;
@@ -3498,13 +3456,6 @@ xsd:date rdf:type rdfs:Datatype .
                                                                       <http://www.opengis.net/ont/geosparql#asGeoJSON> "{\"geometry\":{\"type\":\"Envelope\",\"coordinates\":[[3,4],[7,9]]}}"^^<http://www.opengis.net/ont/geosparql#geojsonLiteral> ;
                                                                       <http://www.opengis.net/ont/geosparql#asKML> "<kml:Envelope><kml:coordinates>3,4 7,9</kml:coordinates></kml:Envelope>"^^<http://www.opengis.net/ont/geosparql#kmlLiteral> ;
                                                                       <http://www.opengis.net/ont/geosparql#asWKT> "ENVELOPE(3 4,7 9)"^^<http://www.opengis.net/ont/geosparql#wktLiteral> .
-
-
-###  http://www.opengis.net/gml/3.2#24c37b55-5a7a-4201-81c2-25bb403145c1
-<http://www.opengis.net/gml/3.2#24c37b55-5a7a-4201-81c2-25bb403145c1> rdf:type owl:NamedIndividual ,
-                                                                               <http://www.opengis.net/gml/3.2#Envelope> ;
-                                                                      <http://www.opengis.net/ont/geosparql#asGML> "<gml:Envelope xmlns:gml=\"http://www.opengis.net/gml/3.2\" srsName=\"EPSG:31467\"><gml:lowerCorner>3480000.151 5889753.337</gml:lowerCorner><gml:upperCorner>3480000.151 5889753.337</gml:upperCorner></gml:Envelope>"^^<file:/home/timo/xmlschemas/examples/gmlLiteral> ;
-                                                                      rdfs:label "24c37b55-5a7a-4201-81c2-25bb403145c1"@en .
 
 
 ###  http://www.opengis.net/gml/3.2#24f40422-0c32-41af-8090-c9b003fb5cee
@@ -3624,13 +3575,6 @@ xsd:date rdf:type rdfs:Datatype .
                                                                       <http://www.opengis.net/ont/geosparql#asWKT> "ENVELOPE(3 4,7 9)"^^<http://www.opengis.net/ont/geosparql#wktLiteral> .
 
 
-###  http://www.opengis.net/gml/3.2#314daa7f-0048-441e-a991-174352e5626e
-<http://www.opengis.net/gml/3.2#314daa7f-0048-441e-a991-174352e5626e> rdf:type owl:NamedIndividual ,
-                                                                               <http://www.opengis.net/gml/3.2#Envelope> ;
-                                                                      <http://www.opengis.net/ont/geosparql#asGML> "<gml:Envelope xmlns:gml=\"http://www.opengis.net/gml/3.2\" srsName=\"EPSG:31467\"><gml:lowerCorner>3480353.826 </gml:lowerCorner><gml:lowerCorner>5889904.082</gml:lowerCorner><gml:upperCorner>3480550.285 5890004.37</gml:upperCorner></gml:Envelope>"^^<file:/home/timo/xmlschemas/examples/gmlLiteral> ;
-                                                                      rdfs:label "314daa7f-0048-441e-a991-174352e5626e"@en .
-
-
 ###  http://www.opengis.net/gml/3.2#326a12dd-b459-48d4-a972-b1f340cb93ca
 <http://www.opengis.net/gml/3.2#326a12dd-b459-48d4-a972-b1f340cb93ca> rdf:type owl:NamedIndividual ,
                                                                                <http://www.opengis.net/gml/3.2#Envelope> ;
@@ -3665,13 +3609,6 @@ xsd:date rdf:type rdfs:Datatype .
                                                                       <http://www.opengis.net/ont/geosparql#asGeoJSON> "{\"geometry\":{\"type\":\"Envelope\",\"coordinates\":[[3,4],[7,9]]}}"^^<http://www.opengis.net/ont/geosparql#geojsonLiteral> ;
                                                                       <http://www.opengis.net/ont/geosparql#asKML> "<kml:Envelope><kml:coordinates>3,4 7,9</kml:coordinates></kml:Envelope>"^^<http://www.opengis.net/ont/geosparql#kmlLiteral> ;
                                                                       <http://www.opengis.net/ont/geosparql#asWKT> "ENVELOPE(3 4,7 9)"^^<http://www.opengis.net/ont/geosparql#wktLiteral> .
-
-
-###  http://www.opengis.net/gml/3.2#354757f3-b02e-4865-9572-a145e34ef1c5
-<http://www.opengis.net/gml/3.2#354757f3-b02e-4865-9572-a145e34ef1c5> rdf:type owl:NamedIndividual ,
-                                                                               <http://www.opengis.net/gml/3.2#Envelope> ;
-                                                                      <http://www.opengis.net/ont/geosparql#asGML> "<gml:Envelope xmlns:gml=\"http://www.opengis.net/gml/3.2\" srsName=\"EPSG:31467\"><gml:lowerCorner>3479836.037 5889630.233</gml:lowerCorner><gml:upperCorner>3480001.533 5889762.7</gml:upperCorner></gml:Envelope>"^^<file:/home/timo/xmlschemas/examples/gmlLiteral> ;
-                                                                      rdfs:label "354757f3-b02e-4865-9572-a145e34ef1c5"@en .
 
 
 ###  http://www.opengis.net/gml/3.2#35503508-9be4-4054-ae2d-e6cc48a05bd7
@@ -4493,13 +4430,6 @@ xsd:date rdf:type rdfs:Datatype .
                                                                       <http://www.opengis.net/ont/geosparql#asWKT> "ENVELOPE(3 4,8 0)"^^<http://www.opengis.net/ont/geosparql#wktLiteral> .
 
 
-###  http://www.opengis.net/gml/3.2#8d40f8f0-2c8f-467c-abb3-5e5308df7974
-<http://www.opengis.net/gml/3.2#8d40f8f0-2c8f-467c-abb3-5e5308df7974> rdf:type owl:NamedIndividual ,
-                                                                               <http://www.opengis.net/gml/3.2#Envelope> ;
-                                                                      <http://www.opengis.net/ont/geosparql#asGML> "<gml:Envelope xmlns:gml=\"http://www.opengis.net/gml/3.2\" srsName=\"EPSG:31467\"><gml:lowerCorner>3479304.31 5890083.692</gml:lowerCorner><gml:upperCorner>3479385.494 5890184.765</gml:upperCorner></gml:Envelope>"^^<file:/home/timo/xmlschemas/examples/gmlLiteral> ;
-                                                                      rdfs:label "8d40f8f0-2c8f-467c-abb3-5e5308df7974"@en .
-
-
 ###  http://www.opengis.net/gml/3.2#8dcc73df-3a27-4399-89e0-e479d3bd41f0
 <http://www.opengis.net/gml/3.2#8dcc73df-3a27-4399-89e0-e479d3bd41f0> rdf:type owl:NamedIndividual ,
                                                                                <http://www.opengis.net/gml/3.2#Envelope> ;
@@ -4876,16 +4806,13 @@ xsd:date rdf:type rdfs:Datatype .
                                                                                         <http://www.xplanung.de/xplangml/5/0#BP_SchutzPflegeEntwicklungsFlaeche> ;
                                                                                <http://inspire.ec.europa.eu/schemas/plu/4.0#hilucsLandUse> <http://inspire.ec.europa.eu/codelist/HILUCSValue/6_3_NaturalAreasNotInOtherEconomicUse> ;
                                                                                <http://inspire.ec.europa.eu/schemas/plu/4.0#specificLandUse> <http://inspire.ec.europa.eu/codelist/de/landuse/3_40_SchutzPflegeEntwicklungsFlaeche> ;
-                                                                               <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#a9012828-611d-49cb-880c-56037003126b> ,
-                                                                                                                          <http://www.opengis.net/gml/3.2#00affc96-2636-4dd6-a790-8819007a7ec8> ;
+                                                                               <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#a9012828-611d-49cb-880c-56037003126b> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#gehoertZuBereich> <http://www.xplanung.de/xplangml/5/0#GML_7af470e9-0167-43ae-823d-56e4241eab9d> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#position> <http://www.xplanung.de/xplangml/5/0#3431a704-a47f-49af-a260-5ccbedaf446a> ;
-                                                                               <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ,
-                                                                                                                           0 ;
+                                                                               <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ;
                                                                                <http://www.xplanung.de/xplangml/5/0#flaechenschluss> "true"^^xsd:boolean ;
                                                                                <http://www.xplanung.de/xplangml/5/0#istAusgleich> "false"^^xsd:boolean ;
-                                                                               <http://www.xplanung.de/xplangml/5/0#rechtscharakter> "9998"^^xsd:int ,
-                                                                                                                                     9998 ;
+                                                                               <http://www.xplanung.de/xplangml/5/0#rechtscharakter> "9998"^^xsd:int ;
                                                                                rdfs:label "GML_064d1b74-ffaf-4fde-a6e8-04ab0fceaa88"@en .
 
 
@@ -5683,12 +5610,10 @@ xsd:date rdf:type rdfs:Datatype .
                                                                                <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#63c019dc-3928-4bbf-9317-d3a36443a156> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#gehoertZuBereich> <http://www.xplanung.de/xplangml/5/0#GML_7af470e9-0167-43ae-823d-56e4241eab9d> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#position> <http://www.xplanung.de/xplangml/5/0#c72f894a-1ac0-45ef-bb91-3f6c9bc7f840> ;
-                                                                               <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ,
-                                                                                                                           0 ;
+                                                                               <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ;
                                                                                <http://www.xplanung.de/xplangml/5/0#flaechenschluss> "true"^^xsd:boolean ;
                                                                                <http://www.xplanung.de/xplangml/5/0#istAusgleich> "false"^^xsd:boolean ;
-                                                                               <http://www.xplanung.de/xplangml/5/0#rechtscharakter> "9998"^^xsd:int ,
-                                                                                                                                     9998 ;
+                                                                               <http://www.xplanung.de/xplangml/5/0#rechtscharakter> "9998"^^xsd:int ;
                                                                                rdfs:label "GML_2c8d0815-73c3-479c-9fc8-1c51323d6367"@en .
 
 
@@ -5835,8 +5760,7 @@ xsd:date rdf:type rdfs:Datatype .
                                                                                         <http://www.xplanung.de/xplangml/5/0#BP_AnpflanzungBindungErhaltung_BindungErhaltung> ;
                                                                                <http://inspire.ec.europa.eu/schemas/plu/4.0#specificSupplementaryRegulation> <http://inspire.ec.europa.eu/codelist/de/landuse/3_4_1_BindungErhaltung> ;
                                                                                <http://inspire.ec.europa.eu/schemas/plu/4.0#supplementaryRegulation> <http://inspire.ec.europa.eu/codelist/SupplementaryRegulationValue/3_HeritageProtection> ;
-                                                                               <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#abda109a-59e0-418a-8bd8-5d572f67e93a> ,
-                                                                                                                          <http://www.opengis.net/gml/3.2#24c37b55-5a7a-4201-81c2-25bb403145c1> ;
+                                                                               <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#abda109a-59e0-418a-8bd8-5d572f67e93a> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#gehoertZuBereich> <http://www.xplanung.de/xplangml/5/0#GML_7af470e9-0167-43ae-823d-56e4241eab9d> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#position> <http://www.xplanung.de/xplangml/5/0#f06edf7c-d778-42c2-9f76-35682fb8f8ae> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ;
@@ -5946,12 +5870,10 @@ xsd:date rdf:type rdfs:Datatype .
                                                                                <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#cebf9c49-d600-4c8e-96d4-e11f978d2c64> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#gehoertZuBereich> <http://www.xplanung.de/xplangml/5/0#GML_7af470e9-0167-43ae-823d-56e4241eab9d> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#position> <http://www.xplanung.de/xplangml/5/0#586d7602-384d-4620-b291-14aaac0e7cca> ;
-                                                                               <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ,
-                                                                                                                           0 ;
+                                                                               <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ;
                                                                                <http://www.xplanung.de/xplangml/5/0#flaechenschluss> "true"^^xsd:boolean ;
                                                                                <http://www.xplanung.de/xplangml/5/0#istAusgleich> "false"^^xsd:boolean ;
-                                                                               <http://www.xplanung.de/xplangml/5/0#rechtscharakter> "9998"^^xsd:int ,
-                                                                                                                                     9998 ;
+                                                                               <http://www.xplanung.de/xplangml/5/0#rechtscharakter> "9998"^^xsd:int ;
                                                                                rdfs:label "GML_3a1ca16e-5f02-48c8-8e4e-24e0e8c2e981"@en .
 
 
@@ -6497,8 +6419,7 @@ xsd:date rdf:type rdfs:Datatype .
                                                                                         <http://www.xplanung.de/xplangml/5/0#BP_UeberbaubareGrundstuecksFlaeche> ;
                                                                                <http://inspire.ec.europa.eu/schemas/plu/4.0#specificSupplementaryRegulation> <http://inspire.ec.europa.eu/codelist/de/landuse/3_49_UeberbaubareGrundstuecksFlaeche> ;
                                                                                <http://inspire.ec.europa.eu/schemas/plu/4.0#supplementaryRegulation> <http://inspire.ec.europa.eu/codelist/SupplementaryRegulationValue/5_1_UsableBuildingArea> ;
-                                                                               <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#e217c65b-bfce-43b0-b83b-ad6a320b4225> ,
-                                                                                                                          <http://www.opengis.net/gml/3.2#454f7f85-5587-4a2e-8c6c-9290eeb245aa> ;
+                                                                               <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#454f7f85-5587-4a2e-8c6c-9290eeb245aa> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#gehoertZuBereich> <http://www.xplanung.de/xplangml/5/0#GML_7af470e9-0167-43ae-823d-56e4241eab9d> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#position> <http://www.xplanung.de/xplangml/5/0#6c63b356-9d82-477b-b562-b99403ec29a9> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ;
@@ -6608,12 +6529,10 @@ xsd:date rdf:type rdfs:Datatype .
                                                                                <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#514831b3-e7de-4d97-9d3a-7a2e186ca103> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#gehoertZuBereich> <http://www.xplanung.de/xplangml/5/0#GML_7af470e9-0167-43ae-823d-56e4241eab9d> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#position> <http://www.xplanung.de/xplangml/5/0#26124915-8839-4f00-8520-be547ad25293> ;
-                                                                               <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ,
-                                                                                                                           0 ;
+                                                                               <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ;
                                                                                <http://www.xplanung.de/xplangml/5/0#flaechenschluss> "true"^^xsd:boolean ;
                                                                                <http://www.xplanung.de/xplangml/5/0#istAusgleich> "false"^^xsd:boolean ;
-                                                                               <http://www.xplanung.de/xplangml/5/0#rechtscharakter> "9998"^^xsd:int ,
-                                                                                                                                     9998 ;
+                                                                               <http://www.xplanung.de/xplangml/5/0#rechtscharakter> "9998"^^xsd:int ;
                                                                                rdfs:label "GML_51e1035b-d7f7-4d6d-8bcf-1335cde72afc"@en .
 
 
@@ -6734,12 +6653,10 @@ xsd:date rdf:type rdfs:Datatype .
                                                                                <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#23945326-0dac-411a-9e55-b5ff6b79122d> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#gehoertZuBereich> <http://www.xplanung.de/xplangml/5/0#GML_7af470e9-0167-43ae-823d-56e4241eab9d> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#position> <http://www.xplanung.de/xplangml/5/0#bb66fe0a-5a00-437a-a2fa-e978265bae8a> ;
-                                                                               <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ,
-                                                                                                                           0 ;
+                                                                               <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ;
                                                                                <http://www.xplanung.de/xplangml/5/0#flaechenschluss> "true"^^xsd:boolean ;
                                                                                <http://www.xplanung.de/xplangml/5/0#istAusgleich> "false"^^xsd:boolean ;
-                                                                               <http://www.xplanung.de/xplangml/5/0#rechtscharakter> "9998"^^xsd:int ,
-                                                                                                                                     9998 ;
+                                                                               <http://www.xplanung.de/xplangml/5/0#rechtscharakter> "9998"^^xsd:int ;
                                                                                rdfs:label "GML_56478008-ea1c-49e0-8724-403b0f30f475"@en .
 
 
@@ -6912,12 +6829,10 @@ xsd:date rdf:type rdfs:Datatype .
                                                                                <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#fc78afc8-997e-4271-aa01-8ac5800db95e> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#gehoertZuBereich> <http://www.xplanung.de/xplangml/5/0#GML_7af470e9-0167-43ae-823d-56e4241eab9d> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#position> <http://www.xplanung.de/xplangml/5/0#ee8a6af8-8965-4db4-b23f-da2ec0092c15> ;
-                                                                               <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ,
-                                                                                                                           0 ;
+                                                                               <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ;
                                                                                <http://www.xplanung.de/xplangml/5/0#flaechenschluss> "true"^^xsd:boolean ;
                                                                                <http://www.xplanung.de/xplangml/5/0#istAusgleich> "false"^^xsd:boolean ;
-                                                                               <http://www.xplanung.de/xplangml/5/0#rechtscharakter> "9998"^^xsd:int ,
-                                                                                                                                     9998 ;
+                                                                               <http://www.xplanung.de/xplangml/5/0#rechtscharakter> "9998"^^xsd:int ;
                                                                                rdfs:label "GML_5ffe6cc1-d138-4c07-86c0-1305b0787beb"@en .
 
 
@@ -7073,8 +6988,7 @@ xsd:date rdf:type rdfs:Datatype .
                                                                                         <http://www.xplanung.de/xplangml/5/0#BP_BauLinie> ;
                                                                                <http://inspire.ec.europa.eu/schemas/plu/4.0#specificSupplementaryRegulation> <http://inspire.ec.europa.eu/codelist/de/supplementaryRegulation/3_9_BauLinie> ;
                                                                                <http://inspire.ec.europa.eu/schemas/plu/4.0#supplementaryRegulation> <http://inspire.ec.europa.eu/codelist/SupplementaryRegulationValue/6_1_BoundaryLine> ;
-                                                                               <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#04e63428-ae29-4f9d-8b69-313aade1888c> ,
-                                                                                                                          <http://www.opengis.net/gml/3.2#314daa7f-0048-441e-a991-174352e5626e> ;
+                                                                               <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#04e63428-ae29-4f9d-8b69-313aade1888c> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#gehoertZuBereich> <http://www.xplanung.de/xplangml/5/0#GML_7af470e9-0167-43ae-823d-56e4241eab9d> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#position> <http://www.xplanung.de/xplangml/5/0#e341d177-96fb-4a67-aa2a-a66651e61879> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ;
@@ -7089,8 +7003,7 @@ xsd:date rdf:type rdfs:Datatype .
                                                                                         <http://www.xplanung.de/xplangml/5/0#BP_AnpflanzungBindungErhaltung_BindungErhaltung> ;
                                                                                <http://inspire.ec.europa.eu/schemas/plu/4.0#specificSupplementaryRegulation> <http://inspire.ec.europa.eu/codelist/de/landuse/3_4_1_BindungErhaltung> ;
                                                                                <http://inspire.ec.europa.eu/schemas/plu/4.0#supplementaryRegulation> <http://inspire.ec.europa.eu/codelist/SupplementaryRegulationValue/3_HeritageProtection> ;
-                                                                               <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#17ee8794-753f-4f9a-92bb-9c0b89ac01c3> ,
-                                                                                                                          <http://www.opengis.net/gml/3.2#7e17d489-aca9-413b-bb89-617152210664> ;
+                                                                               <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#7e17d489-aca9-413b-bb89-617152210664> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#gehoertZuBereich> <http://www.xplanung.de/xplangml/5/0#GML_7af470e9-0167-43ae-823d-56e4241eab9d> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#position> <http://www.xplanung.de/xplangml/5/0#27bcb6e3-bb12-452b-9714-475175eb4d35> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ;
@@ -7247,8 +7160,7 @@ xsd:date rdf:type rdfs:Datatype .
                                                                                         <http://www.xplanung.de/xplangml/5/0#BP_BauGrenze> ;
                                                                                <http://inspire.ec.europa.eu/schemas/plu/4.0#specificSupplementaryRegulation> <http://inspire.ec.europa.eu/codelist/de/supplementaryRegulation/3_8_BauGrenze> ;
                                                                                <http://inspire.ec.europa.eu/schemas/plu/4.0#supplementaryRegulation> <http://inspire.ec.europa.eu/codelist/SupplementaryRegulationValue/6_1_BuildingLine> ;
-                                                                               <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#354757f3-b02e-4865-9572-a145e34ef1c5> ,
-                                                                                                                          <http://www.opengis.net/gml/3.2#441896f8-e563-4296-b0e4-969e4f5daa91> ;
+                                                                               <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#441896f8-e563-4296-b0e4-969e4f5daa91> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#gehoertZuBereich> <http://www.xplanung.de/xplangml/5/0#GML_7af470e9-0167-43ae-823d-56e4241eab9d> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#position> <http://www.xplanung.de/xplangml/5/0#99893a50-a360-45c8-adb1-adfdec2f3fc4> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ;
@@ -8496,8 +8408,7 @@ xsd:date rdf:type rdfs:Datatype .
                                                                                         <http://www.xplanung.de/xplangml/5/0#BP_UeberbaubareGrundstuecksFlaeche> ;
                                                                                <http://inspire.ec.europa.eu/schemas/plu/4.0#specificSupplementaryRegulation> <http://inspire.ec.europa.eu/codelist/de/landuse/3_49_UeberbaubareGrundstuecksFlaeche> ;
                                                                                <http://inspire.ec.europa.eu/schemas/plu/4.0#supplementaryRegulation> <http://inspire.ec.europa.eu/codelist/SupplementaryRegulationValue/5_1_UsableBuildingArea> ;
-                                                                               <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#d6bfa787-b0a1-4376-80e2-486b61f749a9> ,
-                                                                                                                          <http://www.opengis.net/gml/3.2#8d40f8f0-2c8f-467c-abb3-5e5308df7974> ;
+                                                                               <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#d6bfa787-b0a1-4376-80e2-486b61f749a9> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#gehoertZuBereich> <http://www.xplanung.de/xplangml/5/0#GML_7af470e9-0167-43ae-823d-56e4241eab9d> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#position> <http://www.xplanung.de/xplangml/5/0#b82aa896-f4bb-4bd8-9ec7-781dbe9b8c04> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ;
@@ -8693,8 +8604,7 @@ xsd:date rdf:type rdfs:Datatype .
                                                                                         <http://www.xplanung.de/xplangml/5/0#BP_SchutzPflegeEntwicklungsFlaeche> ;
                                                                                <http://inspire.ec.europa.eu/schemas/plu/4.0#hilucsLandUse> <http://inspire.ec.europa.eu/codelist/HILUCSValue/6_3_NaturalAreasNotInOtherEconomicUse> ;
                                                                                <http://inspire.ec.europa.eu/schemas/plu/4.0#specificLandUse> <http://inspire.ec.europa.eu/codelist/de/landuse/3_40_SchutzPflegeEntwicklungsFlaeche> ;
-                                                                               <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#c74dcfaa-1da9-40a1-9f75-b563c36ff948> ,
-                                                                                                                          <http://www.opengis.net/gml/3.2#ce475e06-4278-4e18-8a69-324c382ceea5> ;
+                                                                               <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#c74dcfaa-1da9-40a1-9f75-b563c36ff948> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#gehoertZuBereich> <http://www.xplanung.de/xplangml/5/0#GML_7af470e9-0167-43ae-823d-56e4241eab9d> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#position> <http://www.xplanung.de/xplangml/5/0#679293c3-5846-414d-9a66-1aa0e0e9f211> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ;
@@ -8782,8 +8692,7 @@ xsd:date rdf:type rdfs:Datatype .
                                                                                         <http://www.xplanung.de/xplangml/5/0#BP_AnpflanzungBindungErhaltung_BindungErhaltung> ;
                                                                                <http://inspire.ec.europa.eu/schemas/plu/4.0#specificSupplementaryRegulation> <http://inspire.ec.europa.eu/codelist/de/landuse/3_4_1_BindungErhaltung> ;
                                                                                <http://inspire.ec.europa.eu/schemas/plu/4.0#supplementaryRegulation> <http://inspire.ec.europa.eu/codelist/SupplementaryRegulationValue/3_HeritageProtection> ;
-                                                                               <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#bbdf2af7-11fa-4833-9150-8a40c47de1fb> ,
-                                                                                                                          <http://www.opengis.net/gml/3.2#bc1b939f-bc8d-4dcc-86e8-688bbf075165> ;
+                                                                               <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#bbdf2af7-11fa-4833-9150-8a40c47de1fb> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#gehoertZuBereich> <http://www.xplanung.de/xplangml/5/0#GML_7af470e9-0167-43ae-823d-56e4241eab9d> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#position> <http://www.xplanung.de/xplangml/5/0#b11fd5e8-497b-4d9f-9ac9-1fee4f4916bc> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ;
@@ -9082,13 +8991,10 @@ xsd:date rdf:type rdfs:Datatype .
                                                                                <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#e8c0a355-20bb-4f13-8459-81e560354a82> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#gehoertZuBereich> <http://www.xplanung.de/xplangml/5/0#GML_7af470e9-0167-43ae-823d-56e4241eab9d> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#position> <http://www.xplanung.de/xplangml/5/0#35fc5182-afdb-4b82-8d29-be8f7533e759> ;
-                                                                               <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ,
-                                                                                                                           0 ;
+                                                                               <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ;
                                                                                <http://www.xplanung.de/xplangml/5/0#flaechenschluss> "true"^^xsd:boolean ;
-                                                                               <http://www.xplanung.de/xplangml/5/0#nutzungsform> "1000"^^xsd:int ,
-                                                                                                                                  1000 ;
-                                                                               <http://www.xplanung.de/xplangml/5/0#rechtscharakter> "9998"^^xsd:int ,
-                                                                                                                                     9998 ;
+                                                                               <http://www.xplanung.de/xplangml/5/0#nutzungsform> "1000"^^xsd:int ;
+                                                                               <http://www.xplanung.de/xplangml/5/0#rechtscharakter> "9998"^^xsd:int ;
                                                                                rdfs:label "GML_b088ef6c-b009-4af7-aec6-5ed090aaff10"@en ;
                                                                                <http://www.xplanung.de/xplangml/5/0#nutzungsform> <http://www.xplanung.de/xplangml/5/0#BP_StrassenVerkehrsFlaeche_1000> .
 
@@ -9187,12 +9093,10 @@ xsd:date rdf:type rdfs:Datatype .
                                                                                <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#b55e1786-8b5c-4cbc-a328-a1b7d3f9ba8d> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#gehoertZuBereich> <http://www.xplanung.de/xplangml/5/0#GML_7af470e9-0167-43ae-823d-56e4241eab9d> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#position> <http://www.xplanung.de/xplangml/5/0#7fadbf00-ed5b-4447-887d-163654268512> ;
-                                                                               <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ,
-                                                                                                                           0 ;
+                                                                               <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ;
                                                                                <http://www.xplanung.de/xplangml/5/0#flaechenschluss> "true"^^xsd:boolean ;
                                                                                <http://www.xplanung.de/xplangml/5/0#istAusgleich> "false"^^xsd:boolean ;
-                                                                               <http://www.xplanung.de/xplangml/5/0#rechtscharakter> "9998"^^xsd:int ,
-                                                                                                                                     9998 ;
+                                                                               <http://www.xplanung.de/xplangml/5/0#rechtscharakter> "9998"^^xsd:int ;
                                                                                rdfs:label "GML_b97918dc-013d-4d20-a960-26df80f00a97"@en .
 
 
@@ -9292,12 +9196,10 @@ xsd:date rdf:type rdfs:Datatype .
                                                                                <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#b98f0f75-e11a-4328-907b-04f3eac1ea87> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#gehoertZuBereich> <http://www.xplanung.de/xplangml/5/0#GML_7af470e9-0167-43ae-823d-56e4241eab9d> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#position> <http://www.xplanung.de/xplangml/5/0#5292e3dc-ec53-4007-881c-d3d4bef52c4f> ;
-                                                                               <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ,
-                                                                                                                           0 ;
+                                                                               <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ;
                                                                                <http://www.xplanung.de/xplangml/5/0#flaechenschluss> "true"^^xsd:boolean ;
                                                                                <http://www.xplanung.de/xplangml/5/0#istAusgleich> "false"^^xsd:boolean ;
-                                                                               <http://www.xplanung.de/xplangml/5/0#rechtscharakter> "9998"^^xsd:int ,
-                                                                                                                                     9998 ;
+                                                                               <http://www.xplanung.de/xplangml/5/0#rechtscharakter> "9998"^^xsd:int ;
                                                                                rdfs:label "GML_bcd43ed0-4777-4458-bf60-d0c2f5bfb04b"@en .
 
 
@@ -9886,12 +9788,10 @@ xsd:date rdf:type rdfs:Datatype .
                                                                                <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#b9c731ae-3abf-4226-84d1-64ff939b017d> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#gehoertZuBereich> <http://www.xplanung.de/xplangml/5/0#GML_7af470e9-0167-43ae-823d-56e4241eab9d> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#position> <http://www.xplanung.de/xplangml/5/0#5773dc58-0fa9-46dc-a677-44e8a6d5c5a9> ;
-                                                                               <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ,
-                                                                                                                           0 ;
+                                                                               <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ;
                                                                                <http://www.xplanung.de/xplangml/5/0#flaechenschluss> "true"^^xsd:boolean ;
                                                                                <http://www.xplanung.de/xplangml/5/0#istAusgleich> "false"^^xsd:boolean ;
-                                                                               <http://www.xplanung.de/xplangml/5/0#rechtscharakter> "9998"^^xsd:int ,
-                                                                                                                                     9998 ;
+                                                                               <http://www.xplanung.de/xplangml/5/0#rechtscharakter> "9998"^^xsd:int ;
                                                                                rdfs:label "GML_d5e084d1-115c-4578-a55a-99c6509ad850"@en .
 
 
@@ -9957,12 +9857,10 @@ xsd:date rdf:type rdfs:Datatype .
                                                                                <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#fc6c65fc-0fb2-4641-8b81-12161904c60d> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#gehoertZuBereich> <http://www.xplanung.de/xplangml/5/0#GML_7af470e9-0167-43ae-823d-56e4241eab9d> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#position> <http://www.xplanung.de/xplangml/5/0#2dad183b-7b6b-4306-bb71-a123baac8163> ;
-                                                                               <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ,
-                                                                                                                           0 ;
+                                                                               <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ;
                                                                                <http://www.xplanung.de/xplangml/5/0#flaechenschluss> "true"^^xsd:boolean ;
                                                                                <http://www.xplanung.de/xplangml/5/0#istAusgleich> "false"^^xsd:boolean ;
-                                                                               <http://www.xplanung.de/xplangml/5/0#rechtscharakter> "9998"^^xsd:int ,
-                                                                                                                                     9998 ;
+                                                                               <http://www.xplanung.de/xplangml/5/0#rechtscharakter> "9998"^^xsd:int ;
                                                                                rdfs:label "GML_d81251be-6ade-4378-8422-191f59e163a8"@en .
 
 
@@ -10149,8 +10047,7 @@ xsd:date rdf:type rdfs:Datatype .
                                                                                         <http://www.xplanung.de/xplangml/5/0#BP_BauGrenze> ;
                                                                                <http://inspire.ec.europa.eu/schemas/plu/4.0#specificSupplementaryRegulation> <http://inspire.ec.europa.eu/codelist/de/supplementaryRegulation/3_8_BauGrenze> ;
                                                                                <http://inspire.ec.europa.eu/schemas/plu/4.0#supplementaryRegulation> <http://inspire.ec.europa.eu/codelist/SupplementaryRegulationValue/6_1_BuildingLine> ;
-                                                                               <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#2da6cf90-a5f3-4a1e-b5ff-8eee4234a7e8> ,
-                                                                                                                          <http://www.opengis.net/gml/3.2#7e3dec06-d5b0-44f1-90dc-930c0a20d815> ;
+                                                                               <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#7e3dec06-d5b0-44f1-90dc-930c0a20d815> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#gehoertZuBereich> <http://www.xplanung.de/xplangml/5/0#GML_7af470e9-0167-43ae-823d-56e4241eab9d> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#position> <http://www.xplanung.de/xplangml/5/0#f4d26b62-3caa-4efc-bffa-70404a03377d> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ;
@@ -10305,12 +10202,10 @@ xsd:date rdf:type rdfs:Datatype .
                                                                                <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#09c58efe-0f8c-4541-9e54-a98a59336ed9> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#gehoertZuBereich> <http://www.xplanung.de/xplangml/5/0#GML_7af470e9-0167-43ae-823d-56e4241eab9d> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#position> <http://www.xplanung.de/xplangml/5/0#5121708d-46e9-407f-98d3-1657bd6aad99> ;
-                                                                               <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ,
-                                                                                                                           0 ;
+                                                                               <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ;
                                                                                <http://www.xplanung.de/xplangml/5/0#flaechenschluss> "true"^^xsd:boolean ;
                                                                                <http://www.xplanung.de/xplangml/5/0#istAusgleich> "false"^^xsd:boolean ;
-                                                                               <http://www.xplanung.de/xplangml/5/0#rechtscharakter> "9998"^^xsd:int ,
-                                                                                                                                     9998 ;
+                                                                               <http://www.xplanung.de/xplangml/5/0#rechtscharakter> "9998"^^xsd:int ;
                                                                                rdfs:label "GML_e831e788-2734-40ff-ab99-3cd436a42bdc"@en .
 
 
@@ -10599,12 +10494,10 @@ xsd:date rdf:type rdfs:Datatype .
                                                                                <http://www.opengis.net/gml/3.2#boundedBy> <http://www.opengis.net/gml/3.2#1c2f9bab-07c4-4dc5-b337-efdcc5292220> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#gehoertZuBereich> <http://www.xplanung.de/xplangml/5/0#GML_7af470e9-0167-43ae-823d-56e4241eab9d> ;
                                                                                <http://www.xplanung.de/xplangml/5/0#position> <http://www.xplanung.de/xplangml/5/0#8ecc186d-43a2-4a2e-a61c-b842077a2155> ;
-                                                                               <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ,
-                                                                                                                           0 ;
+                                                                               <http://www.xplanung.de/xplangml/5/0#ebene> "0"^^xsd:int ;
                                                                                <http://www.xplanung.de/xplangml/5/0#flaechenschluss> "true"^^xsd:boolean ;
                                                                                <http://www.xplanung.de/xplangml/5/0#istAusgleich> "false"^^xsd:boolean ;
-                                                                               <http://www.xplanung.de/xplangml/5/0#rechtscharakter> "9998"^^xsd:int ,
-                                                                                                                                     9998 ;
+                                                                               <http://www.xplanung.de/xplangml/5/0#rechtscharakter> "9998"^^xsd:int ;
                                                                                rdfs:label "GML_f869e0f7-302b-4e02-86f0-ce955206f154"@en .
 
 
