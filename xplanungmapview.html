@@ -420,7 +420,7 @@ function getLiteral(value){
 }
 
 
-function walkDOM(main,file,importdate) {
+function walkDOM(main,file,importdate,epsg) {
         var propToRanges={}
         var propToDomains={}
     var arr = [];
@@ -496,7 +496,7 @@ function walkDOM(main,file,importdate) {
 					if(main.firstChild!=null && main.firstChild.nextSibling!=null){						
 						xmlString = (new XMLSerializer()).serializeToString(main);		
 						//console.log("XMLString: "+xmlString)
-						coordsconverted=getCoordArrayFromGML(xmlString,epsgdefs[$('#epsgqueryimport option:selected').val()],true,false,true)
+						coordsconverted=getCoordArrayFromGML(xmlString,epsg,true,false,true)
 						//console.log("Coordarray: "+coordsconverted)
 						result+="<"+relName+"> <http://www.opengis.net/ont/geosparql#asGML> \""+convertGMLToOtherCRS(xmlString.replace(new RegExp("\"", 'g'),"\\\"").replace(new RegExp("\n", 'g'),""),coordsconverted)+"\"^^<http://www.opengis.net/ont/geosparql#gmlLiteral> . \n "
 						//console.log(coordsconverted)
@@ -603,7 +603,7 @@ function convertGMLToOtherCRS(gmlString,coordarray){
 	return null;
 }
 
-function walkDOMKML(main) {
+function walkDOMKML(main,epsg) {
     var arr = [];
 	var result=ttlprefixList
 	depth=0
@@ -717,12 +717,13 @@ function loadSupportingOntology(){
 		});
 }
 
-function importFromString(contents,file){
+function importFromString(contents,file,importformat,epsg){
+		console.log(file+" "+importformat+" "+epsg)
         var importdate = new Date();
-        switch($('#queryimportformat').val()){
-					case "geojson": contents=importGeoJSON(contents);break;
-					case "gml": contents=walkDOM(new DOMParser().parseFromString(contents, "text/xml"),file,importdate); break;
-					case "kml": contents=walkDOMKML(new DOMParser().parseFromString(contents, "text/xml")); break;
+        switch(importformat){
+					case "geojson": contents=importGeoJSON(contents,epsg,true);break;
+					case "gml": contents=walkDOM(new DOMParser().parseFromString(contents, "text/xml"),file,importdate,epsg); break;
+					case "kml": contents=walkDOMKML(new DOMParser().parseFromString(contents, "text/xml"),epsg); break;
 					case "ttl":  break;
 					case "shp":  shp(file).then(function(geojson){
                                                 contents=importGeoJSON(contents);
@@ -760,7 +761,7 @@ function readRDFFile(e){
 		if(currdfstore==null){
 				currdfstore=store;			
 		}
-		importFromString(contents,file.name)
+		importFromString(contents,file.name,$('#queryimportformat').val(),epsgdefs[$('#epsgqueryimport option:selected').val()])
 		});
 	};	
 	text=reader.readAsText(file);    
@@ -2138,10 +2139,20 @@ function exportLastImport(){
 	//saveTextAsFile(lastimportAsTTL,"ttl")
 }
 
-function importFromURL(){
-        $.ajax({url: "https://cors.io/?"+$('#url-input').val(),async: true, success: function(result){
+function importFromURL(urll,format,epsg){
+		console.log(urll+" - "+format+" - "+epsg)
+		if(urll==null){
+			urll="https://cors.io/?"+$('#url-input').val()
+		}
+		if(format==null){
+			format=$('#queryimportformat').val()
+		}
+		if(epsg==null){
+			epsg=epsgdefs[$('#epsgqueryimport option:selected').val()]
+		}
+        $.ajax({url: urll,async: true, success: function(result){
 				console.log(result)
-				importFromString(result,$('#url-input').val())
+				importFromString(result,urll,format,epsg)
         },error: function (xhr, ajaxOptions, thrownError) {
             alert(xhr.status);
             alert(thrownError);
@@ -2167,7 +2178,7 @@ function checkSPARQLEndpoint(){
         console.log($('#sparqlendpointurl').val())
         $.get({url: $('#sparqlendpointurl').val(),async: true, success: function(result){
                 console.log(result)
-		importFromString(result,null)
+		importFromString(result,null,$('#queryimportformat').val(),epsgdefs[$('#epsgqueryimport option:selected').val()])
         },error: function (xhr, ajaxOptions, thrownError) {
             alert(xhr.status);
             alert(thrownError);
@@ -2177,7 +2188,14 @@ function checkSPARQLEndpoint(){
 
 
 function importFromTextInput(){
-        importFromString($('#text-input').val(),null)
+        importFromString($('#text-input').val(),null,$('#queryimportformat').val(),epsgdefs[$('#epsgqueryimport option:selected').val()])
+}
+
+function importExample(){
+		ex=$('#examplelist').val()
+		splex=ex.split("|")
+		console.log(splex[0]+" "+splex[1]+" "+splex[2])
+        importFromURL(splex[0],splex[1],epsgdefs[splex[2]])
 }
 
 function displayImport(){
@@ -2185,6 +2203,7 @@ function displayImport(){
                 case "file": $('#importdiv').html("<input type=\"file\"  id=\"file-input\" /><br/>"); 	  document.getElementById('file-input')
 	  .addEventListener('change', readRDFFile, false); break;
                 case "url": $('#importdiv').html("<input type=\"url\"  id=\"url-input\" /><button id=\"importfromurl\" onclick=\"importFromURL()\">Load</button><br/>"); break;
+				case "examples": $('#importdiv').html("<select id=\"examplelist\"><option value=\"https://cors.io/?http://www.xplanungwiki.de/upload/XPlanGML/5.0/Beispieldaten/BP2070.gml|gml|EPSG:31467\">BP2070  GML EPSG:31467</option><option value=\"https://cors.io/?http://www.xplanungwiki.de/upload/XPlanGML/5.0/Beispieldaten/BP2135.gml|gml|EPSG:31467\">BP2135  GML EPSG:31467</option><option value=\"https://cors.io/?http://www.xplanungwiki.de/upload/XPlanGML/5.0/Beispieldaten/LA22.gml|gml|EPSG:31467\">BA22  GML EPSG:31467</option><option value=\"https://cors.io/?http://www.xplanungwiki.de/upload/XPlanGML/5.0/Beispieldaten/LA67.gml|gml|EPSG:31467\">LA67 GML EPSG:31467</option><option value=\"https://cors.io/?http://www.xplanungwiki.de/upload/XPlanGML/5.0/Beispieldaten/FPlan.gml|gml|EPSG:31467\">FPlan  GML EPSG:31467</option></select><button id=\"loadexample\" onclick=\"importExample()\">Load</button><br/>"); break;
                 case "textinput": $('#importdiv').html("<textarea id=\"text-input\"/><button id=\"importfromurl\" onclick=\"importFromTextInput()\">Load</button><br/>"); break;
         }
 }
@@ -2228,7 +2247,13 @@ function getOrigins(){
         console.log(success,results)
                 reshtml=""
 		for(res in results){
-                        reshtml+="<option value=\""+results[res]["orig"]["value"]+"\">"+results[res]["origval"]["value"]+"</option>"
+						
+						string=results[res]["origval"]["value"]
+						string=string.replace("https://cors.io/?http://","")
+						if(results[res]["origval"]["value"].length > 25) {
+							string = string.substring(0,string.indexOf('/'))+"..."+string.substring(string.lastIndexOf('/')+1)
+						}
+                        reshtml+="<option value=\""+results[res]["orig"]["value"]+"\">"+string+"</option>"
 		}
 		$('#origin').html(reshtml);
 		$('#originresources').html(reshtml);
@@ -2325,7 +2350,7 @@ NOT<input type="checkbox" id="geoconstraintnegate"/><select id="geospatiallist">
 <tr  valign="top" align="top"><td>Query: </td><td><button id="querybutton" onclick="uiQuery()">Query</button><button id="classhierarchy" onclick="getClassHierarchy({})">Class Hierarchy</button><button id="originQuery" onclick="originQuery()">Origin Query</button> </td></tr>
 </table>
 </td></tr></table><table width="100%" border=0 cellspacing="0"><tr><th>Importing Data</th><th>Exporting Data</th><th>Options</th><th>Constraints</th></tr><tr><td>
-Import From <select id="importfrom" onChange="displayImport()"><option value="file" selected="selected">File</option><option value="textinput">Textinput</option><option value="url">URL</option></select>
+Import From <select id="importfrom" onChange="displayImport()"><option value="examples">Examples</option><option value="file" selected="selected">File</option><option value="textinput">Textinput</option><option value="url">URL</option></select>
 <div id="importdiv"><input type="file"  id="file-input" /><br/></div>
 Format: <select id="queryimportformat">
 <option value="ttl" selected="selected">TTL</option>
