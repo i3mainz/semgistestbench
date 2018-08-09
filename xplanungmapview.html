@@ -717,6 +717,42 @@ function loadSupportingOntology(){
 		});
 }
 
+function TTLCoordconvert(contents){
+        spl=contents.split("\n")
+        queryString=prefixList+" SELECT DISTINCT ?geom WHERE { ?ind ?asGML ?geo . } "
+        toadd=[]
+        currdfstore.execute(queryString, function(success,results){ 
+                     queryString2=prefixList+"DELETE { ";
+                    for(res in results){
+                                        queryString2+="<"+results[res]["ind"]["value"]+"> <"+results[res]["ind"]["value"]+"> "+results[res]["geo"]["value"]+" \n"
+                                        xmlString=results[res]["geo"]["value"]
+                                        relName=results[res]["ind"]["value"]
+                                        coordsconverted=getCoordArrayFromGML(results[res]["geo"]["value"],epsgdefs[$('#epsgqueryimport option:selected').val()],true,false,true)
+                                        //console.log("Coordarray: "+coordsconverted)
+                                        toadd.push("<"+results[res]["ind"]["value"]+"> <http://www.opengis.net/ont/geosparql#asGML> \""+convertGMLToOtherCRS(xmlString.replace(new RegExp("\"", 'g'),"\\\"").replace(new RegExp("\n", 'g'),""),coordsconverted)+"\"^^<http://www.opengis.net/ont/geosparql#gmlLiteral> . \n ")
+                                        try{
+						wkt=gmlStringToWKT(xmlString,coordsconverted)
+						//console.log("WKT: "+wkt)
+						 toadd.push(" <http://www.opengis.net/ont/geosparql#asWKT> rdf:type owl:DatatypeProperty . \n <"+relName+"> <http://www.opengis.net/ont/geosparql#asWKT> \""+wkt+"\"^^<http://www.opengis.net/ont/geosparql#wktLiteral> . \n ")
+						}catch(err){console.log(err)}
+						try{
+						geojson=gmlStringToGeoJSON(xmlString,coordsconverted)
+						 toadd.push(" <http://www.opengis.net/ont/geosparql#asGeoJSON> rdf:type owl:DatatypeProperty . \n <"+relName+"> <http://www.opengis.net/ont/geosparql#asGeoJSON> \""+geojson.replace(new RegExp("\"", 'g'),"\\\"")+"\"^^<http://www.opengis.net/ont/geosparql#geojsonLiteral> . \n ")
+						}catch(err){console.log(err)}
+						try{
+                        kml=gmlStringToKML(xmlString,coordsconverted)
+						 toadd.push(" <http://www.opengis.net/ont/geosparql#asKML> rdf:type owl:DatatypeProperty . \n <"+relName+"> <http://www.opengis.net/ont/geosparql#asKML> \""+kml.replace(new RegExp("\"", 'g'),"\\\"")+"\"^^<http://www.opengis.net/ont/geosparql#kmlLiteral> . \n ")
+						}catch(err){console.log(err)}
+                    }
+                   queryString2+="} INSERT { "
+                   for(add in toadd){
+                            queryString2+=toadd[add]
+                   }
+                   queryString2+="}"
+	});
+  
+}
+
 function importFromString(contents,file){
         var importdate = new Date();
         switch($('#queryimportformat').val()){
@@ -989,8 +1025,12 @@ function displayQueryResult(persons,query,classTopers,persToClass){
 					}else{
 						for(val in persons[pers][rel]){
 							tooltip+="<li><a href=\""+rel+"\" target=\"_blank\">"+rel.substring(rel.lastIndexOf("#")+1)+"</a> - "
+							tempval=[]
 							for(vall in persons[pers][rel][val]){
-								tooltip+="<a href=\""+vall+"\" target=\"_blank\">"+(persons[pers][rel][val][vall].includes("#")?persons[pers][rel][val][vall].substring(persons[pers][rel][val][vall].lastIndexOf('#')+1):persons[pers][rel][val][vall])+"</a>"
+								if(!(persons[pers][rel][val][vall] in tempval)){
+                                                                    tooltip+="<a href=\""+persons[pers][rel][val][vall]+"\" target=\"_blank\">"+(persons[pers][rel][val][vall].includes("#")?persons[pers][rel][val][vall].substring(persons[pers][rel][val][vall].lastIndexOf('#')+1):persons[pers][rel][val][vall])+"</a>"
+                                                                    tempval.push(persons[pers][rel][val][vall])
+								}
 							}
 							tooltip+="</li>"
 						}
