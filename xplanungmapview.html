@@ -412,7 +412,7 @@ function walkDOM(main,file,importdate,epsg) {
 				}
 				
 			}
-			if(main.nodeName.includes("featureMember")){
+			if(main.nodeName.includes("featureMember") || main.nodeName.includes("cityObjectMember") | main.nodeName.includes(":member")){
                                 classdepth=depth+1
 			}
 			if(depth==classdepth && !main.nodeName.includes("gml:")){
@@ -979,10 +979,10 @@ function displayQueryResult(persons,query,classTopers,persToClass){
 			tooltipstart="<html>";
 			console.log(persons[pers])
 			typestr=""
-			for(cls in persons[pers]["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]){
-                                tp=persons[pers]["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"][cls][Object.keys(persons[pers]["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"][cls])[0]]
-                                typestr+=tp.substring(tp.indexOf('#')+1)+", "
-			}
+			Object.keys(persToClass[pers]).sort().forEach(function(cls) {
+				tp=cls
+                typestr+=tp.substring(tp.indexOf('#')+1)+", "
+			});
 			typestr=typestr.substring(0,typestr.length-2)
 			tooltip="<b><a href=\""+pers+"\" target=\"_blank\">"+pers.substring(pers.indexOf('#')+1)+" ("+typestr+")</a></b><ul>"
 			Object.keys(persons[pers]).sort().forEach(function(rel) {
@@ -1002,7 +1002,7 @@ function displayQueryResult(persons,query,classTopers,persToClass){
 							tempval=[]
 							for(vall in persons[pers][rel][val]){
 								if(!(persons[pers][rel][val][vall] in tempval)){
-                                                                    tooltip+="<a href=\""+persons[pers][rel][val][vall]+"\" target=\"_blank\">"+(persons[pers][rel][val][vall].includes("#")?persons[pers][rel][val][vall].substring(persons[pers][rel][val][vall].lastIndexOf('#')+1):persons[pers][rel][val][vall])+"</a>"
+                                    tooltip+="<a href=\""+persons[pers][rel][val][vall]+"\" target=\"_blank\">"+(persons[pers][rel][val][vall].includes("#")?persons[pers][rel][val][vall].substring(persons[pers][rel][val][vall].lastIndexOf('#')+1):persons[pers][rel][val][vall])+"</a>"
                                                                     tempval.push(persons[pers][rel][val][vall])
 								}
 							}
@@ -2472,7 +2472,7 @@ Format: <select id="queryimportformat">
 </select>
 CRS: <select id="epsgqueryimport"></select><br/>
 Load supporting Ontology:<select id="supportingOntologySel"></select><button id="loadSuppOnt" onclick="loadSupportingOntology()">Load</button><br/>
-Load svg images: <input type="checkbox" id="loadsvg"/>Qualityanalysis:<input type="checkbox" id="qualityanalysis"/></td><td>
+Load svg images: <input type="checkbox" id="loadsvg" checked="checked"/>Qualityanalysis:<input type="checkbox" id="qualityanalysis"/></td><td>
 <button id="exportTTL" onclick="exportAsTTL()">Export Database</button><button id="queryasTTL" onclick="exportQueryResult()">Export Query Result</button><br/>
 <button id="exportlastasTTL" onclick="exportLastImport()">Export resource</button> <select id="origin"></select>
 <br/>
