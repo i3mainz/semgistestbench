@@ -869,7 +869,10 @@ function handleResults(results,start){
                                 classTopers[results[res]["val"]["value"]]=[]
                             }
                             classTopers[results[res]["val"]["value"]].push(results[res]["person"]["value"])
-                            persToClass[results[res]["person"]["value"]]=results[res]["val"]["value"]
+							if(!(results[res]["person"]["value"]  in persToClass)){
+								persToClass[results[res]["person"]["value"]]={}
+							}
+                            persToClass[results[res]["person"]["value"]][results[res]["val"]["value"]]=true
 			}
 			//console.log(results[res]["val"]["value"])
 			if(results[res]["person"]["value"]!=undefined && results[res]["rel"]["value"]!=undefined && results[res]["val"]["value"]!=undefined){
@@ -969,9 +972,9 @@ function displayQueryResult(persons,query,classTopers,persToClass){
                 }
 		for(pers in persons){
                     //console.log(persToClass[pers]+" - "+clslist)
-                    if(persToClass[pers] in constraintclasses && !(persToClass[pers] in clslist)){
-                                continue;
-                       }
+            if(persToClass[pers] in constraintclasses && !(persToClass[pers] in clslist)){
+                continue;
+            }
 			markerIconPath=""
 			tooltipstart="<html>";
 			console.log(persons[pers])
@@ -1039,6 +1042,7 @@ function displayQueryResult(persons,query,classTopers,persToClass){
 						
 						console.log("HATCH: "+JSON.stringify(persons[pers]["hatch"]))
 						geom=wkt.toJson();
+						console.log(JSON.stringify(persToClass))
 						handleGeometry(geom["type"],geom["coordinates"],query,markerIconPath,pers,persons[pers]["hatch"],layergroups,persToClass[pers])
 					}catch(err){console.log(err)}//}
 				}
@@ -1050,8 +1054,9 @@ function displayQueryResult(persons,query,classTopers,persToClass){
 		mymap.removeControl(layercontrol);
 	}
         overlayMaps={}
+		//console.log(JSON.stringify(layergroups))
         Object.keys(layergroups).sort().forEach(function(layer) {
-		overlayMaps[layer.substring(layer.indexOf('#')+1)]=L.layerGroup(layergroups[layer])
+			overlayMaps[layer.substring(layer.indexOf('#')+1)]=L.layerGroup(layergroups[layer])
 	});
 	for(layer in overlayMaps){
                 mymap.addLayer(overlayMaps[layer])
@@ -1186,10 +1191,15 @@ function extend(obj, src) {
     return obj;
 }
 	
-function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch,layergroups,geomclass){
+function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch,layergroups,geomclasses){
+	//console.log(JSON.stringify(geomclasses))
+	//console.log(JSON.stringify(classesToQuery))
+	clsToQuery=JSON.stringify(classesToQuery)
 	console.log("Handle Geometry "+type+" "+JSON.stringify(coordinates)+" "+query+" "+firstpoint+" - "+persons[pers]["linestringImageStyle"]+" - "+persons[pers]["image"]+" - "+hatch )
-	if(!(geomclass in layergroups)){
-		layergroups[geomclass]=[]
+	for(geomclass in geomclasses){
+		if(!(geomclass in layergroups) && clsToQuery.includes(geomclass)){
+			layergroups[geomclass]=[]
+		}
 	}
 	try{
 	if(type.toLowerCase()=="point" && coordinates!=null && coordinates[0]!=null){
@@ -1229,14 +1239,23 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch,layergr
                             marker.bindPopup(tooltip, {maxWidth : 560});
                            // marker.addTo(mymap);
                             markercollection.push(marker)
-							layergroups[geomclass].push(marker)
+							for(geomclass in geomclasses){
+								if(clsToQuery.includes(geomclass)){
+									layergroups[geomclass].push(marker)
+								}
+							}
+							//layergroups[geomclass].push(marker)
                         } else{
 							//console.log("CREATING MARKER AT "+JSON.stringify(coordinates))
                             var marker = new L.marker(coordinates/*,{icon:markerIcon}*/); //opacity may be set to zero
                             marker.bindPopup(tooltip, {maxWidth : 560});
                             //marker.addTo(mymap);
                             markercollection.push(marker)
-							layergroups[geomclass].push(marker)
+							for(geomclass in geomclasses){
+								if(clsToQuery.includes(geomclass)){
+									layergroups[geomclass].push(marker)
+								}
+							}
                         }
 				}
 
@@ -1262,13 +1281,25 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch,layergr
 				var polyline;
 			       if(persons[pers]["linestringStyle"]!=null){
                             polyline=L.polyline( coordinates,JSON.parse("{"+persons[pers]["linestringStyle"]+"}")).bindPopup(tooltip, {maxWidth : 560})//.addTo( mymap);   
-							layergroups[geomclass].push(polyline)										
+							for(geomclass in geomclasses){
+								if(clsToQuery.includes(geomclass)){
+									layergroups[geomclass].push(polyline)
+									}
+								}										
 			       }else if(persons[pers]["style"]!=null){
                                     polyline=L.polyline( coordinates,JSON.parse("{"+persons[pers]["style"]+"}")).bindPopup(tooltip, {maxWidth : 560})//.addTo( mymap); 
+									for(geomclass in geomclasses){
+								if(clsToQuery.includes(geomclass)){
 									layergroups[geomclass].push(polyline)
+									}
+								}
 			       }else{
                                 polyline=L.polyline( coordinates,{color: 'blue'}).bindPopup(tooltip, {maxWidth : 560})//.addTo( mymap); 
-								layergroups[geomclass].push(polyline)
+								for(geomclass in geomclasses){
+								if(clsToQuery.includes(geomclass)){
+									layergroups[geomclass].push(polyline)
+									}
+								}
 			       }
 			       if(persons[pers]["linestringImageStyle"]!=null && persons[pers]["linestringImage"]!=null && $('#loadsvg').is(":checked")){
                                     style=JSON.parse(persons[pers]["linestringImageStyle"])
@@ -1319,7 +1350,11 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch,layergr
 						if(stripes!=null)
 							jsonstyle["fillPattern"]=stripes
                         poly=L.polygon( coordinates,jsonstyle).bindPopup(tooltip, {maxWidth : 560})//.addTo( mymap); 
-						layergroups[geomclass].push(poly)                        
+						for(geomclass in geomclasses){
+								if(clsToQuery.includes(geomclass)){
+							layergroups[geomclass].push(poly)
+							}
+						}                      
 			       }else if(persons[pers]["style"]!=null){
 								jsonstyle=JSON.parse("{"+persons[pers]["style"]+"}")
 								if(stripes!=null)
@@ -1327,14 +1362,22 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch,layergr
 								console.log("PATTERN STYLE: "+JSON.stringify(jsonstyle))
                                 poly=L.polygon(coordinates,jsonstyle);
                                 poly.bindPopup(tooltip, {maxWidth : 560})//.addTo( mymap);
-								layergroups[geomclass].push(poly)
+								for(geomclass in geomclasses){
+								if(clsToQuery.includes(geomclass)){
+									layergroups[geomclass].push(poly)
+									}
+								}   
 			       }else{
 							jsonstyle={color: 'red',opacity:0.4}
 				   			if(stripes!=null)
 								jsonstyle["fillPattern"]=stripes
                             poly=L.polygon( coordinates,jsonstyle);
                                 poly.bindPopup(tooltip, {maxWidth : 560})//.addTo( mymap); 
-							layergroups[geomclass].push(poly)								
+							for(geomclass in geomclasses){
+								if(clsToQuery.includes(geomclass)){
+									layergroups[geomclass].push(poly)
+									}
+							}   								
 			       }
 				   if(persons[pers]["img"]!=null && $('#loadsvg').is(":checked")){
 						console.log("semgis:image <div style='background-image: url(\"data:image/svg+xml;utf8,"+persons[pers]["img"]+"\")\"></div>)")
@@ -1346,7 +1389,11 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch,layergr
 						marker=L.marker(poly.getBounds().getCenter(), {icon:divIcon});
 						//marker.addTo(mymap);
 						markercollection.push(marker)
-						layergroups[geomclass].push(marker)
+						for(geomclass in geomclasses){
+								if(clsToQuery.includes(geomclass)){
+							layergroups[geomclass].push(marker)
+							}
+						}   
 					}
 
 			}
