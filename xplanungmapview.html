@@ -120,20 +120,6 @@ WHERE {
         ?subject != owl:Ontology) )
 } ORDER BY ?subject
 `
-
-/*query=`PREFIX owl: <http://www.w3.org/2002/07/owl#>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-SELECT DISTINCT ?subject ?label ?supertype
-WHERE {
-	?subject a owl:Class .
-	?subject rdfs:subClassOf ?supertype .
-	?supertype rdfs:subClassOf* <http://www.opengis.net/ont/geosparql#Feature> .
-	OPTIONAL { ?subject rdfs:subClassOf ?supertype } .
-    OPTIONAL { ?subject rdfs:label ?label }.
-}
-`*/
-//} UNION { ?individual a ?subject . } .
 console.log(query)
 currdfstore.execute(query, function(success,results){
       // console.log(results)
@@ -195,26 +181,6 @@ currdfstore.execute(query, function(success,results){
       $('#jstree').jstree(true).search(v,false,true);
     }, 250);
   });
-        /*$('#jstree').on('select_node.jstree', function (e, data) {
-            var i, j, r = [];
-            for(i = 0, j = data.selected.length; i < j; i++) {
-            r.push(data.instance.get_node(data.selected[i]).text);
-            }
-            $('#event_result').html('Selected: ' + r.join(', '));
-        });
-        $('#jstree').on('deselect_node.jstree', function (e, data) {
-            var i, j, r = [];
-            for(i = 0, j = data.selected.length; i < j; i++) {
-                    r.push(data.instance.get_node(data.selected[i]).text);
-            }
-            $('#event_result').html('Selected: ' + r.join(', '));
-        });*/
-  // create the instance
- // .jstree();
-        /*bind("select_node.jstree", function(evt, data){
-                console.log(data)
-        });*/
-        //console.log(JSON.stringify(ress))
 });
 }
 
@@ -263,7 +229,7 @@ function exportAsTTL(){
 					}
 					
 				}
-                switch($('#dbexportformat').val()){
+                switch($('#exportformat').val()){
 					case "ttl":
                                         saveTextAsFile(tosave,"ttl");
                                         break;
@@ -713,6 +679,7 @@ function loadSupportingOntology(){
 									getAllClasses();  
 				getAllProperties(); 
 				getOrigins();
+				getNamespaces();
 				});
 			}});
 		});
@@ -774,10 +741,11 @@ function importFromString(contents,file,importformat,epsg){
 				getAllClasses();  
 				getAllProperties(); 
 				getOrigins();
+				getNamespaces();
 				//uiQuery(true)
 				});
 		}else if($('#choosedatabase').val()!="remote"){
-                        remoteSPARQLImport($('#sparqlendpointurl').val(),contents,$('#choosegraph').val())
+            remoteSPARQLImport($('#sparqlendpointurl').val(),contents,$('#choosegraph').val())
 		}
 }
 
@@ -810,6 +778,7 @@ function uiQuery(start){
 		getAllClasses();  
 		getAllProperties(); 
 		getOrigins();
+		getNamespaces();
 	}
 	firstpoint=false;
 	if(bboxpoint!=null)
@@ -1470,18 +1439,22 @@ function replaceWithNSPrefix(replaceString,namespaces){
 }
 
 function exportQueryResult(tosave,exportFormat){
+		exportnamespace=JSON.stringify($('#namespaceexport').val())
+		/*if(!Array.isArray(exportnamespace)){
+			exportnamespace=[exportnamespace]
+		}*/
         if(exportFormat==undefined){
-                exportFormat=$( "#queryexportformat option:selected" ).val();
+                exportFormat=$( "#exportformat option:selected" ).val();
         }
         if(tosave==undefined){
                 tosave=curQueryResultTTL
         }
         console.log(tosave)
-	console.log($( "#queryexportformat option:selected" ).val())
-	if(exportFormat=="ttl" || $( "#queryexportformat option:selected" ).val()=="ttl"){
+	console.log($( "#exportformat option:selected" ).val())
+	if(exportFormat=="ttl" || $( "#exportformat option:selected" ).val()=="ttl"){
 		saveTextAsFile(tosave,"ttl")
 	}
-	if(exportFormat=="gml" || $( "#queryexportformat option:selected" ).val()=="gml"){
+	if(exportFormat=="gml" || $( "#exportformat option:selected" ).val()=="gml"){
         namespaces={}
         namespaces2={}
         gmlstart="<?xml version=\"1.0\"  encoding=\"utf-8\" standalone=\"yes\" ?><gml:FeatureCollection xmlns:gml=\"http://www.opengis.net/gml/3.2\" "
@@ -1628,7 +1601,7 @@ function exportQueryResult(tosave,exportFormat){
 					}
 				}
                 if(!("properties" in geojson)){
-                                                geojson["properties"]={}
+                       geojson["properties"]={}
 					}
                 if(splitt[spl].includes("asGeoJSON")){				
                     geojson["geometry"]=JSON.parse(splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1))["geometry"]
@@ -1640,19 +1613,24 @@ function exportQueryResult(tosave,exportFormat){
                 }else if(splitt[spl].includes(":type") || splitt[spl].includes("#type")  ){
 					//console.log("IN TYPE CLAUSE")
 					//console.log(splitt[spl])
-
-					geojson["properties"]["id"]=subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")
+					if(exportnamespace.length==0 || exportnamespace.includes("all") ||  exportnamespace.includes(subsplit[0].substring(1,subsplit[0].indexOf('#')+1))){
+						geojson["properties"]["id"]=subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")
+					}				
 				}else if(splitt[spl].includes("label")){
 					continue;
 				}else{
 				if(exportFormat=="shp"){
-                                        geojson["properties"][subsplit[1].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")]=(subsplit[2].includes("^^")?
-					subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):
-					subsplit[2].replace("<","").replace(">","").replace("\"",""))
+					if(exportnamespace.length==0 || exportnamespace.includes("all") || exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1))){
+						geojson["properties"][subsplit[1].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")]=(subsplit[2].includes("^^")?
+						subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):
+						subsplit[2].replace("<","").replace(">","").replace("\"",""))
+					}
 				}else{
-                                        geojson["properties"][subsplit[1].replace("<","").replace(">","")]=(subsplit[2].includes("^^")?
-					subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):
-					subsplit[2].replace("<","").replace(">","").replace("\"",""))
+					if(exportnamespace.length==0 || exportnamespace.includes("all") || exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1))){
+						geojson["properties"][subsplit[1].replace("<","").replace(">","")]=(subsplit[2].includes("^^")?
+						subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):
+						subsplit[2].replace("<","").replace(">","").replace("\"",""))
+					}	                 
 				}
 					
 					//gml+="<"+subsplit[1].replace("<","").replace(">","")+">"+(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))+"</"+subsplit[1].replace("<","").replace(">","")+">\n"
@@ -1742,18 +1720,22 @@ function exportQueryResult(tosave,exportFormat){
 				}else if(splitt[spl].includes(":type") || splitt[spl].includes("#type")  ){
 					//console.log("IN TYPE CLAUSE")
 					//console.log(splitt[spl])
-					geojson["properties"]["id"]=subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")
+					if(exportnamespace.length==0 || exportnamespace.includes("all") || exportnamespace.includes(subsplit[0].substring(1,subsplit[0].indexOf('#')+1))){
+						geojson["properties"]["id"]=subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")
+					}
 				}else if(splitt[spl].includes("label")){
 					continue;
 				}else{
-					console.log(subsplit[1])
-					subl=subsplit[1].replace("<","").replace(">","")
-					context[subl.substring(subl.indexOf('#')+1)]=subl
-					console.log(JSON.stringify(context))
-					geojson["properties"][subsplit[1].replace("<","").replace(">","")]=(subsplit[2].includes("^^")?
-					subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):
-					subsplit[2].replace("<","").replace(">","").replace("\"",""))
-					//gml+="<"+subsplit[1].replace("<","").replace(">","")+">"+(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))+"</"+subsplit[1].replace("<","").replace(">","")+">\n"
+					if(exportnamespace.length==0 || exportnamespace.includes("all") || exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1))){
+						console.log(subsplit[1])
+						subl=subsplit[1].replace("<","").replace(">","")
+						context[subl.substring(subl.indexOf('#')+1)]=subl
+						console.log(JSON.stringify(context))
+						geojson["properties"][subsplit[1].replace("<","").replace(">","")]=(subsplit[2].includes("^^")?
+						subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):
+						subsplit[2].replace("<","").replace(">","").replace("\"",""))
+						//gml+="<"+subsplit[1].replace("<","").replace(">","")+">"+(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))+"</"+subsplit[1].replace("<","").replace(">","")+">\n"
+					}
 				}
 			}catch(err){console.log(err); continue;}
 		}
@@ -1766,7 +1748,7 @@ function exportQueryResult(tosave,exportFormat){
 		console.log(collection)
 		saveTextAsFile(JSON.stringify(collection, null, 2),"geojson")
 	}
-	if(exportFormat=="kml" || $( "#queryexportformat option:selected" ).val()=="kml"){
+	if(exportFormat=="kml" || $( "#exportformat option:selected" ).val()=="kml"){
         var namespaces={}
         var namespaces2={}
 		kmlstart="<?xml version=\"1.0\"  encoding=\"utf-8\" standalone=\"yes\" ?><kml xmlns:kml=\"http://www.opengis.net/kml/2.2\" "
@@ -1835,7 +1817,9 @@ function exportQueryResult(tosave,exportFormat){
 					wrotetype=true;
 					for(item in towrite){
 						subsplit=towrite[item].split(" ")
-						classnames[classname]+="<"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">"+(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))+"</"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">\n"
+						if(exportnamespace.length==0 || exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1))){
+							classnames[classname]+="<"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">"+(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))+"</"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">\n"
+						}
 					}
 					towrite=[]
 			}
@@ -2176,7 +2160,7 @@ function clearGraph(){
 }
 
 function exportLastImport(){
-	exportQueryResult(lastimportAsTTL,$('#lastimportexportformat').val())
+	exportQueryResult(lastimportAsTTL,$('#exportformat').val())
 	//saveTextAsFile(lastimportAsTTL,"ttl")
 }
 
@@ -2280,6 +2264,43 @@ function remoteSPARQLImport(endpoint,data,graph){
 				console.log(result)
 				handleResults(result)
                 }});
+}
+
+function getNamespaces(){
+query=`PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT DISTINCT ?subject ?label ?supertype
+WHERE {
+    { ?subject a owl:Class . } UNION { ?individual a ?subject . } .
+    FILTER (
+        (		
+		!(REGEX(STR(?subject), "^http://www.w3.org/1999/02/22-rdf-syntax-ns#")) &&
+        !(REGEX(STR(?subject), "^http://www.w3.org/2001/XMLSchema#")) &&
+        !(REGEX(STR(?subject), "^http://www.w3.org/2002/07/owl#")) && 
+        !(REGEX(STR(?subject), "^http://www.w3.org/2000/01/rdf-schema#")) && 
+		!(REGEX(STR(?subject), "^_:"))  ))
+} ORDER BY ?subject`
+currdfstore.execute(query, function(success,results){ 
+        console.log(success,results)
+        namespaces={}
+		for(res in results){
+			namespace=results[res]["subject"]["value"].substring(0,results[res]["subject"]["value"].indexOf('#')+1).trim()
+			if(namespace.length==0)
+				continue;
+			console.log(namespace)
+			if(!(namespace in namespaces)){
+				namespaces[namespace]=true
+			}
+		}
+		console.log(JSON.stringify(namespaces))
+		reshtml="<option value=\"all\">All</option>"
+		for(ns in namespaces){
+			reshtml+="<option value=\""+ns+"\">"+ns+"</option>"
+		}
+		$('#namespaceexport').html(reshtml);
+	});
+
 }
 
 function getOrigins(){
@@ -2388,7 +2409,8 @@ NOT<input type="checkbox" id="geoconstraintnegate"/><select id="geospatiallist">
 <button id="clearconstraints" onclick="clearConstraints()">Clear</button></td></tr>
 <tr><td>Which resource?<input type="checkbox" id="resourceactive"/></td><td><select id="originresources"></select><button id="addgeoconstraint"  onClick="addConstraint('classeslist3','geospatiallist','classeslist4')">Add</button>
 <button id="clearconstraints" onclick="clearConstraints()">Clear</button></td></tr>
-<tr  valign="top" align="top"><td>Query: </td><td><button id="querybutton" onclick="uiQuery()">Query</button><button id="classhierarchy" onclick="getClassHierarchy({})">Class Hierarchy</button><button id="originQuery" onclick="originQuery()">Origin Query</button> </td></tr>
+<tr  valign="top" align="top"><td>Query: </td><td><button id="querybutton" onclick="uiQuery()">Query</button>
+<!--<button id="classhierarchy" onclick="getClassHierarchy({})">Class Hierarchy</button><button id="originQuery" onclick="originQuery()">Origin Query</button>--> </td></tr>
 </table>
 </td></tr></table><table width="100%" border=0 cellspacing="0"><tr><th>Importing Data</th><th>Exporting Data</th><th>Options</th><th>Constraints</th></tr><tr><td>
 Import From <select id="importfrom" onChange="displayImport()"><option value="examples">Examples</option><option value="file" selected="selected">File</option><option value="textinput">Textinput</option><option value="url">URL</option></select>
@@ -2404,8 +2426,10 @@ Format: <select id="queryimportformat">
 CRS: <select id="epsgqueryimport"></select><br/>
 Load supporting Ontology:<select id="supportingOntologySel"></select><button id="loadSuppOnt" onclick="loadSupportingOntology()">Load</button><br/>
 Load svg images: <input type="checkbox" id="loadsvg"/>Qualityanalysis:<input type="checkbox" id="qualityanalysis"/></td><td>
-<button id="exportTTL" onclick="exportAsTTL()">Export Database as</button>
-<select id="dbexportformat">
+<button id="exportTTL" onclick="exportAsTTL()">Export Database</button><button id="queryasTTL" onclick="exportQueryResult()">Export Query Result</button><br/>
+<button id="exportlastasTTL" onclick="exportLastImport()">Export resource</button> <select id="origin"></select>
+<br/>
+Format:<select id="exportformat">
 <option value="ttl" selected="selected">TTL</option>
 <option value="gml">GML</option>
 <option value="kml">KML</option>
@@ -2413,27 +2437,7 @@ Load svg images: <input type="checkbox" id="loadsvg"/>Qualityanalysis:<input typ
 <option value="geojsonld">GeoJSON-LD</option>
 <option value="jsonld">JSON-LD</option>
 <option value="shp">Shapefile</option>
-</select><br/>
-<button id="exportlastasTTL" onclick="exportLastImport()">Export resource</button> <select id="origin"></select> as 
-<select id="lastimportexportformat">
-<option value="ttl" selected="selected">TTL</option>
-<option value="gml">GML</option>
-<option value="kml">KML</option>
-<option value="geojson">GeoJSON</option>
-<option value="geojsonld">GeoJSON-LD</option>
-<option value="jsonld">JSON-LD</option>
-<option value="shp">Shapefile</option>
-</select><br/>
-<button id="queryasTTL" onclick="exportQueryResult()">Export Query Result as</button>
-<select id="queryexportformat">
-<option value="ttl" selected="selected">TTL</option>
-<option value="gml">GML</option>
-<option value="kml">KML</option>
-<option value="geojson">GeoJSON</option>
-<option value="geojsonld">GeoJSON-LD</option>
-<option value="jsonld">JSON-LD</option>
-<option value="shp">Shapefile</option>
-</select><br/>CRS: <select id="epsgqueryexport"></select></td>
+</select>CRS: <select id="epsgqueryexport"></select><br/>NS: <select id="namespaceexport" multiple></select></td>
 <td>Database Type: 
 <select id="choosedatabase" onchange="databaseType()">
 <option value="inmemory" selected="selected">In Memory Database</option>
