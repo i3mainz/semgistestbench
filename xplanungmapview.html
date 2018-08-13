@@ -246,6 +246,21 @@ function exportAsTTL(){
 
 function saveTextAsFile(tosave,fileext)
 {
+    var a = document.createElement('a');
+    a.style = "display: none";  
+    var blob= new Blob([tosave], {type:'text/plain'});
+    var url = window.URL.createObjectURL(blob);
+    var filename = "res."+fileext;
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+        a.click();
+    setTimeout(function(){
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);  
+    }, 1000);
+
+/*
     var textFileAsBlob = new Blob([tosave], {type:'text/plain'});
     var fileNameToSaveAs = "res."+fileext;
 
@@ -268,7 +283,7 @@ function saveTextAsFile(tosave,fileext)
         document.body.appendChild(downloadLink);
     }
 
-    downloadLink.click();
+    downloadLink.click();*/
 }
 
 
