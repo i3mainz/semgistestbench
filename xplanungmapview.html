@@ -2273,8 +2273,8 @@ function importFromURL(urll,format,epsg){
 				console.log(result)
 				importFromString(result,urll,format,epsg)
         },error: function (xhr, ajaxOptions, thrownError) {
-            alert(xhr.status);
-            alert(thrownError);
+            alert("Cannot connect to "+urll)
+			closeWaitingDialog();
       }});
 }
 
