@@ -21,7 +21,6 @@
 	    <script src="js/turf.min.js"></script>
 		<script src="js/leaflet.pattern.js"></script>
 	    <script src="js/jsts.js"></script>
-	    <!-- TODO: INCLUDE GEOJSON-RBUSH -->
   
 <script>
 var revision="a011fd8f3a7cb506cc1ebdae34b2cb1578a380bd"
@@ -77,25 +76,6 @@ $( function() {
 	 bboxpoint=turf.point(JSON.parse("["+e.latlng.lat + ", " + e.latlng.lng+"]"));
 	curposmarker= new L.marker(e.latlng).addTo(mymap);
 });
-	  /*$("#loadingScreen").dialog({
-        autoOpen: false,    // set this to false so we can manually open it
-        dialogClass: "loadingScreenWindow",
-        closeOnEscape: false,
-        draggable: true,
-        width: 460,
-        minHeight: 50,
-        modal: true,
-        buttons: {},
-        resizable: false,
-        open: function() {
-            // scrollbar fix for IE
-            $('body').css('overflow','hidden');
-        },
-        close: function() {
-            // reset overflow
-            $('body').css('overflow','auto');
-        }
-    }); */// end of dialog
 	  rdfstore.create(function(err, store) {
 		if(currdfstore==null){
 			currdfstore=store;			
