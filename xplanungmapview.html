@@ -21,7 +21,6 @@
 	    <script src="js/turf.min.js"></script>
 		<script src="js/leaflet.pattern.js"></script>
 	    <script src="js/jsts.js"></script>
-	    <!-- TODO: INCLUDE GEOJSON-RBUSH -->
   
 <script>
 var revision="a011fd8f3a7cb506cc1ebdae34b2cb1578a380bd"
@@ -68,6 +67,15 @@ $( function() {
         $("#epsgqueryimport").html(epsg);
 	  document.getElementById('file-input')
 	  .addEventListener('change', readRDFFile, false);
+	  	  mymap.on('click', function(e) {
+	  if(curposmarker!=null){
+			mymap.removeLayer(curposmarker);
+	  }
+	  
+	$('#coordinate').val("["+e.latlng.lat + ", " + e.latlng.lng+"]");
+	 bboxpoint=turf.point(JSON.parse("["+e.latlng.lat + ", " + e.latlng.lng+"]"));
+	curposmarker= new L.marker(e.latlng).addTo(mymap);
+});
 	  rdfstore.create(function(err, store) {
 		if(currdfstore==null){
 			currdfstore=store;			
@@ -78,19 +86,26 @@ $( function() {
             suppOnt+="<option value=\""+supportingOntologies[key]+"\">"+key+"</option>"
 		}
 		$('#supportingOntologySel').html(suppOnt)
-	  mymap.on('click', function(e) {
-	  if(curposmarker!=null){
-			mymap.removeLayer(curposmarker);
-	  }
-	  
-	$('#coordinate').val("["+e.latlng.lat + ", " + e.latlng.lng+"]");
-	 bboxpoint=turf.point(JSON.parse("["+e.latlng.lat + ", " + e.latlng.lng+"]"));
-	curposmarker= new L.marker(e.latlng).addTo(mymap);
-});
+
 
 });
 
 });
+
+function waitingDialog(waiting) { // I choose to allow my loading screen dialog to be customizable, you don't have to
+    $("#loadingScreen").html(('' != waiting.message) ? "<span><img src=\"images/loading.gif\" width=\"20\" height=\"20\"/>&nbsp;&nbsp;&nbsp;"+waiting.message+"</span>" : '<span><img src="images/loading.gif"/>Please wait...</span>');
+    setTimeout(function(){
+       
+    }, 1000);
+	//$("#loadingScreen").dialog('option', 'title', ('' != waiting.title) ? waiting.title : 'Loading');
+	if(!$("#loadingScreen").attr("open"))
+		document.getElementById("loadingScreen").showModal();
+}
+
+
+function closeWaitingDialog() {
+   document.getElementById("loadingScreen").close()
+}
 
 function getClassHierarchy(classeswithinstances){
 console.log(JSON.stringify(classeswithinstances))
@@ -254,7 +269,7 @@ function saveTextAsFile(tosave,fileext)
     a.href = url;
     a.download = filename;
     document.body.appendChild(a);
-        a.click();
+    a.click();
     setTimeout(function(){
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);  
@@ -716,28 +731,39 @@ function importFromString(contents,file,importformat,epsg){
 		console.log(file+" "+importformat+" "+epsg)
         var importdate = new Date();
         switch(importformat){
-					case "geojson": contents=importGeoJSON(contents,epsg,true);break;
-					case "gml": contents=walkDOM(new DOMParser().parseFromString(contents, "text/xml"),file,importdate,epsg); break;
-					case "kml": contents=walkDOMKML(new DOMParser().parseFromString(contents, "text/xml"),epsg); break;
+					case "geojson": waitingDialog({title: "Importing "+file, message: "Converting GeoJSON to TTL..."}); contents=importGeoJSON(contents,epsg,true);break;
+					case "gml":  waitingDialog({title: "Importing "+file, message: "Converting GML to TTL..."}); contents=walkDOM(new DOMParser().parseFromString(contents, "text/xml"),file,importdate,epsg); break;
+					case "kml": waitingDialog({title: "Importing "+file, message: "Converting KML to TTL..."}); contents=walkDOMKML(new DOMParser().parseFromString(contents, "text/xml"),epsg); break;
 					case "ttl":  break;
-					case "shp":  shp(file).then(function(geojson){
+					case "shp":  waitingDialog({title: "Importing "+file, message: "Converting SHP to TTL..."}); shp(file).then(function(geojson){
                                                 contents=importGeoJSON(contents);
                                         });break;
 		}
+		waitingDialog({title: "Importing "+file, message: "Importing TTL into the Database..."});
 		if($('#choosedatabase').val()!="remote"){
 				currdfstore.load('text/turtle', contents, function(s,d){
 				//console.log(s,d);
+				waitingDialog({title: "Importing "+file, message: "Querying classes..."});
 				markercollection=[]
 				firstpoint=false;
 				getAllClasses();  
 				getAllProperties(); 
 				getOrigins();
 				getNamespaces();
-				//uiQuery(true)
+				if($('#queryonload').is(':checked')){
+					waitingDialog({title: "Querying...", message: "Querying contents..."});
+					uiQuery(true)
+				}else{
+					closeWaitingDialog();
+				}
+				
+				//
 				});
 		}else if($('#choosedatabase').val()!="remote"){
             remoteSPARQLImport($('#sparqlendpointurl').val(),contents,$('#choosegraph').val())
+			closeWaitingDialog();
 		}
+		
 }
 
 function readRDFFile(e){
@@ -764,18 +790,19 @@ function readRDFFile(e){
 }
 
 function uiQuery(start){
-        curQueryResultTTL=""
-	if(start){
+    curQueryResultTTL=""
+	/*if(start){
 		getAllClasses();  
 		getAllProperties(); 
 		getOrigins();
 		getNamespaces();
-	}
+	}*/
 	firstpoint=false;
 	if(bboxpoint!=null)
 		bboxbuffer=turf.buffer(bboxpoint, $('#buffersize').val(), {units: "meters"})
 	//console.log(bboxbuffer)
 	clearMap();
+	if(!start){
 	sel=$("#jstree").jstree("get_selected",true)
 	classesToQuery=[]
 	for(s in sel){
@@ -792,7 +819,7 @@ function uiQuery(start){
 	}
 	//classesToQuery.concat(Object.keys(constraintclasses)
 	//console.log(classesToQuery);
-	if(!start){
+	
 	if(classesToQuery.length==0){
 		alert("No classes to query!")
 		return
@@ -925,10 +952,11 @@ function handleResults(results,start){
                     persons[results[res]["person"]["value"]]["img"]=results[res]["img"]["value"]
 			}
 		}
-		displayQueryResult(persons,!start,classTopers,persToClass);
+		displayQueryResult(persons,!start,classTopers,persToClass,start);
 }
 	
-function displayQueryResult(persons,query,classTopers,persToClass){
+function displayQueryResult(persons,query,classTopers,persToClass,start){
+	waitingDialog({title: "Querying...", message: "Displaying query result..."});
 	var layergroups={}
 	var wkt = new Wkt.Wkt();
 		firstpoint=false;
@@ -963,7 +991,7 @@ function displayQueryResult(persons,query,classTopers,persToClass){
                 }
 		for(pers in persons){
                     //console.log(persToClass[pers]+" - "+clslist)
-            if(persToClass[pers] in constraintclasses && !(persToClass[pers] in clslist)){
+            if(query && persToClass[pers] in constraintclasses && !(persToClass[pers] in clslist)){
                 continue;
             }
 			markerIconPath=""
@@ -1038,10 +1066,10 @@ function displayQueryResult(persons,query,classTopers,persToClass){
 							wkt.read(persons[pers][rel]);
 						}
 						
-						console.log("HATCH: "+JSON.stringify(persons[pers]["hatch"]))
+						//console.log("HATCH: "+JSON.stringify(persons[pers]["hatch"]))
 						geom=wkt.toJson();
-						console.log(JSON.stringify(persToClass))
-						handleGeometry(geom["type"],geom["coordinates"],query,markerIconPath,pers,persons[pers]["hatch"],layergroups,persToClass[pers])
+						//console.log(JSON.stringify(persToClass))
+						handleGeometry(geom["type"],geom["coordinates"],query,markerIconPath,pers,persons[pers]["hatch"],layergroups,persToClass[pers],start)
 					}catch(err){console.log(err)}//}
 				}
 		}
@@ -1060,7 +1088,7 @@ function displayQueryResult(persons,query,classTopers,persToClass){
                 mymap.addLayer(overlayMaps[layer])
         }
 	layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(mymap);
-
+	closeWaitingDialog();
 }
 	
 	
@@ -1189,16 +1217,17 @@ function extend(obj, src) {
     return obj;
 }
 	
-function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch,layergroups,geomclasses){
+function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch,layergroups,geomclasses,start){
 	//console.log(JSON.stringify(geomclasses))
 	//console.log(JSON.stringify(classesToQuery))
 	clsToQuery=JSON.stringify(classesToQuery)
 	console.log("Handle Geometry "+type+" "+JSON.stringify(coordinates)+" "+query+" "+firstpoint+" - "+persons[pers]["linestringImageStyle"]+" - "+persons[pers]["image"]+" - "+hatch )
 	for(geomclass in geomclasses){
-		if(!(geomclass in layergroups) && clsToQuery.includes(geomclass)){
+		if((!(geomclass in layergroups) && clsToQuery.includes(geomclass)) || start){
 			layergroups[geomclass]=[]
 		}
 	}
+	//console.log("Layergroups: "+JSON.stringify(layergroups))
 	try{
 	if(type.toLowerCase()=="point" && coordinates!=null && coordinates[0]!=null){
 				if(!query || $('#coordinate').val()=="" || !$('#whereactive').is(':checked')  || (!turf.booleanDisjoint(turf.envelope(turf.point(coordinates)),bboxbuffer))){
@@ -1238,7 +1267,7 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch,layergr
                            // marker.addTo(mymap);
                             markercollection.push(marker)
 							for(geomclass in geomclasses){
-								if(clsToQuery.includes(geomclass)){
+								if(clsToQuery.includes(geomclass) || start){
 									layergroups[geomclass].push(marker)
 								}
 							}
@@ -1250,7 +1279,7 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch,layergr
                             //marker.addTo(mymap);
                             markercollection.push(marker)
 							for(geomclass in geomclasses){
-								if(clsToQuery.includes(geomclass)){
+								if(clsToQuery.includes(geomclass) || start){
 									layergroups[geomclass].push(marker)
 								}
 							}
@@ -1280,21 +1309,21 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch,layergr
 			       if(persons[pers]["linestringStyle"]!=null){
                             polyline=L.polyline( coordinates,JSON.parse("{"+persons[pers]["linestringStyle"]+"}")).bindPopup(tooltip, {maxWidth : 560})//.addTo( mymap);   
 							for(geomclass in geomclasses){
-								if(clsToQuery.includes(geomclass)){
+								if(clsToQuery.includes(geomclass) || start){
 									layergroups[geomclass].push(polyline)
 									}
 								}										
 			       }else if(persons[pers]["style"]!=null){
                                     polyline=L.polyline( coordinates,JSON.parse("{"+persons[pers]["style"]+"}")).bindPopup(tooltip, {maxWidth : 560})//.addTo( mymap); 
 									for(geomclass in geomclasses){
-								if(clsToQuery.includes(geomclass)){
+								if(clsToQuery.includes(geomclass) || start){
 									layergroups[geomclass].push(polyline)
 									}
 								}
 			       }else{
                                 polyline=L.polyline( coordinates,{color: 'blue'}).bindPopup(tooltip, {maxWidth : 560})//.addTo( mymap); 
 								for(geomclass in geomclasses){
-								if(clsToQuery.includes(geomclass)){
+								if(clsToQuery.includes(geomclass) || start){
 									layergroups[geomclass].push(polyline)
 									}
 								}
@@ -1349,7 +1378,7 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch,layergr
 							jsonstyle["fillPattern"]=stripes
                         poly=L.polygon( coordinates,jsonstyle).bindPopup(tooltip, {maxWidth : 560})//.addTo( mymap); 
 						for(geomclass in geomclasses){
-								if(clsToQuery.includes(geomclass)){
+								if(clsToQuery.includes(geomclass) || start){
 							layergroups[geomclass].push(poly)
 							}
 						}                      
@@ -1361,7 +1390,7 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch,layergr
                                 poly=L.polygon(coordinates,jsonstyle);
                                 poly.bindPopup(tooltip, {maxWidth : 560})//.addTo( mymap);
 								for(geomclass in geomclasses){
-								if(clsToQuery.includes(geomclass)){
+								if(clsToQuery.includes(geomclass) || start){
 									layergroups[geomclass].push(poly)
 									}
 								}   
@@ -1372,7 +1401,7 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch,layergr
                             poly=L.polygon( coordinates,jsonstyle);
                                 poly.bindPopup(tooltip, {maxWidth : 560})//.addTo( mymap); 
 							for(geomclass in geomclasses){
-								if(clsToQuery.includes(geomclass)){
+								if(clsToQuery.includes(geomclass) || start){
 									layergroups[geomclass].push(poly)
 									}
 							}   								
@@ -1388,7 +1417,7 @@ function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch,layergr
 						//marker.addTo(mymap);
 						markercollection.push(marker)
 						for(geomclass in geomclasses){
-								if(clsToQuery.includes(geomclass)){
+								if(clsToQuery.includes(geomclass) || start){
 							layergroups[geomclass].push(marker)
 							}
 						}   
@@ -2218,12 +2247,13 @@ function importFromURL(urll,format,epsg){
 		if(epsg==null){
 			epsg=epsgdefs[$('#epsgqueryimport option:selected').val()]
 		}
+		waitingDialog({title: "Downloading... ", message: "Downloading "+urll+"..."});
         $.ajax({url: urll,async: true, success: function(result){
 				console.log(result)
 				importFromString(result,urll,format,epsg)
         },error: function (xhr, ajaxOptions, thrownError) {
-            alert(xhr.status);
-            alert(thrownError);
+            alert("Cannot connect to "+urll)
+			closeWaitingDialog();
       }});
 }
 
@@ -2392,9 +2422,17 @@ function originQuery(){
 .leaflet-container:full-screen { width: 100% !important; height: 100% !important; z-index: 99999; }
 .leaflet-container:fullscreen { width: 100% !important; height: 100% !important; z-index: 99999; }
 .leaflet-pseudo-fullscreen { position: fixed !important; width: 100% !important; height: 100% !important; top: 0px !important; left: 0px !important; z-index: 99999; }
+#loadingScreen {
+	background-color:white ;
+    padding-left: 25px;
+}
+.loadingScreenWindow .ui-dialog-titlebar-close {
+    display: none;
+}
 </style>
 </head>
 <body>
+<dialog id="loadingScreen"></dialog>
 <!--<h3 align="center">XPlanung Mapview based on LinkedData</h3>-->
 <table border=0 height="70%" width="100%" align="top" valign="top"><tr><td width="80%" height="70%" align="top" valign="top" >
 <div id="mapid" style="height:100%" width="80%">
@@ -2476,7 +2514,7 @@ Format: <select id="queryimportformat">
 </select>
 CRS: <select id="epsgqueryimport"></select><br/>
 Load supporting Ontology:<select id="supportingOntologySel"></select><button id="loadSuppOnt" onclick="loadSupportingOntology()">Load</button><br/>
-Load svg images: <input type="checkbox" id="loadsvg" checked="checked"/>Qualityanalysis:<input type="checkbox" id="qualityanalysis"/></td><td>
+Load svg images: <input type="checkbox" id="loadsvg" checked="checked"/>Qualityanalysis:<input type="checkbox" id="qualityanalysis"/>Query on Load:<input type="checkbox" id="queryonload"></td><td>
 <button id="exportTTL" onclick="exportAsTTL()">Export Database</button><button id="queryasTTL" onclick="exportQueryResult()">Export Query Result</button><br/>
 <button id="exportlastasTTL" onclick="exportLastImport()">Export resource</button> <select id="origin"></select>
 <br/>
