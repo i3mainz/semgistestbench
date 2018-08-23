@@ -259,31 +259,6 @@ function saveTextAsFile(tosave,fileext)
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);  
     }, 1000);
-
-/*
-    var textFileAsBlob = new Blob([tosave], {type:'text/plain'});
-    var fileNameToSaveAs = "res."+fileext;
-
-    var downloadLink = document.createElement("a");
-    downloadLink.download = fileNameToSaveAs;
-    downloadLink.innerHTML = "Download File";
-    if (window.URL != null)
-    {
-        // Chrome allows the link to be clicked
-        // without actually adding it to the DOM.
-        downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
-    }
-    else
-    {
-        // Firefox requires the link to be added to the DOM
-        // before it can be clicked.
-        downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
-        downloadLink.onclick = destroyClickedElement;
-        downloadLink.style.display = "none";
-        document.body.appendChild(downloadLink);
-    }
-
-    downloadLink.click();*/
 }
 
 
@@ -2433,13 +2408,21 @@ function originQuery(){
 			'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
 		id: 'mapbox.streets'
 	}).addTo(mymap);
+	var wmsLayer = L.tileLayer.wms('http://sgx.geodatenzentrum.de/wms_topplus_web_open', {
+layers: 'web',
+format: 'image/png',
+ transparent: true,
+attribution: '&copy; Bundesamt f&uuml;r Kartographie und Geod&auml;sie 2017, <a href="http://sg.geodatenzentrum.de/web_public/Datenquellen_TopPlus_Open.pdf">Datenquellen</a>'
+}).addTo(mymap);
 	var baseMaps = {
-    "BaseMap": layer
+    "BKG": wmsLayer,
+        "OSM": layer
 	};
 	L.control.scale({
 	position: 'bottomright',
 	imperial: false
 }).addTo(mymap);
+layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(mymap);
 	/*var printProvider = L.print.provider({
    method: 'GET',
    url: ' http://path/to/mapfish/print',
