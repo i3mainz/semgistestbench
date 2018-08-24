@@ -1837,7 +1837,7 @@ function exportQueryResult(tosave,exportFormat){
 	if(exportFormat=="kml" || $( "#exportformat option:selected" ).val()=="kml"){
         var namespaces={}
         var namespaces2={}
-		kmlstart="<?xml version=\"1.0\"  encoding=\"utf-8\" standalone=\"yes\" ?><kml xmlns:kml=\"http://www.opengis.net/kml/2.2\" "
+		kmlstart="<?xml version=\"1.0\"  encoding=\"utf-8\" standalone=\"yes\" ?>\n<kml xmlns:kml=\"http://www.opengis.net/kml/2.2\" "
 		kml=""
 		remembersub1=""
 		curgmlid="";
@@ -1915,14 +1915,14 @@ function exportQueryResult(tosave,exportFormat){
 		for(cls in classnames){
             kml+="<kml:Folder>\n<kml:name>"+cls+"</kml:name>\n"
             kml+=classnames[cls]
-            kml+="</kml:Placemark></kml:Folder> \n"
+            kml+="</kml:Placemark>\n</kml:Folder> \n"
 		}
 		//kml+="</kml:Placemark>\n</kml:Folder>\n</kml:Document>"
         for(ns in namespaces){
             kmlstart+=" xmlns:"+ns+"=\""+namespaces[ns]+"\" "
 		}
-		kmlstart+="><kml:Document> \n"
-		kml=kmlstart+kml+"</kml:Document></kml>"
+		kmlstart+=">\n<kml:Document> \n"
+		kml=kmlstart+kml+"</kml:Document>\n</kml>\n"
 		console.log(kml)
 		saveTextAsFile(kml,"kml")
 	}
