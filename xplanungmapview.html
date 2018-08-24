@@ -1572,7 +1572,7 @@ function exportQueryResult(tosave,exportFormat){
 					if(result.includes("srsName")){
 						srsIndex=result.indexOf("srsName=")+9
 						srsIndex2=result.indexOf("\"",srsIndex)
-						result=result.substring(0,srsIndex)+$('#epsgqueryexport option:selected').val()+result.substring(srsIndex2-1)
+						result=result.substring(0,srsIndex)+$('#epsgqueryexport option:selected').val()+result.substring(srsIndex2)
 						gml+=result+"\n"
 					}else{
 						srsIndex=result.indexOf(">")
