@@ -427,19 +427,21 @@ function walkDOM(main,file,importdate,epsg) {
 				if(main.getAttribute("gml:id")==null){
 								uuid=generateUUID()
 								result+="<"+main.namespaceURI+"#"+main.localName+"> rdf:type owl:Class . \n <"+main.namespaceURI+"#"+uuid+"> rdf:type <"+main.namespaceURI+"#"+main.localName+"> .  \n"
+								result+="<"+main.namespaceURI+"#"+uuid+"> <http://www.semgis.de/geodata#hasOriginClass>  <"+main.namespaceURI+"#"+main.localName+"> . \n"
 								curclass=main.namespaceURI+"#"+main.localName
 								//console.log("HAS ORIGIN BEFORE")
                                                                 insertid=(!(file.includes("http"))?file.substring(0,file.lastIndexOf('.')):file)+"_"+(importdate.getTime())
-                                                                //console.log("HAS ORIGIN: "+"<"+main.namespaceURI+"#"+uuid+"> <http://www.semgis.de/geodata#hasOrigin> <"+main.namespaceURI+"#"+insertid+"> . \n")
+                                //console.log("HAS ORIGIN: "+"<"+main.namespaceURI+"#"+uuid+"> <http://www.semgis.de/geodata#hasOrigin> <"+main.namespaceURI+"#"+insertid+"> . \n")
 								result+="<"+main.namespaceURI+"#"+uuid+"> <http://www.semgis.de/geodata#hasOrigin> <"+main.namespaceURI+"#"+insertid+"> . \n"
 								if(file!=null){
-                                                                        result+="<"+main.namespaceURI+"#"+insertid+"> <http://www.semgis.de/geodata#value> \""+file+"\"^^<http://www.w3.org/2001/XMLSchema#string> . \n "
+                                    result+="<"+main.namespaceURI+"#"+insertid+"> <http://www.semgis.de/geodata#value> \""+file+"\"^^<http://www.w3.org/2001/XMLSchema#string> . \n "
 								}
 								result+="<"+main.namespaceURI+"#"+insertid+"> <http://www.semgis.de/geodata#originType> \""+$('#importfrom').val()+"\"^^<http://www.w3.org/2001/XMLSchema#string> . \n "
                                                                 result+="<"+main.namespaceURI+"#"+insertid+"> <http://www.semgis.de/geodata#importTime> \""+importdate.toISOString()+"\"^^<http://www.w3.org/2001/XMLSchema#dateTime> . \n "
 								parentNodeName=main.namespaceURI+"#"+uuid
 				}else{
 								result+="<"+main.namespaceURI+"#"+main.localName+"> rdf:type owl:Class . \n  <"+main.namespaceURI+"#"+main.getAttribute("gml:id")+"> rdf:type <"+main.namespaceURI+"#"+main.localName+"> . \n"
+								result+="<"+main.namespaceURI+"#"+main.localName+"> <http://www.semgis.de/geodata#hasOriginClass>  <"+main.namespaceURI+"#"+main.localName+"> . \n"
 								curclass=main.namespaceURI+"#"+main.localName
 								//console.log("HAS ORIGIN BEFORE")
 								insertid=(!(file.includes("http"))?file.substring(0,file.lastIndexOf('.')):file)+"_"+(importdate.getTime())
@@ -448,8 +450,8 @@ function walkDOM(main,file,importdate,epsg) {
 								if(file!=null){
                                                                         result+="<"+main.namespaceURI+"#"+insertid+"> <http://www.semgis.de/geodata#value> \""+file+"\"^^<http://www.w3.org/2001/XMLSchema#string> . \n "
 								}
-                                                                result+="<"+main.namespaceURI+"#"+insertid+"> <http://www.semgis.de/geodata#originType> \""+$('#importfrom').val()+"\"^^<http://www.w3.org/2001/XMLSchema#string> . \n "
-                                                                result+="<"+main.namespaceURI+"#"+insertid+"> <http://www.semgis.de/geodata#importTime> \""+importdate.toISOString()+"\"^^<http://www.w3.org/2001/XMLSchema#dateTime> . \n "
+                                result+="<"+main.namespaceURI+"#"+insertid+"> <http://www.semgis.de/geodata#originType> \""+$('#importfrom').val()+"\"^^<http://www.w3.org/2001/XMLSchema#string> . \n "
+                                result+="<"+main.namespaceURI+"#"+insertid+"> <http://www.semgis.de/geodata#importTime> \""+importdate.toISOString()+"\"^^<http://www.w3.org/2001/XMLSchema#dateTime> . \n "
 								parentNodeName=main.namespaceURI+"#"+main.getAttribute("gml:id")
 				}
 				}catch(err){}
@@ -1531,7 +1533,7 @@ function exportQueryResult(tosave,exportFormat){
 	if(exportFormat=="gml" || $( "#exportformat option:selected" ).val()=="gml"){
         namespaces={}
         namespaces2={}
-        gmlstart="<?xml version=\"1.0\"  encoding=\"utf-8\" standalone=\"yes\" ?><gml:FeatureCollection xmlns:gml=\"http://www.opengis.net/gml/3.2\" "
+        gmlstart="<?xml version=\"1.0\"  encoding=\"utf-8\" standalone=\"yes\" ?>\n<gml:FeatureCollection xmlns:gml=\"http://www.opengis.net/gml/3.2\" "
 		gml=""
 		remembersub1=""
 		curgmlid="";
@@ -1567,7 +1569,16 @@ function exportQueryResult(tosave,exportFormat){
 					coordsconverted=getCoordArrayFromGML(xmlString,epsgdefs[$('#epsgqueryexport option:selected').val()],true,false,false)					
 					result=convertGMLToOtherCRS(xmlString,coordsconverted)
 					console.log(result)
-                    gml+=result+"\n"
+					if(result.includes("srsName")){
+						srsIndex=result.indexOf("srsName=")+9
+						srsIndex2=result.indexOf("\"",srsIndex)
+						result=result.substring(0,srsIndex)+$('#epsgqueryexport option:selected').val()+result.substring(srsIndex2-1)
+						gml+=result+"\n"
+					}else{
+						srsIndex=result.indexOf(">")
+						result.substring(0,srsIndex-1)+"srsName=\""+$('#epsgqueryexport option:selected').val()+"\""+result.substring(srsIndex)
+						gml+=result+"\n"
+					}                 
                     gml+="</"+replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)+">\n"
                     waitingForGeomTag=""
                     waitingForGeomTextContent=""
