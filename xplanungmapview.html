@@ -850,7 +850,7 @@ function uiQuery(start){
 	}else{
 		queryString=prefixList+" SELECT DISTINCT ?person ?rel ?pointstyle ?polygonstyle ?linestyle ?linestringImage ?linestringImageStyle ?hatch ?img ?val ?valLabel ?wkt ?wkt2 ?gml ?kml ?geojson WHERE { ?percls rdf:type owl:Class .  OPTIONAL{?percls semgis:polygonStyle ?polygonstyle .} OPTIONAL{?percls semgis:linestringStyle ?linestyle .} OPTIONAL{?percls semgis:pointStyle ?pointstyle .} OPTIONAL{?percls semgis:image ?img .} OPTIONAL{?percls semgis:linestringImageStyle ?linestringImageStyle .} OPTIONAL{?percls semgis:linestringImage ?linestringImage .} OPTIONAL{ ?person semgis:hatch  ?hatch .} ?person rdf:type ?percls . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val ?abc ?val2. ?val2 geo:asWKT ?wkt2 .}  OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL {?val rdfs:label ?valLabel . } "
 	}
-	queryString+="} ORDER BY ?person "
+	queryString+="} ORDER BY ?person ?rel "
 	console.log(queryString)
 	resultss={}
 	if($('#choosedatabase').val()=="remote"){
@@ -1590,43 +1590,57 @@ function exportQueryResult(tosave,exportFormat){
 			if(curgmlid==gmlid && !wrotetype && !splitt[spl].includes("type")){
 				towrite.push(splitt[spl])
 			}else if(!splitt[spl].includes("type") && !splitt[spl].includes("asGML")){
+							
                                 textContent=(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""));
                                 if((textContent.split("-").length - 1)>=4){
-                                        if(waitingForGeomTag!=""){
+										if(exportnamespace.length==0 || exportnamespace.includes("all") || exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1))){
+											if(waitingForGeomTag!=""){
                                                gml+="<"+replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)+">\n"
                                                 gml+=waitingForGeomTextContent
                                                 gml+="</"+replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)+">\n"
                                                 waitingForGeomTag=""
                                                 waitingForGeomTextContent=""
-                                        }
-                                        waitingForGeomTag=subsplit[1]
-                                        waitingForGeomTextContent=textContent
+											}
+											waitingForGeomTag=subsplit[1]
+											waitingForGeomTextContent=textContent
+										}
                                 }else{
-					gml+="<"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">"+textContent+"</"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">\n"
+				if(exportnamespace.length==0 || exportnamespace.includes("all") || exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1))){
+							gml+="<"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">"+textContent+"</"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">\n"
+				}
+					
                                 }
 			}
 			if(splitt[spl].includes("type") && !splitt[spl].includes("asGML")){
-					console.log("IN TYPE CLAUSE")
-					if(!remembersub1==""){
-						gml+="</"+replaceWithNSPrefix(remembersub1.replace("<","").replace(">",""),namespaces2)+">\n"
-					}
-
-					gml+="<"+replaceWithNSPrefix(subsplit[2].replace("<","").replace(">",""),namespaces2)+" gml:id=\""+subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")+"\">\n"
-					remembersub1=subsplit[2]
-					wrotetype=true;
-					for(item in towrite){
-						subsplit=towrite[item].split(" ")
-						gml+="<"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">"+(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))+"</"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">\n"
+					
+						console.log("IN TYPE CLAUSE")
+						if(!remembersub1==""){
+							gml+="</"+replaceWithNSPrefix(remembersub1.replace("<","").replace(">",""),namespaces2)+">\n</gml:featureMember>\n"
+						}
+					if(exportnamespace.length==0 || exportnamespace.includes("all") || exportnamespace.includes(subsplit[2].substring(1,subsplit[2].indexOf('#')+1))){
+						gml+="<gml:featureMember>\n<"+replaceWithNSPrefix(subsplit[2].replace("<","").replace(">",""),namespaces2)+" gml:id=\""+subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")+"\">\n"
+						remembersub1=subsplit[2]
+						wrotetype=true;
+						for(item in towrite){
+							subsplit=towrite[item].split(" ")
+							if(exportnamespace.length!=0 && !(exportnamespace.includes("all")) && !(exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1)))){
+								continue;
+							}
+							gml+="<"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">"+(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))+"</"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">\n"
+						}
+					}else{
+						remembersub1=""
 					}
 					towrite=[]
+					
 			}
 
 			}catch(err){console.log(err)}
 		}
-		gml+="</"+replaceWithNSPrefix(remembersub1.replace("<","").replace(">",""),namespaces2)+">\n"
+		gml+="</"+replaceWithNSPrefix(remembersub1.replace("<","").replace(">",""),namespaces2)+">\n</gml:featureMember>\n"
 		gml+="</gml:FeatureCollection>"
 		for(ns in namespaces){
-                        gmlstart+=" xmlns:"+ns+"=\""+namespaces[ns]+"\" "
+            gmlstart+=" xmlns:"+ns+"=\""+namespaces[ns]+"\" "
 		}
 		gmlstart+="> \n"
 		gml=gmlstart+gml
