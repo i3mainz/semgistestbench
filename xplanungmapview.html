@@ -826,11 +826,11 @@ function uiQuery(start){
 		alert("No classes to query!")
 		return
 	}
-	queryString=prefixList+" SELECT DISTINCT ?person ?rel ?pointstyle ?linestyle ?polygonstyle ?hatch ?img ?linestringImageStyle ?linestringImage ?val ?valLabel ?wkt ?wkt2 ?gml ?kml ?geojson ?standard WHERE { "
+	queryString=prefixList+" SELECT DISTINCT ?person ?rel ?pointstyle ?linestyle ?polygonstyle ?hatch ?img ?linestringImageStyle ?linestringImage ?val ?valLabel ?wkt ?wkt2 ?gml ?kml ?geojson ?standard ?abstractClass ?proporderWHERE { "
 	for(cls in classesToQuery){
 		console.log(cls)
 		if($('#whichactive').is(':checked')){
-						queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val .  OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val ?abc ?val2. ?val2 geo:asWKT ?wkt2 .}  OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{?val semgis:standard ?standard .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:lineStyle ?linestringStyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}   OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle  ?linestringImageStyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:hatch  ?hatch .}  "
+						queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val .  OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val ?abc ?val2. ?val2 geo:asWKT ?wkt2 .}  OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{?val semgis:standard ?standard .} OPTIONAL{?val semgis:abstractClass ?abstractClass .} OPTIONAL{?val semgis:propOrder ?proporder .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:lineStyle ?linestringStyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}   OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle  ?linestringImageStyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:hatch  ?hatch .}  "
 						if(classesToQuery[cls] in constraints){
                                                         if("NOT" in constraints[classesToQuery[cls]]){
                                                                 queryString+="MINUS {"+constraints[classesToQuery[cls]].replace("NOT ","")+"} ."
@@ -845,12 +845,12 @@ function uiQuery(start){
 						}
 						queryString+="} UNION"
 		}else{
-			queryString+="{ ?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val ?abc ?val2. ?val2 geo:asWKT ?wkt2 .}  OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}   OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{?val semgis:standard ?standard .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringStyle ?linestyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle ?linestringImageStyle.} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:hatch  ?hatch .} } UNION "
+			queryString+="{ ?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val ?abc ?val2. ?val2 geo:asWKT ?wkt2 .}  OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}   OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{?val semgis:standard ?standard .} OPTIONAL{?val semgis:abstractClass ?abstractClass .} OPTIONAL{?val semgis:propOrder ?proporder .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringStyle ?linestyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle ?linestringImageStyle.} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:hatch  ?hatch .} } UNION "
 		}
 	}
 	queryString=queryString.substring(0,queryString.length-6)
 	}else{
-		queryString=prefixList+" SELECT DISTINCT ?person ?rel ?pointstyle ?polygonstyle ?linestyle ?linestringImage ?linestringImageStyle ?hatch ?img ?val ?valLabel ?wkt ?wkt2 ?gml ?kml ?geojson ?standard WHERE { ?percls rdf:type owl:Class .  OPTIONAL{?percls semgis:polygonStyle ?polygonstyle .} OPTIONAL{?percls semgis:linestringStyle ?linestyle .} OPTIONAL{?percls semgis:pointStyle ?pointstyle .} OPTIONAL{?percls semgis:standard ?standard .} OPTIONAL{?percls semgis:image ?img .} OPTIONAL{?percls semgis:linestringImageStyle ?linestringImageStyle .} OPTIONAL{?percls semgis:linestringImage ?linestringImage .} OPTIONAL{ ?percls semgis:hatch  ?hatch .} ?person rdf:type ?percls . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val ?abc ?val2. ?val2 geo:asWKT ?wkt2 .}  OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL {?val rdfs:label ?valLabel . } "
+		queryString=prefixList+" SELECT DISTINCT ?person ?rel ?pointstyle ?polygonstyle ?linestyle ?linestringImage ?linestringImageStyle ?hatch ?img ?val ?valLabel ?wkt ?wkt2 ?gml ?kml ?geojson ?standard ?abstractClass ?proporder WHERE { ?percls rdf:type owl:Class .  OPTIONAL{?percls semgis:polygonStyle ?polygonstyle .} OPTIONAL{?percls semgis:linestringStyle ?linestyle .} OPTIONAL{?percls semgis:pointStyle ?pointstyle .} OPTIONAL{?percls semgis:standard ?standard .} OPTIONAL{?percls semgis:abstractClass ?abstractClass .} OPTIONAL{?percls semgis:propOrder ?proporder .}  OPTIONAL{?percls semgis:image ?img .} OPTIONAL{?percls semgis:linestringImageStyle ?linestringImageStyle .} OPTIONAL{?percls semgis:linestringImage ?linestringImage .} OPTIONAL{ ?percls semgis:hatch  ?hatch .} ?person rdf:type ?percls . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val ?abc ?val2. ?val2 geo:asWKT ?wkt2 .}  OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL {?val rdfs:label ?valLabel . } "
 	}
 	queryString+="} ORDER BY ?person ?rel "
 	console.log(queryString)
@@ -892,10 +892,10 @@ function handleResults(results,start){
 							if(!(results[res]["person"]["value"]  in persToClass)){
 								persToClass[results[res]["person"]["value"]]={}
 							}
-							if(results[res]["standard"]!=null){
-								persToClass[results[res]["person"]["value"]][results[res]["val"]["value"]]=true				
+							if(results[res]["standard"]!=null && (results[res]["abstractClass"]==null || results[res]["abstractClass"]==false)){
+								persToClass[results[res]["person"]["value"]][results[res]["val"]["value"]]={"export":true,"order":results[res]["propOrder"]}				
 							}else{
-								persToClass[results[res]["person"]["value"]][results[res]["val"]["value"]]=false	
+								persToClass[results[res]["person"]["value"]][results[res]["val"]["value"]]={"export":false,"order":results[res]["propOrder"]}		
 							}
 							console.log(JSON.stringify(persToClass[results[res]["person"]["value"]]))
 							//alert(JSON.stringify(persToClass[results[res]["person"]["value"]]))
@@ -925,7 +925,7 @@ function handleResults(results,start){
                             persons[results[res]["person"]["value"]]["polygonStyle"]=results[res]["polygonstyle"]["value"]
 			}
 			if(results[res]["linestyle"]!=null){
-                persons[results[res]["person"]["value"]]["linestringStyle"]=results[res]["linestyle"]["value"]
+                            persons[results[res]["person"]["value"]]["linestringStyle"]=results[res]["linestyle"]["value"]
 			}
 			if(results[res]["linestringImageStyle"]!=null){
                             persons[results[res]["person"]["value"]]["linestringImageStyle"]=results[res]["linestringImageStyle"]["value"]
@@ -962,7 +962,7 @@ function handleResults(results,start){
                                 persons[results[res]["person"]["value"]]["hatch"]=results[res]["hatch"]["value"]
 			}
 			if(results[res]["img"]!=null){
-                    persons[results[res]["person"]["value"]]["img"]=results[res]["img"]["value"]
+                                persons[results[res]["person"]["value"]]["img"]=results[res]["img"]["value"]
 			}
 		}
 		displayQueryResult(persons,!start,classTopers,persToClass,start);
@@ -1615,17 +1615,17 @@ function exportQueryResult(tosave,exportFormat){
 							
                                 textContent=(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""));
                                 if((textContent.split("-").length - 1)>=4){
-										if(exportnamespace.length==0 || exportnamespace.includes("all") || exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1))){
-											if(waitingForGeomTag!=""){
-                                               gml+="<"+replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)+">\n"
-                                                gml+=waitingForGeomTextContent
-                                                gml+="</"+replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)+">\n"
-                                                waitingForGeomTag=""
-                                                waitingForGeomTextContent=""
-											}
-											waitingForGeomTag=subsplit[1]
-											waitingForGeomTextContent=textContent
-										}
+                                            if(exportnamespace.length==0 || exportnamespace.includes("all") || exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1))){
+                                                if(waitingForGeomTag!=""){
+                                                        gml+="<"+replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)+">\n"
+                                                        gml+=waitingForGeomTextContent
+                                                        gml+="</"+replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)+">\n"
+                                                        waitingForGeomTag=""
+                                                        waitingForGeomTextContent=""
+                                                }
+                                                        waitingForGeomTag=subsplit[1]
+							waitingForGeomTextContent=textContent
+                                            }
                                 }else{
 				if(exportnamespace.length==0 || exportnamespace.includes("all") || exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1))){
 							gml+="<"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">"+textContent+"</"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">\n"
