@@ -4,6 +4,7 @@
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix semgis: <http://www.semgis.de/geodata#> .
 @prefix xplan5: <http://www.xplanung.de/xplangml/5/0#> .
 @prefix inspire4: <http://semgis.de/inspire4#> .
 @prefix inspire-plu: <http://inspire.ec.europa.eu/schemas/plu/4.0#> .
@@ -1014,7 +1015,7 @@ inspire-plu:ZoningElement_WaterTraffic rdf:type owl:Class ;
 
 ###  http://www.xplanung.de/xplangml/5/0#BP_AnpflanzungBindungErhaltung
 xplan5:BP_AnpflanzungBindungErhaltung rdf:type owl:Class ;  <http://www.semgis.de/geodata#standard> "xplanung"@de ;
-<http://www.semgis.de/geodata#standardVersion>1.1 ;
+<http://www.semgis.de/geodata#standardVersion>1.1 ;  semgis:propOrder "massnahme;gegenstand;kronendurchmesser;pflanztiefe;istAusgleich;baumArt" ;
                                       rdfs:subClassOf xplan5:BP_Objekt .
 
 
@@ -1094,7 +1095,7 @@ xplan5:BP_AnpflanzungBindungErhaltung_BindungErhaltung rdf:type owl:Class ;
 
 ###  http://www.xplanung.de/xplangml/5/0#BP_BauGrenze
 xplan5:BP_BauGrenze rdf:type owl:Class ;  <http://www.semgis.de/geodata#standard> "xplanung"@de ;
-<http://www.semgis.de/geodata#standardVersion>1.1 ;
+<http://www.semgis.de/geodata#standardVersion>1.1 ; semgis:propOrder "bautiefe;geschossMin;geschossMax" ;
                     owl:equivalentClass [ owl:intersectionOf ( inspire-plu:SupplementaryRegulation
                                                                [ rdf:type owl:Restriction ;
                                                                  owl:onProperty inspire-plu:specificSupplementaryRegulation ;
@@ -1119,7 +1120,7 @@ xplan5:BP_BauGrenze rdf:type owl:Class ;  <http://www.semgis.de/geodata#standard
 
 ###  http://www.xplanung.de/xplangml/5/0#BP_BauLinie
 xplan5:BP_BauLinie rdf:type owl:Class ;  <http://www.semgis.de/geodata#standard> "xplanung"@de ;
-<http://www.semgis.de/geodata#standardVersion>1.1 ;
+<http://www.semgis.de/geodata#standardVersion>1.1 ; semgis:propOrder "bautiefe;geschossMin;geschossMax" ;
                    owl:equivalentClass [ owl:intersectionOf ( inspire-plu:SupplementaryRegulation
                                                               [ rdf:type owl:Restriction ;
                                                                 owl:onProperty inspire-plu:specificSupplementaryRegulation ;
@@ -1144,7 +1145,7 @@ xplan5:BP_BauLinie rdf:type owl:Class ;  <http://www.semgis.de/geodata#standard>
 
 ###  http://www.xplanung.de/xplangml/5/0#BP_BaugebietsTeilFlaeche
 xplan5:BP_BaugebietsTeilFlaeche rdf:type owl:Class ; <http://www.semgis.de/geodata#standard> "xplanung"@de ;
-<http://www.semgis.de/geodata#standardVersion>1.1 ;
+<http://www.semgis.de/geodata#standardVersion>1.1 ; semgis:propOrder "DNmin;DNmax;DN;DNZwingend;FR;dachform;detaillierteDachform;abweichungText;MaxZahlWohnungen;Fmin;Fmax;Bmin;Bmax;Tmin;Tmax;GFZmin;GFZmax;GFZ;GFZ_Ausn;GFmin;GFmax;GF;GF_Ausn;BMZ;BMZ_Ausn;BM;BM_Ausn;GRZmin;GRZmax;GRZ;GRZ_Ausn;GRmin;GRmax;GR;GR_Ausn;Zmin;Zmax;Zzwingend;Z;Z_Ausn;Z_Staffel;Z_Dach;ZUmin;ZUmax;ZUzwingend;ZU;ZU_Ausn;wohnnutzungEGStrasse;ZWohn;GFAntWohnen;GFWohnen;GFAntGewerbe;GFGewerbe;allgArtDerBaulNutzung;besondereArtDerBaulNutzung;sondernutzung;detaillierteArtDerBaulNutzung;nutzungText;abweichungBauNVO;bauweise;abweichendeBauweise;vertikaleDifferenzierung;bebauungsArt;bebauungVordereGrenze;bebauungRueckwaertigeGrenze;bebauungSeitlicheGrenze;refGebaeudequerschnitt;zugunstenVon" ;
                                 owl:equivalentClass [ owl:intersectionOf ( xplan5:BP_BaugebietsTeilFlaeche
                                                                            [ rdf:type owl:Restriction ;
                                                                              owl:onProperty xplan5:besondereArtDerBaulNutzung ;
@@ -1470,13 +1471,13 @@ xplan5:BP_BaugebietsTeilFlaeche_Industriegebiet rdf:type owl:Class ;
 
 ###  http://www.xplanung.de/xplangml/5/0#BP_Bereich
 xplan5:BP_Bereich rdf:type owl:Class ; <http://www.semgis.de/geodata#standard> "xplanung"@de ;
-<http://www.semgis.de/geodata#standardVersion>1.1 ;
+<http://www.semgis.de/geodata#standardVersion>1.1 ; semgis:propOrder "versionBauNVODatum;versionBauNVOText;versionBauGBDatum;versionBauGBText;versionSonstRechtsgrundlageDatum;versionSonstRechtsgrundlageText;gehoertZuPlan" ;
                   rdfs:subClassOf xplan5:BP_Objekt .
 
 
 ###  http://www.xplanung.de/xplangml/5/0#BP_GruenFlaeche
 xplan5:BP_GruenFlaeche rdf:type owl:Class ; <http://www.semgis.de/geodata#standard> "xplanung"@de ;
-<http://www.semgis.de/geodata#standardVersion>1.1 ;
+<http://www.semgis.de/geodata#standardVersion>1.1 ; semgis:propOrder "MaxZahlWohnungen;Fmin;Fmax;Bmin;Bmax;Tmin;Tmax;GFZmin;GFZmax;GFZ;GFZ_Ausn;GFmin;GFmax;GF;GF_Ausn;BMZ;BMZ_Ausn;BM;BM_Ausn;GRZmin;GRZmax;GRZ;GRZ_Ausn;GRmin;GRmax;GR;GR_Ausn;Zmin;Zmax;Zzwingend;Z;Z_Ausn;Z_Staffel;Z_Dach;ZUmin;ZUmax;ZUzwingend;ZU;ZU_Ausn;zweckbestimmung;detaillierteZweckbestimmung;nutzungsform;zugunstenVon" ;
                        rdfs:subClassOf xplan5:BP_Objekt .
 
 
@@ -1566,7 +1567,7 @@ xplan5:BP_GruenFlaeche_Parkanlage rdf:type owl:Class ;
 
 ###  http://www.xplanung.de/xplangml/5/0#BP_KennzeichnungsFlaeche
 xplan5:BP_KennzeichnungsFlaeche rdf:type owl:Class ; <http://www.semgis.de/geodata#standard> "xplanung"@de ;
-<http://www.semgis.de/geodata#standardVersion>1.1 ;
+<http://www.semgis.de/geodata#standardVersion>1.1 ; semgis:propOrder "zweckbestimmung" ;
                                 rdfs:subClassOf xplan5:BP_Objekt .
 
 
@@ -1637,7 +1638,7 @@ xplan5:BP_KennzeichnungsFlaeche_Naturgewalten rdf:type owl:Class ;
 
 ###  http://www.xplanung.de/xplangml/5/0#BP_NebenanlagenFlaeche
 xplan5:BP_NebenanlagenFlaeche rdf:type owl:Class ; <http://www.semgis.de/geodata#standard> "xplanung"@de ;
-<http://www.semgis.de/geodata#standardVersion>1.1 ;
+<http://www.semgis.de/geodata#standardVersion>1.1 ;  semgis:propOrder "zweckbestimmung;detaillierteZweckbestimmung;Zmax" ;
                               owl:equivalentClass [ owl:intersectionOf ( inspire-plu:SupplementaryRegulation
                                                                          [ rdf:type owl:Restriction ;
                                                                            owl:onProperty inspire-plu:specificSupplementaryRegulation ;
@@ -1707,13 +1708,13 @@ xplan5:BP_NebenanlagenFlaeche_Sonstiges rdf:type owl:Class ;
 
 
 ###  http://www.xplanung.de/xplangml/5/0#BP_Objekt
-xplan5:BP_Objekt rdf:type owl:Class ; <http://www.semgis.de/geodata#standard> "xplanung"@de ;
-<http://www.semgis.de/geodata#standardVersion>1.1 .
+xplan5:BP_Objekt rdf:type owl:Class ; <http://www.semgis.de/geodata#standard> "xplanung"@de ;  semgis:abstractClass "true"^^xsd:boolean ;
+<http://www.semgis.de/geodata#standardVersion>1.1 ;                  semgis:propOrder "rechtscharakter;refTextInhalt;wirdAusgeglichenDurchFlaeche;wirdAusgeglichenDurchABE;wirdAusgeglichenDurchSPEMassnahme;wirdAusgeglichenDurchSPEFlaeche;wirdAusgeglichenDurchMassnahme" .
 
 
 ###  http://www.xplanung.de/xplangml/5/0#BP_Plan
 xplan5:BP_Plan rdf:type owl:Class ; <http://www.semgis.de/geodata#standard> "xplanung"@de ;
-<http://www.semgis.de/geodata#standardVersion>1.1 ;
+<http://www.semgis.de/geodata#standardVersion>1.1 ;               semgis:propOrder "gemeinde;plangeber;planArt;sonstPlanArt;verfahren;rechtsstand;status;hoehenbezug;aenderungenBisDatum;aufstellungsbeschlussDatum;veraenderungssperreDatum;auslegungsStartDatum;auslegungsEndDatum;traegerbeteiligungsStartDatum;traegerbeteiligungsEndDatum;satzungsbeschlussDatum;rechtsverordnungsDatum;inkrafttretensDatum;ausfertigungsDatum;veraenderungssperre;staedtebaulicherVertrag;erschliessungsVertrag;durchfuehrungsVertrag;gruenordnungsplan;bereich" ;
                owl:equivalentClass [ owl:intersectionOf ( inspire-plu:SpatialPlan
                                                           [ rdf:type owl:Restriction ;
                                                             owl:onProperty inspire-plu:levelOfSpatialPlan ;
@@ -1745,7 +1746,7 @@ xplan5:BP_Plan rdf:type owl:Class ; <http://www.semgis.de/geodata#standard> "xpl
 
 ###  http://www.xplanung.de/xplangml/5/0#BP_SchutzPflegeEntwicklungsFlaeche
 xplan5:BP_SchutzPflegeEntwicklungsFlaeche rdf:type owl:Class ; <http://www.semgis.de/geodata#standard> "xplanung"@de ;
-<http://www.semgis.de/geodata#standardVersion>1.1 ;
+<http://www.semgis.de/geodata#standardVersion>1.1 ; semgis:propOrder "ziel;sonstZiel;massnahme;istAusgleich;refMassnahmenText;refLandschaftsplan" ;
                                           owl:equivalentClass [ rdf:type owl:Class ;
                                                                 owl:unionOf ( [ owl:intersectionOf ( inspire-plu:SupplementaryRegulation
                                                                                                      [ rdf:type owl:Class ;
@@ -1822,7 +1823,7 @@ xplan5:BP_SchutzPflegeEntwicklungsFlaeche rdf:type owl:Class ; <http://www.semgi
 
 ###  http://www.xplanung.de/xplangml/5/0#BP_StrassenVerkehrsFlaeche
 xplan5:BP_StrassenVerkehrsFlaeche rdf:type owl:Class ; <http://www.semgis.de/geodata#standard> "xplanung"@de ;
-<http://www.semgis.de/geodata#standardVersion>1.1 ;
+<http://www.semgis.de/geodata#standardVersion>1.1 ; semgis:propOrder "MaxZahlWohnungen;Fmin;Fmax;Bmin;Bmax;Tmin;Tmax;GFZmin;GFZmax;GFZ;GFZ_Ausn;GFmin;GFmax;GF;GF_Ausn;BMZ;BMZ_Ausn;BM;BM_Ausn;GRZmin;GRZmax;GRZ;GRZ_Ausn;GRmin;GRmax;GR;GR_Ausn;Zmin;Zmax;Zzwingend;Z;Z_Ausn;Z_Staffel;Z_Dach;ZUmin;ZUmax;ZUzwingend;ZU;ZU_Ausn;nutzungsform;begrenzungslinie" ;
                                   rdfs:subClassOf xplan5:BP_Objekt .
 
 
@@ -1906,7 +1907,7 @@ xplan5:BP_StrassenVerkehrsFlaeche_Privat rdf:type owl:Class ;
 
 ###  http://www.xplanung.de/xplangml/5/0#BP_StrassenbegrenzungsLinie
 xplan5:BP_StrassenbegrenzungsLinie rdf:type owl:Class ; <http://www.semgis.de/geodata#standard> "xplanung"@de ;
-<http://www.semgis.de/geodata#standardVersion>1.1 ;
+<http://www.semgis.de/geodata#standardVersion>1.1 ; semgis:propOrder "bautiefe" ;
                                    owl:equivalentClass [ owl:intersectionOf ( inspire-plu:SupplementaryRegulation
                                                                               [ rdf:type owl:Restriction ;
                                                                                 owl:onProperty inspire-plu:specificSupplementaryRegulation ;
@@ -1931,7 +1932,7 @@ xplan5:BP_StrassenbegrenzungsLinie rdf:type owl:Class ; <http://www.semgis.de/ge
 
 ###  http://www.xplanung.de/xplangml/5/0#BP_UeberbaubareGrundstuecksFlaeche
 xplan5:BP_UeberbaubareGrundstuecksFlaeche rdf:type owl:Class ; <http://www.semgis.de/geodata#standard> "xplanung"@de ;
-<http://www.semgis.de/geodata#standardVersion>1.1 ;
+<http://www.semgis.de/geodata#standardVersion>1.1 ; semgis:propOrder "DNmin;DNmax;DN;DNZwingend;FR;dachform;detaillierteDachform;MaxZahlWohnungen;Fmin;Fmax;Bmin;Bmax;Tmin;Tmax;GFZmin;GFZmax;GFZ;GFZ_Ausn;GFmin;GFmax;GF;GF_Ausn;BMZ;BMZ_Ausn;BM;BM_Ausn;GRZmin;GRZmax;GRZ;GRZ_Ausn;GRmin;GRmax;GR;GR_Ausn;Zmin;Zmax;Zzwingend;Z;Z_Ausn;Z_Staffel;Z_Dach;ZUmin;ZUmax;ZUzwingend;ZU;ZU_Ausn;wohnnutzungEGStrasse;ZWohn;GFAntWohnen;GFWohnen;GFAntGewerbe;GFGewerbe;bauweise;abweichendeBauweise;vertikaleDifferenzierung;bebauungsArt;bebauungVordereGrenze;bebauungRueckwaertigeGrenze;bebauungSeitlicheGrenze;refGebaeudequerschnitt;baugrenze;baulinie;geschossMin;geschossMax" ;
                                           owl:equivalentClass [ owl:intersectionOf ( inspire-plu:SupplementaryRegulation
                                                                                      [ owl:intersectionOf ( [ rdf:type owl:Restriction ;
                                                                                                               owl:onProperty inspire-plu:specificSupplementaryRegulation ;
@@ -1959,7 +1960,7 @@ xplan5:BP_UeberbaubareGrundstuecksFlaeche rdf:type owl:Class ; <http://www.semgi
 
 ###  http://www.xplanung.de/xplangml/5/0#BP_VerEntsorgung
 xplan5:BP_VerEntsorgung rdf:type owl:Class ; <http://www.semgis.de/geodata#standard> "xplanung"@de ;
-<http://www.semgis.de/geodata#standardVersion>1.1 ;
+<http://www.semgis.de/geodata#standardVersion>1.1 ; semgis:propOrder "MaxZahlWohnungen;Fmin;Fmax;Bmin;Bmax;Tmin;Tmax;GFZmin;GFZmax;GFZ;GFZ_Ausn;GFmin;GFmax;GF;GF_Ausn;BMZ;BMZ_Ausn;BM;BM_Ausn;GRZmin;GRZmax;GRZ;GRZ_Ausn;GRmin;GRmax;GR;GR_Ausn;Zmin;Zmax;Zzwingend;Z;Z_Ausn;Z_Staffel;Z_Dach;ZUmin;ZUmax;ZUzwingend;ZU;ZU_Ausn;zweckbestimmung;detaillierteZweckbestimmung;textlicheErgaenzung;zugunstenVon" ;
                         rdfs:subClassOf xplan5:BP_Objekt .
 
 
@@ -2252,7 +2253,7 @@ xplan5:BP_VerEntsorgung_Telekommunikation rdf:type owl:Class ;
 
 ###  http://www.xplanung.de/xplangml/5/0#BP_WaldFlaeche
 xplan5:BP_WaldFlaeche rdf:type owl:Class ; <http://www.semgis.de/geodata#standard> "xplanung"@de ;
-<http://www.semgis.de/geodata#standardVersion>1.1 ;
+<http://www.semgis.de/geodata#standardVersion>1.1 ; semgis:propOrder "zweckbestimmung;detaillierteZweckbestimmung" ;
                       rdfs:subClassOf xplan5:BP_Objekt .
 
 

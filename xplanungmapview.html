@@ -826,7 +826,7 @@ function uiQuery(start){
 		alert("No classes to query!")
 		return
 	}
-	queryString=prefixList+" SELECT DISTINCT ?person ?rel ?pointstyle ?linestyle ?polygonstyle ?hatch ?img ?linestringImageStyle ?linestringImage ?val ?valLabel ?wkt ?wkt2 ?gml ?kml ?geojson ?standard ?abstractClass ?proporderWHERE { "
+	queryString=prefixList+" SELECT DISTINCT ?person ?rel ?pointstyle ?linestyle ?polygonstyle ?hatch ?img ?linestringImageStyle ?linestringImage ?val ?valLabel ?wkt ?wkt2 ?gml ?kml ?geojson ?standard ?abstractClass ?proporder WHERE { "
 	for(cls in classesToQuery){
 		console.log(cls)
 		if($('#whichactive').is(':checked')){
@@ -850,7 +850,7 @@ function uiQuery(start){
 	}
 	queryString=queryString.substring(0,queryString.length-6)
 	}else{
-		queryString=prefixList+" SELECT DISTINCT ?person ?rel ?pointstyle ?polygonstyle ?linestyle ?linestringImage ?linestringImageStyle ?hatch ?img ?val ?valLabel ?wkt ?wkt2 ?gml ?kml ?geojson ?standard ?abstractClass ?proporder WHERE { ?percls rdf:type owl:Class .  OPTIONAL{?percls semgis:polygonStyle ?polygonstyle .} OPTIONAL{?percls semgis:linestringStyle ?linestyle .} OPTIONAL{?percls semgis:pointStyle ?pointstyle .} OPTIONAL{?percls semgis:standard ?standard .} OPTIONAL{?percls semgis:abstractClass ?abstractClass .} OPTIONAL{?percls semgis:propOrder ?proporder .}  OPTIONAL{?percls semgis:image ?img .} OPTIONAL{?percls semgis:linestringImageStyle ?linestringImageStyle .} OPTIONAL{?percls semgis:linestringImage ?linestringImage .} OPTIONAL{ ?percls semgis:hatch  ?hatch .} ?person rdf:type ?percls . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val ?abc ?val2. ?val2 geo:asWKT ?wkt2 .}  OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL {?val rdfs:label ?valLabel . } "
+		queryString=prefixList+" SELECT DISTINCT ?person ?rel ?pointstyle ?polygonstyle ?linestyle ?linestringImage ?linestringImageStyle ?hatch ?img ?val ?valLabel ?wkt ?wkt2 ?gml ?kml ?geojson ?standard ?abstractClass ?proporder  WHERE { ?percls rdf:type owl:Class .  OPTIONAL{?percls semgis:polygonStyle ?polygonstyle .} OPTIONAL{?percls semgis:linestringStyle ?linestyle .} OPTIONAL{?percls semgis:pointStyle ?pointstyle .} OPTIONAL{?percls semgis:standard ?standard .} OPTIONAL{?percls semgis:abstractClass ?abstractClass .} OPTIONAL{?percls semgis:propOrder ?proporder .}  OPTIONAL{?percls semgis:image ?img .} OPTIONAL{?percls semgis:linestringImageStyle ?linestringImageStyle .} OPTIONAL{?percls semgis:linestringImage ?linestringImage .} OPTIONAL{ ?percls semgis:hatch  ?hatch .} ?person rdf:type ?percls . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val ?abc ?val2. ?val2 geo:asWKT ?wkt2 .}  OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL {?val rdfs:label ?valLabel . } "
 	}
 	queryString+="} ORDER BY ?person ?rel "
 	console.log(queryString)
@@ -892,10 +892,11 @@ function handleResults(results,start){
 							if(!(results[res]["person"]["value"]  in persToClass)){
 								persToClass[results[res]["person"]["value"]]={}
 							}
+							//alert(results[res]["val"]["value"]+" - "+JSON.stringify(results[res]["standard"])+" - "+JSON.stringify(results[res]["abstractClass"])+" - "+results[res]["proporder"])
 							if(results[res]["standard"]!=null && (results[res]["abstractClass"]==null || results[res]["abstractClass"]==false)){
-								persToClass[results[res]["person"]["value"]][results[res]["val"]["value"]]={"export":true,"order":results[res]["propOrder"]}				
+								persToClass[results[res]["person"]["value"]][results[res]["val"]["value"]]={"export":true,"order":(results[res]["proporder"]!=null?results[res]["proporder"]["value"]:null)}				
 							}else{
-								persToClass[results[res]["person"]["value"]][results[res]["val"]["value"]]={"export":false,"order":results[res]["propOrder"]}		
+								persToClass[results[res]["person"]["value"]][results[res]["val"]["value"]]={"export":false,"order":(results[res]["proporder"]!=null?results[res]["proporder"]["value"]:null)}		
 							}
 							console.log(JSON.stringify(persToClass[results[res]["person"]["value"]]))
 							//alert(JSON.stringify(persToClass[results[res]["person"]["value"]]))
@@ -1575,7 +1576,7 @@ function exportQueryResult(tosave,exportFormat){
 			if(splitt[spl].includes("asGML") && !splitt[spl].includes("Envelope")){
                 console.log("ASGML: "+splitt[spl])
                 if(waitingForGeomTag!=""){
-                    gml+="<"+replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)+"> \n"
+                                        gml+="<"+replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)+"> \n"
 					xmlString=splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1)
 					coordsconverted=getCoordArrayFromGML(xmlString,epsgdefs[$('#epsgqueryexport option:selected').val()],true,false,false)					
 					result=convertGMLToOtherCRS(xmlString,coordsconverted)
@@ -1590,9 +1591,9 @@ function exportQueryResult(tosave,exportFormat){
 						result.substring(0,srsIndex-1)+"srsName=\""+$('#epsgqueryexport option:selected').val()+"\""+result.substring(srsIndex)
 						gml+=result+"\n"
 					}                 
-                    gml+="</"+replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)+">\n"
-                    waitingForGeomTag=""
-                    waitingForGeomTextContent=""
+                                    gml+="</"+replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)+">\n"
+                                    waitingForGeomTag=""
+                                    waitingForGeomTextContent=""
                 }else{
                     gml+=splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1)+"\n"
                 }
@@ -1626,10 +1627,18 @@ function exportQueryResult(tosave,exportFormat){
                                                         waitingForGeomTag=subsplit[1]
 							waitingForGeomTextContent=textContent
                                             }
-                                }else{
-				if(exportnamespace.length==0 || exportnamespace.includes("all") || exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1))){
+                                }else if(curgmlid==gmlid){
+                                                gml+=classdef
+                                                for(item in towrite){
+							subsplit=towrite[item].split(" ")
+							if(exportnamespace.length!=0 && !(exportnamespace.includes("all")) && !(exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1)))){
+								continue;
+							}
+							gml+="<"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">"+(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))+"</"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">\n"
+						}
+				/*if(exportnamespace.length==0 || exportnamespace.includes("all") || exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1))){
 							gml+="<"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">"+textContent+"</"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">\n"
-				}
+				}*/
 					
                                 }
 			}
@@ -1640,24 +1649,20 @@ function exportQueryResult(tosave,exportFormat){
 							gml+="</"+replaceWithNSPrefix(remembersub1.replace("<","").replace(">",""),namespaces2)+">\n</gml:featureMember>\n"
 						}
 						/*alert(subsplit[0].replace("<","").replace(">","")+" - "+subsplit[2].substring(1,subsplit[2].indexOf('#')+1))
-						alert(JSON.stringify(persToClass))
-						alert(subsplit[0].replace("<","").replace(">","")+" - "+subsplit[2].replace(">","").replace("<",""))
-						alert(persToClass[subsplit[0].replace("<","").replace(">","")][subsplit[2].replace(">","").replace("<","")])*/
-
+						
+						alert(subsplit[0].replace("<","").replace(">","")+" - "+subsplit[2].replace(">","").replace("<",""))*/
+						//alert(JSON.stringify(persToClass))
+						//alert(subsplit[0].replace("<","").replace(">","")+" - "+subsplit[2].replace(">","").replace("<","")+" - "+JSON.stringify(persToClass[subsplit[0].replace("<","").replace(">","")][subsplit[2].replace(">","").replace("<","")]["export"]))
+                                                console.log(persToClass[subsplit[0].replace("<","").replace(">","")][subsplit[2].replace(">","").replace("<","")])
 						//&& persToClass[subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")][subsplit[2].substring(1,subsplit[2].indexOf('#')+1)]
 					if(((exportnamespace.length==0 || exportnamespace.includes("all") || 
-					exportnamespace.includes(subsplit[2].substring(1,subsplit[2].indexOf('#')+1))) 
+					exportnamespace.includes(subsplit[2].substring(1,subsplit[2].indexOf('#')+1)) && persToClass[subsplit[0].replace("<","").replace(">","")][subsplit[2].replace(">","").replace("<","")]["export"]) 
 					/*&& persToClass[subsplit[0].replace("<","").replace(">","")][subsplit[2].replace(">","").replace("<","")]*/) ){
-						gml+="<gml:featureMember>\n<"+replaceWithNSPrefix(subsplit[2].replace("<","").replace(">",""),namespaces2)+" gml:id=\""+subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")+"\">\n"
+						classdef="<gml:featureMember>\n<"+replaceWithNSPrefix(subsplit[2].replace("<","").replace(">",""),namespaces2)+" gml:id=\""+subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")+"\">\n"
+						//gml+="<gml:featureMember>\n<"+replaceWithNSPrefix(subsplit[2].replace("<","").replace(">",""),namespaces2)+" gml:id=\""+subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")+"\">\n"
 						remembersub1=subsplit[2]
 						wrotetype=true;
-						for(item in towrite){
-							subsplit=towrite[item].split(" ")
-							if(exportnamespace.length!=0 && !(exportnamespace.includes("all")) && !(exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1)))){
-								continue;
-							}
-							gml+="<"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">"+(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))+"</"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">\n"
-						}
+
 					}else{
 						remembersub1=""
 					}
