@@ -892,7 +892,8 @@ function handleResults(results,start){
 							if(!(results[res]["person"]["value"]  in persToClass)){
 								persToClass[results[res]["person"]["value"]]={}
 							}
-							//alert(results[res]["val"]["value"]+" - "+JSON.stringify(results[res]["standard"])+" - "+JSON.stringify(results[res]["abstractClass"])+" - "+results[res]["proporder"])
+							//alert(results[res]["val"]["value"]+" - "+JSON.stringify(results[res]["standard"])+" - "+JSON.stringify(results[res]["abstractClass"])+" - "+JSON.stringify(results[res]["proporder"]))
+							
 							if(results[res]["standard"]!=null && (results[res]["abstractClass"]==null || results[res]["abstractClass"]==false)){
 								persToClass[results[res]["person"]["value"]][results[res]["val"]["value"]]={"export":true,"order":(results[res]["proporder"]!=null?results[res]["proporder"]["value"]:null)}				
 							}else{
@@ -1548,6 +1549,8 @@ function exportQueryResult(tosave,exportFormat){
         gmlstart="<?xml version=\"1.0\"  encoding=\"utf-8\" standalone=\"yes\" ?>\n<gml:FeatureCollection xmlns:gml=\"http://www.opengis.net/gml/3.2\" "
 		gml=""
 		remembersub1=""
+		classname=""
+		classdef=""
 		curgmlid="";
 		towrite=[]
 		wrotetype=false;
@@ -1555,28 +1558,48 @@ function exportQueryResult(tosave,exportFormat){
 		waitingForGeomTag=""
 		waitingForGeomTextContent=""
 		splitt=tosave.split("\n")
+		attributemap={}
+		
 		for(spl in splitt){
 			//console.log(splitt[spl])
 			subsplit=splitt[spl].trim().split(" ")
-
-			
-			console.log(subsplit)
-			//if(remembersub1="" || rememberremembersub1=subsplit[1]){
+			if(splitt[spl]=="")
+				continue;
 			try{
-						i=0;
-                                while(i<subsplit.length){
-                                    //console.log("Subsplit: "+subsplit[i])
-                                    if(subsplit[i].includes("#") && subsplit[i].includes("<http:")  && !subsplit[i].includes("^^") && !(subsplit[i].substring(1,subsplit[i].indexOf('#')+1) in namespaces2)){
-                                            namespaces2[subsplit[i].substring(1,subsplit[i].indexOf('#')+1)]="n."+nscounter
-                                            namespaces["n."+nscounter]=subsplit[i].substring(1,subsplit[i].indexOf('#')+1)
-                                            nscounter++;
-                                    }
-                                    i++
-                                }
+			gmlid=subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","");
+			if(curgmlid=="")
+				curgmlid=gmlid
+			if(curgmlid!=gmlid){
+				wrotetype=false;
+
+				gml+=classdef
+				console.log("ORDER FOR EXPORT")
+				console.log(classname+" - "+curgmlid)
+				console.log(JSON.stringify(attributemap))
+				console.log(subsplit[0])
+				console.log(subsplit[0]+curgmlid)
+				console.log(JSON.stringify(persToClass[subsplit[0].replace("<","").replace(">","")]))
+				gml+=orderForExport(persToClass[subsplit[0].replace("<","").replace(">","")][classname]["order"],attributemap,subsplit[0].substring(subsplit[0].indexOf('#')+1))
+				gml+="</"+replaceWithNSPrefix(classname,namespaces2)+">\n</gml:featureMember>\n"
+				attributemap={}
+				curgmlid=gmlid;
+			}
+			
+			console.log(subsplit)	
+			i=0;
+            while(i<subsplit.length){
+                //console.log("Subsplit: "+subsplit[i])
+                if(subsplit[i].includes("#") && subsplit[i].includes("<http:")  && !subsplit[i].includes("^^") && !(subsplit[i].substring(1,subsplit[i].indexOf('#')+1) in namespaces2)){
+                    namespaces2[subsplit[i].substring(1,subsplit[i].indexOf('#')+1)]="n."+nscounter
+                    namespaces["n."+nscounter]=subsplit[i].substring(1,subsplit[i].indexOf('#')+1)
+                    nscounter++;
+                }
+                i++
+            }			
 			if(splitt[spl].includes("asGML") && !splitt[spl].includes("Envelope")){
                 console.log("ASGML: "+splitt[spl])
                 if(waitingForGeomTag!=""){
-                                        gml+="<"+replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)+"> \n"
+                   // gml+="<"+replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)+"> \n"
 					xmlString=splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1)
 					coordsconverted=getCoordArrayFromGML(xmlString,epsgdefs[$('#epsgqueryexport option:selected').val()],true,false,false)					
 					result=convertGMLToOtherCRS(xmlString,coordsconverted)
@@ -1585,82 +1608,47 @@ function exportQueryResult(tosave,exportFormat){
 						srsIndex=result.indexOf("srsName=")+9
 						srsIndex2=result.indexOf("\"",srsIndex)
 						result=result.substring(0,srsIndex)+$('#epsgqueryexport option:selected').val()+result.substring(srsIndex2)
-						gml+=result+"\n"
+						attributemap[replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)]=result
+						//gml+=result+"\n"
 					}else{
 						srsIndex=result.indexOf(">")
 						result.substring(0,srsIndex-1)+"srsName=\""+$('#epsgqueryexport option:selected').val()+"\""+result.substring(srsIndex)
-						gml+=result+"\n"
+						attributemap[replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)]=result
+						//gml+=result+"\n"
 					}                 
-                                    gml+="</"+replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)+">\n"
-                                    waitingForGeomTag=""
-                                    waitingForGeomTextContent=""
+                        //gml+="</"+replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)+">\n"
+                        waitingForGeomTag=""
+                        waitingForGeomTextContent=""
                 }else{
-                    gml+=splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1)+"\n"
+					attributemap[replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)]=splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1)
+                    //gml+=splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1)+"\n"
                 }
 			}else if(splitt[spl].includes("NamedIndividual") || splitt[spl].includes("label") || splitt[spl].includes("http://www.w3.org/2002/07/owl#")  || splitt[spl].includes("comment") || 
 			splitt[spl].includes("asWKT") || 
 			splitt[spl].includes("asGeoJSON") || 
 			splitt[spl].includes("asKML") || splitt[spl].includes("gml:id")){
 				continue;
-			}
-			console.log(splitt[spl])
-			gmlid=subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","");
-			if(curgmlid!=gmlid){
-				wrotetype=false;
-				curgmlid=gmlid;
-			}
-
-			if(curgmlid==gmlid && !wrotetype && !splitt[spl].includes("type")){
-				towrite.push(splitt[spl])
-			}else if(!splitt[spl].includes("type") && !splitt[spl].includes("asGML")){
-							
-                                textContent=(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""));
-                                if((textContent.split("-").length - 1)>=4){
-                                            if(exportnamespace.length==0 || exportnamespace.includes("all") || exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1))){
-                                                if(waitingForGeomTag!=""){
-                                                        gml+="<"+replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)+">\n"
-                                                        gml+=waitingForGeomTextContent
-                                                        gml+="</"+replaceWithNSPrefix(waitingForGeomTag.replace("<","").replace(">",""),namespaces2)+">\n"
-                                                        waitingForGeomTag=""
-                                                        waitingForGeomTextContent=""
-                                                }
-                                                        waitingForGeomTag=subsplit[1]
-							waitingForGeomTextContent=textContent
-                                            }
-                                }else if(curgmlid==gmlid){
-                                                gml+=classdef
-                                                for(item in towrite){
-							subsplit=towrite[item].split(" ")
-							if(exportnamespace.length!=0 && !(exportnamespace.includes("all")) && !(exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1)))){
-								continue;
-							}
-							gml+="<"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">"+(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))+"</"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">\n"
-						}
-				/*if(exportnamespace.length==0 || exportnamespace.includes("all") || exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1))){
-							gml+="<"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">"+textContent+"</"+replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)+">\n"
-				}*/
-					
-                                }
-			}
-			if(splitt[spl].includes("type") && !splitt[spl].includes("asGML")){
+			}else if(splitt[spl].includes("type") && !splitt[spl].includes("asGML")){
 					
 						console.log("IN TYPE CLAUSE")
-						if(!remembersub1==""){
-							gml+="</"+replaceWithNSPrefix(remembersub1.replace("<","").replace(">",""),namespaces2)+">\n</gml:featureMember>\n"
-						}
-						/*alert(subsplit[0].replace("<","").replace(">","")+" - "+subsplit[2].substring(1,subsplit[2].indexOf('#')+1))
-						
-						alert(subsplit[0].replace("<","").replace(">","")+" - "+subsplit[2].replace(">","").replace("<",""))*/
-						//alert(JSON.stringify(persToClass))
-						//alert(subsplit[0].replace("<","").replace(">","")+" - "+subsplit[2].replace(">","").replace("<","")+" - "+JSON.stringify(persToClass[subsplit[0].replace("<","").replace(">","")][subsplit[2].replace(">","").replace("<","")]["export"]))
-                                                console.log(persToClass[subsplit[0].replace("<","").replace(">","")][subsplit[2].replace(">","").replace("<","")])
+						console.log(persToClass[subsplit[0].replace("<","").replace(">","")][subsplit[2].replace(">","").replace("<","")])
 						//&& persToClass[subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")][subsplit[2].substring(1,subsplit[2].indexOf('#')+1)]
-					if(((exportnamespace.length==0 || exportnamespace.includes("all") || 
-					exportnamespace.includes(subsplit[2].substring(1,subsplit[2].indexOf('#')+1)) && persToClass[subsplit[0].replace("<","").replace(">","")][subsplit[2].replace(">","").replace("<","")]["export"]) 
-					/*&& persToClass[subsplit[0].replace("<","").replace(">","")][subsplit[2].replace(">","").replace("<","")]*/) ){
+						console.log("Check export: "+persToClass[subsplit[0].replace("<","").replace(">","")][subsplit[2].replace(">","").replace("<","")]["export"])
+						console.log("Exportnamespace: "+exportnamespace)
+						console.log(exportnamespace.length)
+						console.log(exportnamespace=="[]")
+						console.log(exportnamespace.includes("all"))
+						console.log(subsplit[2].substring(1,subsplit[2].indexOf('#')+1))
+						console.log(exportnamespace.includes(subsplit[2].substring(1,subsplit[2].indexOf('#')+1)))
+					if((exportnamespace=="[]" || exportnamespace.includes("all") || 
+					exportnamespace.includes(subsplit[2].substring(1,subsplit[2].indexOf('#')+1))) && persToClass[subsplit[0].replace("<","").replace(">","")][subsplit[2].replace(">","").replace("<","")]["export"]) 
+					/*&& persToClass[subsplit[0].replace("<","").replace(">","")][subsplit[2].replace(">","").replace("<","")]*/{
 						classdef="<gml:featureMember>\n<"+replaceWithNSPrefix(subsplit[2].replace("<","").replace(">",""),namespaces2)+" gml:id=\""+subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")+"\">\n"
+						console.log("New classdef: "+classdef)
 						//gml+="<gml:featureMember>\n<"+replaceWithNSPrefix(subsplit[2].replace("<","").replace(">",""),namespaces2)+" gml:id=\""+subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")+"\">\n"
 						remembersub1=subsplit[2]
+						classname=subsplit[2].replace("<","").replace(">","")
+						console.log("New classname: "+classname)
 						wrotetype=true;
 
 					}else{
@@ -1668,11 +1656,19 @@ function exportQueryResult(tosave,exportFormat){
 					}
 					towrite=[]
 					
+			}else if(!splitt[spl].includes("type") && !splitt[spl].includes("asGML") && splitt[spl]!=""){
+					console.log("Exportnamespace includes? "+subsplit[1].substring(1,subsplit[1].indexOf('#')+1))
+					if(exportnamespace=="[]" || exportnamespace.includes("all") || exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1))){
+								console.log(splitt[spl])
+								textContent=(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""));
+								attributemap[replaceWithNSPrefix(subsplit[1].replace("<","").replace(">",""),namespaces2)]=textContent
+					}
 			}
+
 
 			}catch(err){console.log(err)}
 		}
-		gml+="</"+replaceWithNSPrefix(remembersub1.replace("<","").replace(">",""),namespaces2)+">\n</gml:featureMember>\n"
+		gml+="</"+replaceWithNSPrefix(classname,namespaces2)+">\n</gml:featureMember>\n"
 		gml+="</gml:FeatureCollection>"
 		for(ns in namespaces){
             gmlstart+=" xmlns:"+ns+"=\""+namespaces[ns]+"\" "
@@ -1961,6 +1957,49 @@ function exportQueryResult(tosave,exportFormat){
 		console.log(kml)
 		saveTextAsFile(kml,"kml")
 	}
+}
+
+function orderForExport(orderstring,attributemap,namespace){
+	resultstr=""
+	if(orderstring==null){
+		for(elem in attributemap){
+			resultstr+="<"+elem+">"+attributemap[elem]+"</"+elem+">\n";
+		}
+	}else{
+		console.log("ATTMAP: "+JSON.stringify(attributemap))
+		//console.log("SPLITTING: "+orderstring.split(";"))
+		splitted=orderstring.split(";")
+		if(!(orderstring.includes(";"))){
+			if(namespace+orderstring in attributemap){
+				resultstr+="<"+orderstring+">"+attributemap[namespace+orderstring]+"</"+orderstring+">\n";
+			}else{
+				resultstr+="<"+orderstring+"/>\n"
+			}
+		}else{
+			for(elem in splitted){
+				console.log("ORDER FOR EXPORT: "+orderstring)
+				console.log("ORDER FOR EXPORT: "+namespace.replace(">","")+splitted[elem])
+				wroteit=false;
+				for(att in attributemap){
+					if(att.includes(splitted[elem])){
+						resultstr+="<"+splitted[elem]+">"+attributemap[att]+"</"+splitted[elem]+">\n";
+						wroteit=true
+					}
+				}
+				if(!wroteit){
+					resultstr+="<"+splitted[elem]+"/>\n"
+				}
+				/*if(splitted[elem] in attributemap){
+					resultstr+="<"+splitted[elem]+">"+attributemap[namespace.replace(">","")+splitted[elem]]+"</"+splitted[elem]+">\n";
+				}else{
+					resultstr+="<"+splitted[elem]+"/>\n"
+				}*/
+			}
+		}
+		
+	}
+
+	return resultstr;
 }
 
 function gmlStringToWKT(gmlString,coordarray){
