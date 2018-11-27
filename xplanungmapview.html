@@ -1053,7 +1053,7 @@ function displayQueryResult(persons,query,classTopers,persToClass,start){
 								if(!(rel in tooltipmap) || (rel in tooltipmap && persons[pers][rel][val][vall]!=tooltipmap[rel])){
                                     addit+="<a href=\""+persons[pers][rel][val][vall]+"\" target=\"_blank\" style=\"color:"+colorcodes[ns]+"\">";
 									if(persons[pers][rel][val][vall].includes("#")){
-										ns=rel.substring(0,rel.indexOf('#'))
+										ns=persons[pers][rel][val][vall].substring(0,persons[pers][rel][val][vall].indexOf('#'))
 										if(!(ns in colorcodes)){
 											colorcodes[ns]=colors[colorcounter++]
 										}
@@ -1061,7 +1061,6 @@ function displayQueryResult(persons,query,classTopers,persToClass,start){
 									}else{
 										addit+=persons[pers][rel][val][vall])
 									}
-									//(persons[pers][rel][val][vall].includes("#")?persons[pers][rel][val][vall].substring(persons[pers][rel][val][vall].lastIndexOf('#')+1):persons[pers][rel][val][vall])
 									addit+="</a>"
                                     tempval.push(persons[pers][rel][val][vall])
 									tooltipmap[rel]=persons[pers][rel][val][vall]
