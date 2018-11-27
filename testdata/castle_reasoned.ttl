@@ -1,0 +1,208 @@
+@prefix : <http://www.semanticweb.org/timo.homburg/ontologies/2018/10/untitled-ontology-83#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.semanticweb.org/timo.homburg/ontologies/2018/10/untitled-ontology-83> .
+
+<http://www.semanticweb.org/timo.homburg/ontologies/2018/10/untitled-ontology-83> rdf:type owl:Ontology .
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  http://www.adv-online.de/namespaces/adv/gid/6.0#gebaeudefunktion
+<http://www.adv-online.de/namespaces/adv/gid/6.0#gebaeudefunktion> rdf:type owl:ObjectProperty .
+
+
+###  http://www.geonames.org/ontology#featureCode
+<http://www.geonames.org/ontology#featureCode> rdf:type owl:ObjectProperty .
+
+
+###  http://www.opengis.net/ont/geosparql#hasGeometry
+<http://www.opengis.net/ont/geosparql#hasGeometry> rdf:type owl:ObjectProperty .
+
+
+###  http://www.w3.org/2002/07/owl#topObjectProperty
+owl:topObjectProperty owl:inverseOf owl:topObjectProperty ;
+                      rdf:type owl:SymmetricProperty ,
+                               owl:TransitiveProperty .
+
+
+###  http://www.xerleben.de/schema/2.0_1#lageVerlauf
+<http://www.xerleben.de/schema/2.0_1#lageVerlauf> rdf:type owl:ObjectProperty .
+
+
+###  https://www.wikidata.org/entity#P127
+<https://www.wikidata.org/entity#P127> rdf:type owl:ObjectProperty .
+
+
+###  https://www.wikidata.org/entity#P17
+<https://www.wikidata.org/entity#P17> rdf:type owl:ObjectProperty .
+
+
+###  https://www.wikidata.org/entity#P186
+<https://www.wikidata.org/entity#P186> rdf:type owl:ObjectProperty .
+
+
+###  https://www.wikidata.org/entity#P227
+<https://www.wikidata.org/entity#P227> rdf:type owl:ObjectProperty .
+
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  http://linkedgeodata.org/ontology#wheelchair
+<http://linkedgeodata.org/ontology#wheelchair> rdf:type owl:DatatypeProperty .
+
+
+###  http://www.opengis.net/ont/geosparql#asWKT
+<http://www.opengis.net/ont/geosparql#asWKT> rdf:type owl:DatatypeProperty .
+
+
+###  http://www.xerleben.de/schema/2.0_1#objektName
+<http://www.xerleben.de/schema/2.0_1#objektName> rdf:type owl:DatatypeProperty .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  http://dbpedia.org/ontology#Castle
+<http://dbpedia.org/ontology#Castle> rdf:type owl:Class ;
+                                     owl:equivalentClass <http://linkedgeodata.org/ontology#Castle> ;
+                                     rdfs:subClassOf <http://www.adv-online.de/namespaces/adv/gid/6.0#AX_Gebaeude> ,
+                                                     <http://www.xerleben.de/schema/2.0_1#XE_Bauwerk> .
+
+
+###  http://linkedgeodata.org/ontology#Castle
+<http://linkedgeodata.org/ontology#Castle> rdf:type owl:Class ;
+                                           owl:equivalentClass <http://www.wikidata.org/entity#Q23413> ;
+                                           rdfs:subClassOf <http://www.adv-online.de/namespaces/adv/gid/6.0#AX_Gebaeude> ,
+                                                           <http://www.xerleben.de/schema/2.0_1#XE_Bauwerk> .
+
+
+###  http://www.adv-online.de/namespaces/adv/gid/6.0#AX_Gebaeude
+<http://www.adv-online.de/namespaces/adv/gid/6.0#AX_Gebaeude> rdf:type owl:Class .
+
+
+###  http://www.wikidata.org/entity#Q23413
+<http://www.wikidata.org/entity#Q23413> rdf:type owl:Class ;
+                                        owl:equivalentClass <http://www.xerleben.de/schema/2.0_1#22201110_XE_Bauwerk_Schloss> ;
+                                        rdfs:subClassOf <http://www.adv-online.de/namespaces/adv/gid/6.0#AX_Gebaeude> ,
+                                                        <http://www.xerleben.de/schema/2.0_1#XE_Bauwerk> .
+
+
+###  http://www.xerleben.de/schema/2.0_1#XE_Bauwerk
+<http://www.xerleben.de/schema/2.0_1#XE_Bauwerk> rdf:type owl:Class .
+
+
+###  http://www.xerleben.de/schema/2.0_1#22201110_XE_Bauwerk_Schloss
+<http://www.xerleben.de/schema/2.0_1#22201110_XE_Bauwerk_Schloss> rdf:type owl:Class ;
+                                                                  rdfs:subClassOf <http://www.adv-online.de/namespaces/adv/gid/6.0#AX_Gebaeude> ,
+                                                                                  <http://www.xerleben.de/schema/2.0_1#XE_Bauwerk> .
+
+
+###  https://www.geonames.org/ontology#Feature
+<https://www.geonames.org/ontology#Feature> rdf:type owl:Class .
+
+
+#################################################################
+#    Individuals
+#################################################################
+
+###  http://d-nb.info/gnd#4134967-2
+<http://d-nb.info/gnd#4134967-2> rdf:type owl:NamedIndividual .
+
+
+###  http://www.adv-online.de/namespaces/adv/gid/6.0#AX_Gebaeudefunktion_1410
+<http://www.adv-online.de/namespaces/adv/gid/6.0#AX_Gebaeudefunktion_1410> rdf:type owl:NamedIndividual .
+
+
+###  http://www.geonames.org#6324587
+<http://www.geonames.org#6324587> rdf:type owl:NamedIndividual ,
+                                           <http://dbpedia.org/ontology#Castle> ,
+                                           <http://linkedgeodata.org/ontology#Castle> ,
+                                           <http://www.adv-online.de/namespaces/adv/gid/6.0#AX_Gebaeude> ,
+                                           <http://www.wikidata.org/entity#Q23413> ,
+                                           <http://www.xerleben.de/schema/2.0_1#XE_Bauwerk> ,
+                                           <http://www.xerleben.de/schema/2.0_1#22201110_XE_Bauwerk_Schloss> ,
+                                           <https://www.geonames.org/ontology#Feature> ;
+                                  <http://www.adv-online.de/namespaces/adv/gid/6.0#gebaeudefunktion> <http://www.adv-online.de/namespaces/adv/gid/6.0#AX_Gebaeudefunktion_1410> ;
+                                  <http://www.geonames.org/ontology#featureCode> <http://www.geonames.org/ontology#S.CSTL> ;
+                                  <http://www.opengis.net/ont/geosparql#hasGeometry> <http://www.xerleben.de/schema/2.0_1#h123_geom> ;
+                                  <http://www.xerleben.de/schema/2.0_1#lageVerlauf> <http://www.xerleben.de/schema/2.0_1#h123_geom> ;
+                                  <https://www.wikidata.org/entity#P127> <http://www.wikidata.org/entity#Q985> ;
+                                  <https://www.wikidata.org/entity#P17> <http://www.wikidata.org/entity#Q183> ;
+                                  <https://www.wikidata.org/entity#P186> <http://www.wikidata.org/entity#Q13085> ;
+                                  <https://www.wikidata.org/entity#P227> <http://d-nb.info/gnd#4134967-2> ;
+                                  <http://linkedgeodata.org/ontology#wheelchair> "no" ;
+                                  <http://www.xerleben.de/schema/2.0_1#objektName> "Heidelberger Schloss"@de .
+
+
+###  http://www.geonames.org/ontology#S.CSTL
+<http://www.geonames.org/ontology#S.CSTL> rdf:type owl:NamedIndividual .
+
+
+###  http://www.wikidata.org/entity#Q13085
+<http://www.wikidata.org/entity#Q13085> rdf:type owl:NamedIndividual .
+
+
+###  http://www.wikidata.org/entity#Q183
+<http://www.wikidata.org/entity#Q183> rdf:type owl:NamedIndividual .
+
+
+###  http://www.wikidata.org/entity#Q327265
+<http://www.wikidata.org/entity#Q327265> rdf:type owl:NamedIndividual ,
+                                                  <http://dbpedia.org/ontology#Castle> ,
+                                                  <http://linkedgeodata.org/ontology#Castle> ,
+                                                  <http://www.adv-online.de/namespaces/adv/gid/6.0#AX_Gebaeude> ,
+                                                  <http://www.wikidata.org/entity#Q23413> ,
+                                                  <http://www.xerleben.de/schema/2.0_1#XE_Bauwerk> ,
+                                                  <http://www.xerleben.de/schema/2.0_1#22201110_XE_Bauwerk_Schloss> ,
+                                                  <https://www.geonames.org/ontology#Feature> ;
+                                         <http://www.adv-online.de/namespaces/adv/gid/6.0#gebaeudefunktion> <http://www.adv-online.de/namespaces/adv/gid/6.0#AX_Gebaeudefunktion_1410> ;
+                                         <http://www.geonames.org/ontology#featureCode> <http://www.geonames.org/ontology#S.CSTL> ;
+                                         <http://www.opengis.net/ont/geosparql#hasGeometry> <http://www.xerleben.de/schema/2.0_1#h123_geom> ;
+                                         <http://www.xerleben.de/schema/2.0_1#lageVerlauf> <http://www.xerleben.de/schema/2.0_1#h123_geom> ;
+                                         <https://www.wikidata.org/entity#P127> <http://www.wikidata.org/entity#Q985> ;
+                                         <https://www.wikidata.org/entity#P17> <http://www.wikidata.org/entity#Q183> ;
+                                         <https://www.wikidata.org/entity#P186> <http://www.wikidata.org/entity#Q13085> ;
+                                         <https://www.wikidata.org/entity#P227> <http://d-nb.info/gnd#4134967-2> ;
+                                         <http://linkedgeodata.org/ontology#wheelchair> "no" ;
+                                         <http://www.xerleben.de/schema/2.0_1#objektName> "Heidelberger Schloss"@de .
+
+
+###  http://www.wikidata.org/entity#Q985
+<http://www.wikidata.org/entity#Q985> rdf:type owl:NamedIndividual .
+
+
+###  http://www.xerleben.de/schema/2.0_1#Q327265
+<http://www.xerleben.de/schema/2.0_1#Q327265> rdf:type owl:NamedIndividual ,
+                                                       <http://dbpedia.org/ontology#Castle> ,
+                                                       <http://linkedgeodata.org/ontology#Castle> ,
+                                                       <http://www.adv-online.de/namespaces/adv/gid/6.0#AX_Gebaeude> ,
+                                                       <http://www.wikidata.org/entity#Q23413> ,
+                                                       <http://www.xerleben.de/schema/2.0_1#XE_Bauwerk> ,
+                                                       <http://www.xerleben.de/schema/2.0_1#22201110_XE_Bauwerk_Schloss> ,
+                                                       <https://www.geonames.org/ontology#Feature> ;
+                                              <http://www.adv-online.de/namespaces/adv/gid/6.0#gebaeudefunktion> <http://www.adv-online.de/namespaces/adv/gid/6.0#AX_Gebaeudefunktion_1410> ;
+                                              <http://www.geonames.org/ontology#featureCode> <http://www.geonames.org/ontology#S.CSTL> ;
+                                              <http://www.opengis.net/ont/geosparql#hasGeometry> <http://www.xerleben.de/schema/2.0_1#h123_geom> ;
+                                              <http://www.xerleben.de/schema/2.0_1#lageVerlauf> <http://www.xerleben.de/schema/2.0_1#h123_geom> ;
+                                              <https://www.wikidata.org/entity#P127> <http://www.wikidata.org/entity#Q985> ;
+                                              <https://www.wikidata.org/entity#P17> <http://www.wikidata.org/entity#Q183> ;
+                                              <https://www.wikidata.org/entity#P186> <http://www.wikidata.org/entity#Q13085> ;
+                                              <https://www.wikidata.org/entity#P227> <http://d-nb.info/gnd#4134967-2> ;
+                                              <http://linkedgeodata.org/ontology#wheelchair> "no" ;
+                                              <http://www.xerleben.de/schema/2.0_1#objektName> "Heidelberger Schloss"@de .
+
+
+###  http://www.xerleben.de/schema/2.0_1#h123_geom
+<http://www.xerleben.de/schema/2.0_1#h123_geom> rdf:type owl:NamedIndividual ;
+                                                <http://www.opengis.net/ont/geosparql#asWKT> "POLYGON((49.41190578422021 8.715610742503484,49.41183318844287 8.71571373939514,49.41171591811016 8.71571373939514, 49.41158747891882 8.715722322660438,49.41147579235525 8.715782403880437,49.41129709328237 8.71596264852269,49.41096761526123 8.716254472667059, 49.411001121625134 8.716383218699775, 49.410906186992236 8.71643471730931, 49.410872680457004 8.716657876968384, 49.41080566753098 8.716743707656859, 49.41077216114016 8.716451883512491, 49.410247223278105 8.71643471730931, 49.41018579410769 8.716134309899642, 49.410247223278105 8.716022730070106, 49.41019137850344 8.715739488536201, 49.41011878024398 8.71545624732971, 49.41003501283896 8.715439081126531, 49.4100238437982 8.7151901723264, 49.41010761122229 8.715198755264282, 49.41007968876346 8.71494126319885, 49.410051766288774 8.714803934228255, 49.41035891263692 8.71472668647766, 49.4107498233916 8.714597940444945, 49.410716316962635 8.714366197520574, 49.41062696623166 8.714391946989052, 49.41057112188895 8.71396279338296, 49.41066047272159 8.71394562717978, 49.4107498233916 8.713859796491304, 49.41091177130605 8.7139370442419, 49.41093410898097 8.714074373212496, 49.411017874745255 8.714288949933687, 49.41110164047316 8.7142117023468, 49.411330599421376 8.714864015775673, 49.41147579235525 8.71548199647077, 49.4115707259931 8.715378999906532, 49.411632153430475 8.715241670608519, 49.41190578422021 8.715610742503484))"@de .
+
+
+###  Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi
