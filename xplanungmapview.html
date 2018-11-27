@@ -37,7 +37,7 @@ var supportingOntologies={"AAA-Data":"https://cdn.rawgit.com/i3mainz/SemGISOntol
 "XErleben":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/"+revision+"/XErleben/xerleben2_1.ttl_mod.ttl",
 "XPlanung":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/"+revision+"/XPlanung/xplanung5_0.ttl",
 "XPlanung Styles":"https://cdn.rawgit.com/i3mainz/SemGISOntologies/"+revision+"/XPlanung/xplanung5_0_style.ttl"}
-var colors=["#e65c00","#0000ff","#8c66ff","#ff6666", "#4000ff", "#009933", "#4d004d","#ff0000","#00FF00","#CCEEFF","#0000A0","#800080","#F08080","#6A5ACD","#FFA500","#00FFFF","#C0C0C0","#808080","#000000","#FFFF00"]
+var colors=["#e65c00","#0000ff","#8c66ff","#ff6666", "#4000ff", "#009933", "#4d004d","#4d004d","#ff0000","#4000ff","#00FF00","#CCEEFF","#0000A0","#800080","#F08080","#6A5ACD","#FFA500","#00FFFF","#C0C0C0","#808080","#000000","#FFFF00"]
 var currdfstore=null;
 var wkt = new Wkt.Wkt();
 var firstcoords=[]
@@ -1051,15 +1051,15 @@ function displayQueryResult(persons,query,classTopers,persToClass,start){
 							tempval=[]
 							for(vall in persons[pers][rel][val]){
 								if(!(rel in tooltipmap) || (rel in tooltipmap && persons[pers][rel][val][vall]!=tooltipmap[rel])){
-                                    addit+="<a href=\""+persons[pers][rel][val][vall]+"\" target=\"_blank\" style=\"color:"+colorcodes[ns]+"\">";
+                                    addit+="<a href=\""+persons[pers][rel][val][vall]+"\" target=\"_blank\"><span style=\"color:"+colorcodes[ns]+"\">";
 									if(persons[pers][rel][val][vall].includes("#")){
 										ns=persons[pers][rel][val][vall].substring(0,persons[pers][rel][val][vall].indexOf('#'))
 										if(!(ns in colorcodes)){
 											colorcodes[ns]=colors[colorcounter++]
 										}
-										addit+="<span style=\"color:"+colorcodes[ns]+"\">"+persons[pers][rel][val][vall].substring(persons[pers][rel][val][vall].lastIndexOf('#')+1)+"</span>"
+										addit+="</span><span style=\"color:"+colorcodes[ns]+"\">"+persons[pers][rel][val][vall].substring(persons[pers][rel][val][vall].lastIndexOf('#')+1)+"</span>"
 									}else{
-										addit+=persons[pers][rel][val][vall])
+										addit+=persons[pers][rel][val][vall]
 									}
 									addit+="</a>"
                                     tempval.push(persons[pers][rel][val][vall])
@@ -1074,6 +1074,7 @@ function displayQueryResult(persons,query,classTopers,persToClass,start){
 						}
 					}
 				});
+				alert(JSON.stringify(colorcodes))
 				//console.log("Geoconstraints: "+JSON.stringify(geoconstraints))
                         //console.log("Rest: "+JSON.stringify(rest))
                         tooltip=tooltipstart+tooltip;
