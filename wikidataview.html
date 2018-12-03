@@ -92,9 +92,9 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
                                     popupContent+="<li><a href=\""+key+"\" target=\"_blank\">"+Object.keys(wdkeyset[key])[0]+"</a> - "
                             }
 			    if(spl[0].includes(".jpg")){
-			    	popupContent+=<a href=\""+spl[0]+"\" target=\"_blank\"><img src=\""+spl[1]+"\" height=\"30\" width=\"30\"></a></li>"
+			    	popupContent+="<a href=\""+spl[0]+"\" target=\"_blank\"><img src=\""+spl[1]+"\" height=\"30\" width=\"30\"></a></li>"
 			    }else if(spl[0].includes("http")){
-			    	popupContent+=<a href=\""+spl[0]+"\" target=\"_blank\">"+spl[1]+"</a></li>"
+			    	popupContent+="<a href=\""+spl[0]+"\" target=\"_blank\">"+spl[1]+"</a></li>"
 			    }else{
 			    	popupContent+=spl[1]+"</li>"
 			    }
