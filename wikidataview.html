@@ -29,6 +29,7 @@ function buildOverpassApiUrl(map, overpassQuery) {
 }
 
 function getOSMAttributesForCoordinate(map){
+//if(map.getZoom()>10){
 $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
           var resultAsGeojson = osmtogeojson(osmDataAsJson);
           var resultLayer = L.geoJson(resultAsGeojson, {
@@ -103,7 +104,8 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
             }
           }).addTo(map);
         });
-        }
+    //}
+}
 
 function getWikidataAttributesForCoordinate(){
     //wikidataQuery
