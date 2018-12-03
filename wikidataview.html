@@ -69,7 +69,7 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
                                 popupContent = popupContent + " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\" style=\"color:orange\">" + feature.properties.tags[key] + " | "+wdkeyset[osmToWikidataMap[key]]+"</a></li>";
                         }
                 }else if(key in osmToWikidataMap){
-                        popupContent+="<a style=\"color:orange\" href=\""+Object.keys(osmToWikidataMap[key])[0]+"\">"+key+"</a>"
+                        popupContent+="<a style=\"color:orange\" href=\""+Object.keys(osmToWikidataMap[key])[0]+"\" target=\"_blank\">"+key+"</a>"
                          popupContent = popupContent + " - " + feature.properties.tags[key] + "</li>";
                 }else{
                     popupContent+="<span style=\"color:black\">"+key+"</span>"
