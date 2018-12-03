@@ -74,7 +74,7 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
                 }else{
                     popupContent+="<span style=\"color:black\">"+key+"</span>"
 		    if(feature.properties.tags[key].includes("http")){
-			popupContent = popupContent + " - <a href=\""+feature.properties.tags[key]+"\">" + feature.properties.tags[key] + "</a></li>";
+			popupContent = popupContent + " - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\">" + feature.properties.tags[key] + "</a></li>";
 		    }else{
 			popupContent = popupContent + " - " + feature.properties.tags[key] + "</li>";
 		    }
