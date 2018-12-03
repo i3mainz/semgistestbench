@@ -195,7 +195,7 @@ function loadItems(){
 <script>
 var wikidataToOSMMap={}
 var osmToWikidataMap={}
-	var map = L.map('mapid',{fullscreenControl: true,fullscreenControlOptions: {position: 'topleft'}}).setView([51.505, -0.09], 13);
+	var map = L.map('mapid',{fullscreenControl: true,fullscreenControlOptions: {position: 'topleft'}}).locate({setView: true, maxZoom: 13});//.setView([51.505, -0.09], 13);
         
 getMatchingWikiDataOSMAttributes();
         getWikidataAttributesForCoordinate();
