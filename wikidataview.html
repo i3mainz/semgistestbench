@@ -62,11 +62,11 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
                                 console.log("Key: "+key+" - "+JSON.stringify(osmToWikidataMap[key]) )
                                 console.log(JSON.stringify(wdkeyset))
                 if(key in osmToWikidataMap && osmToWikidataMap[key] in wdkeyset){
-                        popupContent+="<a style=\"color:green\" href=\""+Object.keys(osmToWikidataMap[key])[0]+"\">"+key+"</a>"
+                        popupContent+="<a style=\"color:green\" href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\">"+key+"</a>"
                         if(wdkeyset[osmToWikidataMap[key]]==feature.properties.tags[key]){
-                                popupContent = popupContent + " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\" style=\"color:green\">" + feature.properties.tags[key] + "</a></li>";
+                                popupContent = popupContent + " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\" style=\"color:green\">" + feature.properties.tags[key] + "</a></li>";
                         }else{
-                                popupContent = popupContent + " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\" style=\"color:orange\">" + feature.properties.tags[key] + " | "+wdkeyset[osmToWikidataMap[key]]+"</a></li>";
+                                popupContent = popupContent + " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\" style=\"color:orange\">" + feature.properties.tags[key] + " | "+wdkeyset[osmToWikidataMap[key]]+"</a></li>";
                         }
                 }else if(key in osmToWikidataMap){
                         popupContent+="<a style=\"color:orange\" href=\""+Object.keys(osmToWikidataMap[key])[0]+"\">"+key+"</a>"
@@ -82,9 +82,9 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
                         if(!(Object.values(wdkeyset[key])[0].includes("statement"))){
                             spl=Object.values(wdkeyset[key])[0].split(";")
                             if(key in wikidataToOSMMap){
-                                    popupContent+="<li><a href=\""+key+"\">"+Object.keys(wdkeyset[key])[0]+"</a> - "+(spl[0].includes("http")?"<a href=\""+spl[0]+"\">"+spl[1]+"</a>":spl[1])+"</li>"
+                                    popupContent+="<li><a href=\""+key+"\" target=\"_blank\">"+Object.keys(wdkeyset[key])[0]+"</a> - "+(spl[0].includes("http")?"<a href=\""+spl[0]+"\">"+spl[1]+"</a>":spl[1])+"</li>"
                             }else{
-                                    popupContent+="<li><a href=\""+key+"\">"+Object.keys(wdkeyset[key])[0]+"</a> - "+(spl[0].includes("http")?"<a href=\""+spl[0]+"\">"+spl[1]+"</a>":spl[1])+"</li>"
+                                    popupContent+="<li><a href=\""+key+"\" target=\"_blank\">"+Object.keys(wdkeyset[key])[0]+"</a> - "+(spl[0].includes("http")?"<a href=\""+spl[0]+"\">"+spl[1]+"</a>":spl[1])+"</li>"
                             }
                         }
               }
