@@ -108,6 +108,20 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
 function getWikidataAttributesForCoordinate(){
     //wikidataQuery
 }
+	
+function wikidataAroundQuery(){
+/*SELECT ?place ?placeLabel ?image ?coordinate_location ?dist ?instance_of ?instance_ofLabel WHERE {
+  SERVICE wikibase:around {
+    ?place wdt:P625 ?coordinate_location.
+    bd:serviceParam wikibase:center "[AUTO_COORDINATES]".
+    bd:serviceParam wikibase:radius "1".
+    bd:serviceParam wikibase:distance ?dist.
+  }
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+  OPTIONAL { ?place wdt:P18 ?image. }
+  OPTIONAL { ?place wdt:P31 ?instance_of. }
+}*/
+}
 
 function getAttributesForWikidataID(qid){
 var query = [ "PREFIX bd: <http://www.bigdata.com/rdf#>\n",
