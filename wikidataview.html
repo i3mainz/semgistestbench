@@ -61,7 +61,9 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
                 popupContent = popupContent + "<li>"
                                 console.log("Key: "+key+" - "+JSON.stringify(osmToWikidataMap[key]) )
                                 console.log(JSON.stringify(wdkeyset))
-                if(key in osmToWikidataMap && osmToWikidataMap[key] in wdkeyset){
+				if(key=="wikidata"){
+					popupContent = popupContent + "<span style=\"color:#ff0000\">wikidata</span> - <a href=\"https://www.wikidata.org/entity/"+feature.properties.tags[key]+"\"  target=\"_blank\" style=\"color:#ff0000\">" + feature.properties.tags[key] + "</a></li>";
+				}else if(key in osmToWikidataMap && osmToWikidataMap[key] in wdkeyset){
                         popupContent+="<a style=\"color:green\" href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\">"+key+"</a>"
                         if(wdkeyset[osmToWikidataMap[key]]==feature.properties.tags[key]){
                                 popupContent = popupContent + " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\" style=\"color:green\">" + feature.properties.tags[key] + "</a></li>";
@@ -72,13 +74,13 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
                         popupContent+="<a style=\"color:orange\" href=\""+Object.keys(osmToWikidataMap[key])[0]+"\" target=\"_blank\">"+key+"</a>"
 						if(feature.properties.tags[key].includes(".jpg") || feature.properties.tags[key].includes(".JPG") || feature.properties.tags[key].includes(".svg") || feature.properties.tags[key].includes(".SVG")
 						|| feature.properties.tags[key].includes(".png") || feature.properties.tags[key].includes(".PNG")){
-			    	popupContent+=" - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\"><img src=\""+feature.properties.tags[key].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"			
+						popupContent+=" - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\"><img src=\""+feature.properties.tags[key].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"			
 					}else if(feature.properties.tags[key].includes("http")){
-					popupContent = popupContent + " - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\">" + feature.properties.tags[key] + "</a></li>";
+						popupContent = popupContent + " - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\">" + feature.properties.tags[key] + "</a></li>";
 					}else if(feature.properties.tags[key].startsWith("www.")){
-			    	popupContent+="<a href=\"https://"+feature.properties.tags[key]+"\" target=\"_blank\">"+feature.properties.tags[key]+"</a></li>"
+						popupContent+="<a href=\"https://"+feature.properties.tags[key]+"\" target=\"_blank\">"+feature.properties.tags[key]+"</a></li>"
 					}else{
-					popupContent = popupContent + " - " + feature.properties.tags[key] + "</li>";
+						popupContent = popupContent + " - " + feature.properties.tags[key] + "</li>";
 					}
                 }else{
                     popupContent+="<span style=\"color:black\">"+key+"</span>"
