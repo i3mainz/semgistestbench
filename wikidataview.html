@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   
 <script>
-
+var overlayMaps={}
 function getWikidataItemsInView(){
         //overpass query
 }
@@ -29,7 +29,7 @@ function buildOverpassApiUrl(map, overpassQuery) {
 }
 
 function getOSMAttributesForCoordinate(map){
-//if(map.getZoom()>10){
+if(map.getZoom()>=15){
 $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
           var resultAsGeojson = osmtogeojson(osmDataAsJson);
           var resultLayer = L.geoJson(resultAsGeojson, {
@@ -69,13 +69,27 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
                         }
                 }else if(key in osmToWikidataMap){
                         popupContent+="<a style=\"color:orange\" href=\""+Object.keys(osmToWikidataMap[key])[0]+"\" target=\"_blank\">"+key+"</a>"
-                         popupContent = popupContent + " - " + feature.properties.tags[key] + "</li>";
+						if(feature.properties.tags[key].includes(".jpg") || feature.properties.tags[key].includes(".JPG") || feature.properties.tags[key].includes(".svg") || feature.properties.tags[key].includes(".SVG")
+						|| feature.properties.tags[key].includes(".png") || feature.properties.tags[key].includes(".PNG")){
+			    	popupContent+=" - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\"><img src=\""+feature.properties.tags[key].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"			
+					}else if(feature.properties.tags[key].includes("http")){
+					popupContent = popupContent + " - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\">" + feature.properties.tags[key] + "</a></li>";
+					}else if(feature.properties.tags[key].startsWith("www.")){
+			    	popupContent+="<a href=\"https://"+feature.properties.tags[key]+"\" target=\"_blank\">"+feature.properties.tags[key]+"</a></li>"
+					}else{
+					popupContent = popupContent + " - " + feature.properties.tags[key] + "</li>";
+					}
                 }else{
                     popupContent+="<span style=\"color:black\">"+key+"</span>"
-		    if(feature.properties.tags[key].includes("http")){
-			popupContent = popupContent + " - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\">" + feature.properties.tags[key] + "</a></li>";
-		    }else{
-			popupContent = popupContent + " - " + feature.properties.tags[key] + "</li>";
+			if(feature.properties.tags[key].includes(".jpg") || feature.properties.tags[key].includes(".JPG") || feature.properties.tags[key].includes(".svg") || feature.properties.tags[key].includes(".SVG")
+				|| feature.properties.tags[key].includes(".png") || feature.properties.tags[key].includes(".PNG")){
+			    	popupContent+=" - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\"><img src=\""+feature.properties.tags[key].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"			
+		    }else if(feature.properties.tags[key].includes("http")){
+					popupContent = popupContent + " - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\">" + feature.properties.tags[key] + "</a></li>";
+		    }else if(feature.properties.tags[key].startsWith("www.")){
+			    	popupContent+="<a href=\"https://"+feature.properties.tags[key]+"\" target=\"_blank\">"+feature.properties.tags[key]+"</a></li>"
+			}else{
+					popupContent = popupContent + " - " + feature.properties.tags[key] + "</li>";
 		    }
                      
                 }
@@ -90,10 +104,13 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
                             }else{
                                     popupContent+="<li><a href=\""+key+"\" target=\"_blank\">"+Object.keys(wdkeyset[key])[0]+"</a> - "
                             }
-			    if(spl[0].includes(".jpg") || spl[0].includes(".JPG")){
+			    if(spl[0].includes(".jpg") || spl[0].includes(".JPG")|| spl[0].includes(".svg") || spl[0].includes(".SVG")
+				|| spl[0].includes(".png") || spl[0].includes(".PNG")){
 			    	popupContent+="<a href=\""+spl[0]+"\" target=\"_blank\"><img src=\""+spl[1].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"
 			    }else if(spl[0].includes("http")){
 			    	popupContent+="<a href=\""+spl[0]+"\" target=\"_blank\">"+spl[1]+"</a></li>"
+			    }else if(spl[0].startsWith("www.")){
+			    	popupContent+="<a href=\"https://"+spl[0]+"\" target=\"_blank\">"+spl[1]+"</a></li>"
 			    }else{
 			    	popupContent+=spl[1]+"</li>"
 			    }
@@ -104,25 +121,52 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
             }
           }).addTo(map);
         });
-    //}
+    }
 }
 
 function getWikidataAttributesForCoordinate(){
     //wikidataQuery
 }
 	
-function wikidataAroundQuery(){
-/*SELECT ?place ?placeLabel ?image ?coordinate_location ?dist ?instance_of ?instance_ofLabel WHERE {
-  SERVICE wikibase:around {
-    ?place wdt:P625 ?coordinate_location.
-    bd:serviceParam wikibase:center "[AUTO_COORDINATES]".
-    bd:serviceParam wikibase:radius "1".
-    bd:serviceParam wikibase:distance ?dist.
-  }
-  SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
-  OPTIONAL { ?place wdt:P18 ?image. }
-  OPTIONAL { ?place wdt:P31 ?instance_of. }
-}*/
+function wikidataAroundQuery(coord,width){
+var query = [ "PREFIX bd: <http://www.bigdata.com/rdf#>\n",
+ "PREFIX wikibase: <http://wikiba.se/ontology#>\n",
+ "PREFIX wdt: <http://www.wikidata.org/prop/direct/>\n",
+ "PREFIX wd: <http://www.wikidata.org/entity/>\n",
+ "PREFIX skos: <http://www.w3.org/2004/02/skos/core#>\n",
+ "SELECT ?item ?itemLabel ?location ?rel ?relLabel ?val ?valLabel  WHERE\n",
+ "{\n",
+ "SERVICE wikibase:around { 	\n",
+  " ?item wdt:P625  ?location .\n",
+   "bd:serviceParam wikibase:center \"Point("+coord.lng+" "+coord.lat+")\"^^geo:wktLiteral. \n",
+  " bd:serviceParam wikibase:radius \"1\".\n",
+ "}\n",
+      "?item ?rell ?val .\n",
+      " ?rel wikibase:directClaim ?rell .\n",
+ 	"SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\" }\n",
+" }\n",
+ "ORDER BY ?itemLabel\n",
+    ].join(" ");
+	console.log(query)
+	var queryUrl = "https://query.wikidata.org/sparql?query="+ encodeURIComponent(query) +"&format=json";
+  var res={}
+//var queryUrl = encodeURI( "https://query.wikidata.org/sparql?query="+query+"&format=json" );
+    $.ajax({
+        dataType: "json",  
+        url: queryUrl,
+        async:false,
+        success: function( _data ) {
+            console.log(JSON.stringify(_data))
+            var results = _data.results.bindings;
+             for ( var i in results ) {
+                 if(results[i]["rel"]["value"]!=undefined && results[i]["valLabel"]["value"]!=undefined){
+                        res[results[i]["rel"]["value"]]=JSON.parse("{\""+results[i]["relLabel"]["value"]+"\":\""+results[i]["val"]["value"]+";"+results[i]["valLabel"]["value"]+"\"}")
+                 }
+            }
+            //alert(JSON.stringify(res))
+        }
+    });  
+    return res;
 }
 
 function getAttributesForWikidataID(qid){
@@ -206,21 +250,35 @@ function loadItems(){
     getOSMAttributesForCoordinate(map);
 }
 
+function loadWDItems(){
+	width=(map.getBounds().getEast()-map.getBounds().getWest())/2
+		alert(width)
+	wikidataAroundQuery(map.getCenter(),width);
+}
+
 </script>
 
 </head>
 <body>
 <h2 align="center">Wikidata Mapview</h2>
 
-<div id="mapid" style="height:80%">
+<div id="mapid" style="height:80%;border:2px solid black;">
 <script>
 var wikidataToOSMMap={}
 var osmToWikidataMap={}
-	var map = L.map('mapid',{fullscreenControl: true,fullscreenControlOptions: {position: 'topleft'}}).locate({setView: true, maxZoom: 13});//.setView([51.505, -0.09], 13);
+	var map = L.map('mapid',{fullscreenControl: true,fullscreenControlOptions: {position: 'topleft'}}).locate({setView: true, maxZoom: 16});//.setView([51.505, -0.09], 13);
         
 getMatchingWikiDataOSMAttributes();
         getWikidataAttributesForCoordinate();
-      
+		
+    map.on('zoomend', function() {
+		console.log("zoomend")
+		if(map.getZoom()>=15){
+			$('#mapid').css("border","2px solid green")
+		}else{
+			$('#mapid').css("border","2px solid black")
+		}
+	});
 
 
 	var layer = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
@@ -230,10 +288,27 @@ getMatchingWikiDataOSMAttributes();
 			'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
 		id: 'mapbox.streets'
 	}).addTo(map);
+		var wmsLayer = L.tileLayer.wms('https://sgx.geodatenzentrum.de/wms_topplus_web_open', {
+layers: 'web',
+format: 'image/png',
+ transparent: true,
+attribution: '&copy; Bundesamt f&uuml;r Kartographie und Geod&auml;sie 2017, <a href="http://sg.geodatenzentrum.de/web_public/Datenquellen_TopPlus_Open.pdf">Datenquellen</a>'
+}).addTo(map);
+	var baseMaps = {
+    "BKG": wmsLayer,
+        "OSM": layer
+	};
+	L.control.scale({
+	position: 'bottomright',
+	imperial: false
+}).addTo(map);
+layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(map);
 
 </script>
 </div>
-<button type="button" id="loadbutton" onClick="loadItems()">Load Wikidata Items</button>
+<button type="button" id="loadbutton" onClick="loadItems()">Load OSM Items with Wikidata</button>
+<!--<button type="button" id="loadbutton" onClick="loadWDItems()">Load Wikidata Items with Geocoordinate</button>-->
+
 </body>
 </html>
  
