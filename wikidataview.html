@@ -70,14 +70,28 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
 								console.log(feature.properties.tags[key])
 						wdval=Object.values(wdkeyset[Object.keys(osmToWikidataMap[key])[0]])[0].split(";")[1]
                         if(wdval==feature.properties.tags[key]){
-                                popupContent = popupContent + " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\" style=\"color:green\">" + feature.properties.tags[key] + "</a></li>";
+								if(feature.properties.tags[key].includes("http")){
+									popupContent = popupContent + " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\" style=\"color:green\">" + feature.properties.tags[key] + "</a></li>";
+								}else{
+									popupContent = popupContent + " - <span style=\"color:green\">" + feature.properties.tags[key] + "</span></li>";
+								}
+                                
                         }else{
-                                popupContent = popupContent + " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\" style=\"color:orange\">" + feature.properties.tags[key] + " | "+wdval+"</a></li>";
-                        }
+							if(feature.properties.tags[key].includes("http")){
+								popupContent = popupContent + " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\" style=\"color:orange\">" + feature.properties.tags[key] + "</a>" 
+							}else{
+								popupContent = popupContent + " - <span style=\"color:orange\">" + feature.properties.tags[key] + "</span>";
+							}
+							if(wdval.includes("http")){
+								popupContent +=" | <a href=\""+wdval+"\" target=\"_blank\">"+wdval+"</a></li>";
+							}else{
+								popupContent +=" | <span style=\"color:orange\">"+wdval+"</span></li>";
+							}
+                   }
                 }else if(key in osmToWikidataMap){
                         popupContent+="<a style=\"color:orange\" href=\""+Object.keys(osmToWikidataMap[key])[0]+"\" target=\"_blank\">"+key+"</a>"
 						if(feature.properties.tags[key].includes(".jpg") || feature.properties.tags[key].includes(".JPG") || feature.properties.tags[key].includes(".svg") || feature.properties.tags[key].includes(".SVG")
-						|| feature.properties.tags[key].includes(".png") || feature.properties.tags[key].includes(".PNG")){
+						|| feature.properties.tags[key].includes(".png") || feature.properties.tags[key].includes(".PNG") || feature.properties.tags[key].includes(".gif") || feature.properties.tags[key].includes(".GIF")){
 						popupContent+=" - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\"><img src=\""+feature.properties.tags[key].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"			
 					}else if(feature.properties.tags[key].includes("http")){
 						popupContent = popupContent + " - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\">" + feature.properties.tags[key] + "</a></li>";
@@ -89,7 +103,7 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
                 }else{
                     popupContent+="<span style=\"color:black\">"+key+"</span>"
 			if(feature.properties.tags[key].includes(".jpg") || feature.properties.tags[key].includes(".JPG") || feature.properties.tags[key].includes(".svg") || feature.properties.tags[key].includes(".SVG")
-				|| feature.properties.tags[key].includes(".png") || feature.properties.tags[key].includes(".PNG")){
+				|| feature.properties.tags[key].includes(".png") || feature.properties.tags[key].includes(".PNG") || feature.properties.tags[key].includes(".gif") || feature.properties.tags[key].includes(".GIF")){
 			    	popupContent+=" - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\"><img src=\""+feature.properties.tags[key].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"			
 		    }else if(feature.properties.tags[key].includes("http")){
 					popupContent = popupContent + " - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\">" + feature.properties.tags[key] + "</a></li>";
@@ -128,22 +142,20 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
 			    	popupContent+="<a href=\""+spl[0]+"\" target=\"_blank\"";
 					popupContent+="><img src=\""+spl[1].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"
 			    }else if(spl[0].includes("http")){
-			    	popupContent+="<a href=\""+spl[0]+"\" target=\"_blank\"";
 					if(finished && giventag==spl[1]){
-						popupContent+="<span style=\"color:green\">"+spl[1]+"</span></li>"
+						popupContent+="<a href=\""+spl[0]+"\" target=\"_blank\" style=\"color:green\">"+spl[1]+"</a></li>"
 					}else if(finished && giventag!=spl[1] && giventag!=""){
-						popupContent+="<span style=\"color:orange\">"+spl[1]+" | "+giventag+"</span></li>"
+						popupContent+="<a href=\""+spl[0]+"\" target=\"_blank\" style=\"color:orange\">"+spl[1]+"</a> | "+(giventag.includes("http")?"<a href=\""+giventag+"\" style=\"color:orange\">"+giventag+"</a>":"<span style=\"color:orange\">"+giventag+"</span>")+"</li>"
 					}else{
-						popupContent+=">"+spl[1]+"</a></li>"
+						popupContent+="<a href=\""+spl[0]+"\" target=\"_blank\">"+spl[1]+"</a></li>"
 					}	
 			    }else if(spl[0].startsWith("www.")){
-			    	popupContent+="<a href=\"https://"+spl[0]+"\" target=\"_blank\"";
 					if(finished && giventag==spl[1]){
-						popupContent+="<span style=\"color:green\">"+spl[1]+"</span></li>"
+						popupContent+="<a href=\"https://"+spl[0]+"\" target=\"_blank\" style=\"color:green\">"+spl[1]+"</a></li>"
 					}else if(finished && giventag!=spl[1] && giventag!=""){
-						popupContent+="<span style=\"color:orange\">"+spl[1]+" | "+giventag+"</span></li>"
+						popupContent+="<a href=\"https://"+spl[0]+"\" target=\"_blank\" style=\"color:orange\">"+spl[1]+"</a> | "+(giventag.includes("http")?"<a href=\""+giventag+"\" style=\"color:orange\">"+giventag+"</a>":"<span style=\"color:orange\">"+giventag+"</span>")+"</li>"
 					}else{
-						popupContent+=">"+spl[1]+"</a></li>"
+						popupContent+="<a href=\"https://"+spl[0]+"\" target=\"_blank\">"+spl[1]+"</a></li>"
 					}					
 			    }else{
 					if(finished && giventag==spl[1]){
@@ -284,7 +296,7 @@ var queryUrl = "https://query.wikidata.org/sparql?query="+ encodeURIComponent(qu
                 
                  if(results[i]["wdclass"]["value"]!=undefined && results[i]["osm"]["value"]!=undefined){
                   osmval=results[i]["osm"]["value"].replace("Key:","")
-                 osmToWikidataMap[osmval]=JSON.parse("{\""+results[i]["wdclass"]["value"]+"\":\""+("wdclassLabel" in results[i]?results[i]["wdclassLabel"]["value"]:"")+"\"}")
+                  osmToWikidataMap[osmval]=JSON.parse("{\""+results[i]["wdclass"]["value"]+"\":\""+("wdclassLabel" in results[i]?results[i]["wdclassLabel"]["value"]:"")+"\"}")
 				    if(!(wikidataToOSMMap[results[i]["wdclass"]["value"]])){
 						 wikidataToOSMMap[results[i]["wdclass"]["value"]]=[]
 					}
