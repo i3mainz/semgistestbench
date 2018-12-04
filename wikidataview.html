@@ -8,6 +8,7 @@
   <script src="js/leaflet.polylinedecorator.js"></script>
   <script src="js/wicket.js" type="text/javascript"></script>
      <script src="js/leaflet.fullscreen.js"></script>
+	 <script src="https://labs.easyblog.it/maps/leaflet-search/dist/leaflet-search.min.js"></script>
    <script src="js/leaflet_legend.js"></script>
       <script src="js/leaflet_easyprint.js"></script>
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -59,16 +60,19 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
               keys.forEach(function (key) {
               var ignorekeys=[]
                 popupContent = popupContent + "<li>"
-                                console.log("Key: "+key+" - "+JSON.stringify(osmToWikidataMap[key]) )
-                                console.log(JSON.stringify(wdkeyset))
 				if(key=="wikidata"){
 					popupContent = popupContent + "<span style=\"color:#ff0000\">wikidata</span> - <a href=\"https://www.wikidata.org/entity/"+feature.properties.tags[key]+"\"  target=\"_blank\" style=\"color:#ff0000\">" + feature.properties.tags[key] + "</a></li>";
-				}else if(key in osmToWikidataMap && osmToWikidataMap[key] in wdkeyset){
+				}else if(key in osmToWikidataMap && Object.keys(osmToWikidataMap[key])[0] in wdkeyset){
                         popupContent+="<a style=\"color:green\" href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\">"+key+"</a>"
-                        if(wdkeyset[osmToWikidataMap[key]]==feature.properties.tags[key]){
+								console.log(key)
+								console.log(osmToWikidataMap[key])
+								console.log(JSON.stringify(wdkeyset))
+								console.log(feature.properties.tags[key])
+						wdval=Object.values(wdkeyset[Object.keys(osmToWikidataMap[key])[0]])[0].split(";")[1]
+                        if(wdval==feature.properties.tags[key]){
                                 popupContent = popupContent + " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\" style=\"color:green\">" + feature.properties.tags[key] + "</a></li>";
                         }else{
-                                popupContent = popupContent + " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\" style=\"color:orange\">" + feature.properties.tags[key] + " | "+wdkeyset[osmToWikidataMap[key]]+"</a></li>";
+                                popupContent = popupContent + " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\" style=\"color:orange\">" + feature.properties.tags[key] + " | "+wdval+"</a></li>";
                         }
                 }else if(key in osmToWikidataMap){
                         popupContent+="<a style=\"color:orange\" href=\""+Object.keys(osmToWikidataMap[key])[0]+"\" target=\"_blank\">"+key+"</a>"
@@ -100,22 +104,57 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
               popupContent = popupContent + "</ul>"
               popupContent+="Wikidata Items: <ul>"
               for(key in wdkeyset){
+						giventag=""
                         if(!(Object.values(wdkeyset[key])[0].includes("statement"))){
                             spl=Object.values(wdkeyset[key])[0].split(";")
-                            if(key in wikidataToOSMMap){
-                                    popupContent+="<li><a href=\""+key+"\" target=\"_blank\" style=\"color:orange\">"+Object.keys(wdkeyset[key])[0]+"</a> - "
-                            }else{
+							wdval=spl[1]
+							if(key in wikidataToOSMMap){
+								var finished=false;
+								for(equiv in Object.values(wikidataToOSMMap[key])[0]){
+									if(feature.properties.tags[equiv]){
+										popupContent+="<li><a href=\""+key+"\" target=\"_blank\" style=\"color:green\">"+Object.keys(wdkeyset[key])[0]+"</a> - "
+										giventag=feature.properties.tags[equiv]
+										finished=true;
+									}
+								}
+								if(!finished){
+									popupContent+="<li><a href=\""+key+"\" target=\"_blank\" style=\"color:orange\">"+Object.keys(wdkeyset[key])[0]+"</a> - "
+								}
+							}else{
                                     popupContent+="<li><a href=\""+key+"\" target=\"_blank\">"+Object.keys(wdkeyset[key])[0]+"</a> - "
                             }
 			    if(spl[0].includes(".jpg") || spl[0].includes(".JPG")|| spl[0].includes(".svg") || spl[0].includes(".SVG")
 				|| spl[0].includes(".png") || spl[0].includes(".PNG")){
-			    	popupContent+="<a href=\""+spl[0]+"\" target=\"_blank\"><img src=\""+spl[1].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"
+			    	popupContent+="<a href=\""+spl[0]+"\" target=\"_blank\"";
+					popupContent+="><img src=\""+spl[1].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"
 			    }else if(spl[0].includes("http")){
-			    	popupContent+="<a href=\""+spl[0]+"\" target=\"_blank\">"+spl[1]+"</a></li>"
+			    	popupContent+="<a href=\""+spl[0]+"\" target=\"_blank\"";
+					if(finished && giventag==spl[1]){
+						popupContent+="style=\"color:green\""
+					}else if(finished && giventag!=spl[1] && giventag!=""){
+						popupContent+="<span style=\"color:orange\">"+spl[1]+" | "+giventag+"</span></li>"
+					}else{
+						popupContent+=">"+spl[1]+"</a></li>"
+					}	
 			    }else if(spl[0].startsWith("www.")){
-			    	popupContent+="<a href=\"https://"+spl[0]+"\" target=\"_blank\">"+spl[1]+"</a></li>"
+			    	popupContent+="<a href=\"https://"+spl[0]+"\" target=\"_blank\"";
+					if(finished && giventag==spl[1]){
+						popupContent+="style=\"color:green\""
+						popupContent+=">"+spl[1]+"</a></li>"
+					}else if(finished && giventag!=spl[1] && giventag!=""){
+						popupContent+="<span style=\"color:orange\">"+spl[1]+" | "+giventag+"</span></li>"
+					}else{
+						popupContent+=">"+spl[1]+"</a></li>"
+					}					
 			    }else{
-			    	popupContent+=spl[1]+"</li>"
+					if(finished && giventag==spl[1]){
+						popupContent+="<span style=\"color:green\">"+spl[1]+"</span></li>"
+					}else if(finished && giventag!=spl[1] && giventag!=""){
+						popupContent+="<span style=\"color:orange\">"+spl[1]+" | "+giventag+"</span></li>"
+					}else{
+						popupContent+=spl[1]+"</li>"
+					}
+			    	
 			    }
                         }
               }
@@ -247,7 +286,11 @@ var queryUrl = "https://query.wikidata.org/sparql?query="+ encodeURIComponent(qu
                  if(results[i]["wdclass"]["value"]!=undefined && results[i]["osm"]["value"]!=undefined){
                   osmval=results[i]["osm"]["value"].replace("Key:","")
                  osmToWikidataMap[osmval]=JSON.parse("{\""+results[i]["wdclass"]["value"]+"\":\""+("wdclassLabel" in results[i]?results[i]["wdclassLabel"]["value"]:"")+"\"}")
-                    wikidataToOSMMap[results[i]["wdclass"]["value"]]=JSON.parse("{\""+osmval+"\":\""+("wdclassLabel" in results[i]?results[i]["wdclassLabel"]["value"]:"")+"\"}");
+				    if(!(wikidataToOSMMap[results[i]["wdclass"]["value"]])){
+						 wikidataToOSMMap[results[i]["wdclass"]["value"]]=[]
+					}
+					wikidataToOSMMap[results[i]["wdclass"]["value"]].push(JSON.parse("{\""+osmval+"\":\""+("wdclassLabel" in results[i]?results[i]["wdclassLabel"]["value"]:"")+"\"}"));
+                    //wikidataToOSMMap[results[i]["wdclass"]["value"]]=JSON.parse("{\""+osmval+"\":\""+("wdclassLabel" in results[i]?results[i]["wdclassLabel"]["value"]:"")+"\"}");
                  }
             }
             wikidataToOSMMap["http://www.w3.org/2000/01/rdf-schema#label"]="name"
@@ -280,6 +323,16 @@ function loadWDItems(){
 var wikidataToOSMMap={}
 var osmToWikidataMap={}
 	var map = L.map('mapid',{fullscreenControl: true,fullscreenControlOptions: {position: 'topleft'}}).locate({setView: true, maxZoom: 16});//.setView([51.505, -0.09], 13);
+	map.addControl( new L.Control.Search({
+		url: 'http://nominatim.openstreetmap.org/search?format=json&q={s}',
+		jsonpParam: 'json_callback',
+		propertyName: 'display_name',
+		propertyLoc: ['lat','lon'],
+		marker: L.circleMarker([0,0],{radius:30}),
+		autoCollapse: true,
+		autoType: false,
+		minLength: 2
+	}));
         
 getMatchingWikiDataOSMAttributes();
         getWikidataAttributesForCoordinate();
