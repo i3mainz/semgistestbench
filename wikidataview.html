@@ -130,7 +130,7 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
 			    }else if(spl[0].includes("http")){
 			    	popupContent+="<a href=\""+spl[0]+"\" target=\"_blank\"";
 					if(finished && giventag==spl[1]){
-						popupContent+="style=\"color:green\""
+						popupContent+="<span style=\"color:green\">"+spl[1]+"</span></li>"
 					}else if(finished && giventag!=spl[1] && giventag!=""){
 						popupContent+="<span style=\"color:orange\">"+spl[1]+" | "+giventag+"</span></li>"
 					}else{
@@ -139,8 +139,7 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
 			    }else if(spl[0].startsWith("www.")){
 			    	popupContent+="<a href=\"https://"+spl[0]+"\" target=\"_blank\"";
 					if(finished && giventag==spl[1]){
-						popupContent+="style=\"color:green\""
-						popupContent+=">"+spl[1]+"</a></li>"
+						popupContent+="<span style=\"color:green\">"+spl[1]+"</span></li>"
 					}else if(finished && giventag!=spl[1] && giventag!=""){
 						popupContent+="<span style=\"color:orange\">"+spl[1]+" | "+giventag+"</span></li>"
 					}else{
