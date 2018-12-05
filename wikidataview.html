@@ -91,19 +91,18 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
               keys.forEach(function (key) {
               var ignorekeys=[]
                 popupContent = popupContent + "<li>"
+                                /*alert(JSON.stringify(wdkeyset))
+                                if(key in osmToWikidataMap)
+                                    alert(JSON.stringify(Object.keys(Object.values(osmToWikidataMap[key])[0])[0]))*/
 				if(key=="wikidata"){
 					popupContent = popupContent + "<span style=\"color:#ff0000\">wikidata</span> - <a href=\"https://www.wikidata.org/entity/"+feature.properties.tags[key]+"\"  target=\"_blank\" style=\"color:#ff0000\">" + feature.properties.tags[key] + "</a></li>";
 					ttlExport+=indid+" <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/"+feature.properties.tags[key]+"> . \n"  
-				}else if(key in osmToWikidataMap && Object.keys(osmToWikidataMap[key])[0] in wdkeyset){
-                        popupContent+="<a style=\"color:green\" href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\">"+key+"</a>"
-								/*console.log(key)
-								console.log(osmToWikidataMap[key])
-								console.log(JSON.stringify(wdkeyset))
-								console.log(feature.properties.tags[key])*/
-						wdval=Object.values(wdkeyset[Object.keys(osmToWikidataMap[key])[0]])[0].split(";")[1]
+				}else if(key in osmToWikidataMap && Object.keys(Object.values(osmToWikidataMap[key])[0])[0] in wdkeyset){
+                                                popupContent+="<a style=\"color:green\" href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\">"+key+"</a>"
+						wdval=Object.values(wdkeyset[Object.keys(Object.values(osmToWikidataMap[key])[0])[0]])[0].split(";")[1]
 						if(feature.properties.tags[key].includes("http")){
 						ttlExport+=indid+(feature.properties.tags[key].includes("http")?"<"+feature.properties.tags[key]+">":"\""+feature.properties.tags[key]+"\"")+" "+(wdval.includes("http")?"<"+wdval+">":"\""+wdval+"\"")+" . \n"  
-						}
+                                }
                         if(wdval==feature.properties.tags[key]){
 								if(feature.properties.tags[key].includes("http")){
 									popupContent = popupContent + " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\" style=\"color:green\">" + feature.properties.tags[key] + "</a></li>";
@@ -124,8 +123,12 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
 							}
                    }
                 }else if(key in osmToWikidataMap){
-                        popupContent+="<a style=\"color:orange\" href=\""+Object.keys(osmToWikidataMap[key])[0]+"\" target=\"_blank\">"+key+"</a>"
-						if(feature.properties.tags[key].includes(".jpg") || feature.properties.tags[key].includes(".JPG") || feature.properties.tags[key].includes(".svg") || feature.properties.tags[key].includes(".SVG")
+                        var color="orange"
+                        //if(feature.properties.tags[key] in osmToWikidataMap[key] /*&& wdval==Object.keys(osmToWikidataMap[key][feature.properties.tags[key]])[0]*/){
+                         //       color="green"
+                        //}
+                        popupContent+="<a style=\"color:"+color+"\" href=\""+Object.keys(osmToWikidataMap[key])[0]+"\" target=\"_blank\">"+key+"</a>"
+                                        if(feature.properties.tags[key].includes(".jpg") || feature.properties.tags[key].includes(".JPG") || feature.properties.tags[key].includes(".svg") || feature.properties.tags[key].includes(".SVG")
 						|| feature.properties.tags[key].includes(".png") || feature.properties.tags[key].includes(".PNG") || feature.properties.tags[key].includes(".gif") || feature.properties.tags[key].includes(".GIF")){
 						popupContent+=" - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\"><img src=\""+feature.properties.tags[key].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"			
 					}else if(feature.properties.tags[key].includes("http")){
@@ -382,20 +385,32 @@ var queryUrl = "https://query.wikidata.org/sparql?query="+ encodeURIComponent(qu
         success: function( _data ) {
             var results = _data.results.bindings;
             for ( var i in results ) {
-                
                  if(results[i]["wdclass"]["value"]!=undefined && results[i]["osm"]["value"]!=undefined){
-                  osmval=results[i]["osm"]["value"].replace("Key:","")
-                  osmToWikidataMap[osmval]=JSON.parse("{\""+results[i]["wdclass"]["value"]+"\":\""+("wdclassLabel" in results[i]?results[i]["wdclassLabel"]["value"]:"")+"\"}")
-				    if(!(wikidataToOSMMap[results[i]["wdclass"]["value"]])){
+                  osmval=results[i]["osm"]["value"].replace("Key:","").replace("Tag:","");
+                  if(osmval.includes("=")){
+                        if(!osmToWikidataMap[osmval.substring(0,osmval.indexOf('='))]){
+                            osmToWikidataMap[osmval.substring(0,osmval.indexOf('='))]={}
+                        }
+                        osmToWikidataMap[osmval.substring(0,osmval.indexOf('='))][osmval.substring(osmval.indexOf('=')+1)]=JSON.parse("{\""+results[i]["wdclass"]["value"]+"\":\""+("wdclassLabel" in results[i]?results[i]["wdclassLabel"]["value"]:"")+"\"}")
+                  }else{
+                        if(!osmToWikidataMap[osmval]){
+                            osmToWikidataMap[osmval]={}
+                        }
+                        osmToWikidataMap[osmval][""]=JSON.parse("{\""+results[i]["wdclass"]["value"]+"\":\""+("wdclassLabel" in results[i]?results[i]["wdclassLabel"]["value"]:"")+"\"}")
+
+                  }
+                  				    if(!(wikidataToOSMMap[results[i]["wdclass"]["value"]])){
 						 wikidataToOSMMap[results[i]["wdclass"]["value"]]=[]
 					}
 					wikidataToOSMMap[results[i]["wdclass"]["value"]].push(JSON.parse("{\""+osmval+"\":\""+("wdclassLabel" in results[i]?results[i]["wdclassLabel"]["value"]:"")+"\"}"));
                  }
             }
-            wikidataToOSMMap["http://www.w3.org/2000/01/rdf-schema#label"]="name"
-            osmToWikidataMap["name"]="http://www.w3.org/2000/01/rdf-schema#label"
-            console.log(osmToWikidataMap)
-            console.log(wikidataToOSMMap)
+            wikidataToOSMMap["http://www.w3.org/2000/01/rdf-schema#label"]={}
+            wikidataToOSMMap["http://www.w3.org/2000/01/rdf-schema#label"][""]="name"
+            osmToWikidataMap["name"]={}
+            osmToWikidataMap["name"][""]="http://www.w3.org/2000/01/rdf-schema#label"
+            console.log("osmToWikidataMap: "+JSON.stringify(osmToWikidataMap))
+            console.log("wikidataToOSMMap: "+JSON.stringify(wikidataToOSMMap))
         }
     });
 }
