@@ -167,14 +167,28 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
               popupContent = popupContent + "</ul>"
               popupContent+="Wikidata Items: <ul>"
               for(key in wdkeyset){
+					var isgreen=false;
                     giventag=""
-                    
-                        if(!(Object.values(wdkeyset[key])[0].includes("statement"))){
+                  if(!(Object.values(wdkeyset[key])[0].includes("statement"))){
                             spl=Object.values(wdkeyset[key])[0].split(";")
 							wdval=spl[1]
-							if(key in wikidataToOSMMap){
+							if(key.includes("P31")){
+								//alert("P31: "+spl[0])
+								if(spl[0] in wikidataToOSMMap){
+									tags=Object.keys(wikidataToOSMMap[spl[0]][0])[0].split("=")
+									//alert(JSON.stringify(tags))
+									if(tags[0] in feature.properties.tags && feature.properties.tags[tags[0]]==tags[1]){
+										popupContent+="<li><a href=\""+key+"\" target=\"_blank\" style=\"color:green\">"+Object.keys(wdkeyset[key])[0]+"</a> - "
+										isgreen=true;
+									}
+								}
+								//alert(JSON.stringify(wikidataToOSMMap))
+							}
+							else if(key in wikidataToOSMMap){
+								//alert(JSON.stringify(wikidataToOSMMap[key]))
 								var finished=false;
 								for(equiv in Object.values(wikidataToOSMMap[key])[0]){
+								
 									if(feature.properties.tags[equiv]){
 										popupContent+="<li><a href=\""+key+"\" target=\"_blank\" style=\"color:green\">"+Object.keys(wdkeyset[key])[0]+"</a> - "
 										giventag=feature.properties.tags[equiv]
@@ -193,7 +207,7 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
 					popupContent+="><img src=\""+spl[1].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"
 					ttlExport+=indid+" <"+key+"> <"+spl[0]+"> . \n"  
 			    }else if(spl[0].includes("http")){
-					if(finished && giventag==spl[1]){
+					if((finished && giventag==spl[1]) || isgreen){
 						popupContent+="<a href=\""+spl[0]+"\" target=\"_blank\" style=\"color:green\">"+spl[1]+"</a></li>"
 					}else if(finished && giventag!=spl[1] && giventag!=""){
 						popupContent+="<a href=\""+spl[0]+"\" target=\"_blank\" style=\"color:orange\">"+spl[1]+"</a> | "+(giventag.includes("http")?"<a href=\""+giventag+"\" style=\"color:orange\">"+giventag+"</a>":"<span style=\"color:orange\">"+giventag+"</span>")+"</li>"
@@ -202,7 +216,7 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
 					}	
 					ttlExport+=indid+" <"+key+"> <"+spl[0]+"> . \n"  
 			    }else if(spl[0].startsWith("www.")){
-					if(finished && giventag==spl[1]){
+					if((finished && giventag==spl[1]) || isgreen){
 						popupContent+="<a href=\"https://"+spl[0]+"\" target=\"_blank\" style=\"color:green\">"+spl[1]+"</a></li>"
 					}else if(finished && giventag!=spl[1] && giventag!=""){
 						popupContent+="<a href=\"https://"+spl[0]+"\" target=\"_blank\" style=\"color:orange\">"+spl[1]+"</a> | "+(giventag.includes("http")?"<a href=\""+giventag+"\" style=\"color:orange\">"+giventag+"</a>":"<span style=\"color:orange\">"+giventag+"</span>")+"</li>"
@@ -211,7 +225,7 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
 					}		
 					ttlExport+=indid+" <"+key+"> <"+spl[0]+"> . \n"  
 			    }else{
-					if(finished && giventag==spl[1]){
+					if((finished && giventag==spl[1]) || isgreen){
 						popupContent+="<span style=\"color:green\">"+spl[1]+"</span></li>"
 					}else if(finished && giventag!=spl[1] && giventag!=""){
 						popupContent+="<span style=\"color:orange\">"+spl[1]+" | "+giventag+"</span></li>"
