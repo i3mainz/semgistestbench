@@ -94,7 +94,7 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
 						var wkt = wicket.write();
 						ttlExport+="<http://www.linkedgeodata.org/"+feature.properties.type+feature.properties.id+"> <http://www.opengis.net/ont/geosparql#hasGeometry> \""+wkt+"\"^^<http://www.opengis.net/ont/geosparql#wktLiteral> .\n";
 					}
-                                  }
+              }
               keys.forEach(function (key) {
               var ignorekeys=[]
                 popupContent = popupContent + "<li>"
@@ -104,12 +104,12 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
 				if(key=="wikidata"){
 					popupContent = popupContent + "<span style=\"color:#ff0000\">wikidata</span> - <a href=\"https://www.wikidata.org/entity/"+feature.properties.tags[key]+"\"  target=\"_blank\" style=\"color:#ff0000\">" + feature.properties.tags[key] + "</a></li>";
 					ttlExport+=indid+" <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/"+feature.properties.tags[key]+"> . \n"  
-				}else if(key in osmToWikidataMap && Object.keys(Object.values(osmToWikidataMap[key])[0])[0] in wdkeyset){
+				}else if(key in osmToWikidataMap && (Object.keys(Object.values(osmToWikidataMap[key])[0])[0] in wdkeyset)){
                                                 popupContent+="<a style=\"color:green\" href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\">"+key+"</a>"
 						wdval=Object.values(wdkeyset[Object.keys(Object.values(osmToWikidataMap[key])[0])[0]])[0].split(";")[1]
 						if(feature.properties.tags[key].includes("http")){
-						ttlExport+=indid+(feature.properties.tags[key].includes("http")?"<"+feature.properties.tags[key]+">":"\""+feature.properties.tags[key]+"\"")+" "+(wdval.includes("http")?"<"+wdval+">":"\""+wdval+"\"")+" . \n"  
-                                }
+							ttlExport+=indid+(feature.properties.tags[key].includes("http")?"<"+feature.properties.tags[key]+">":"\""+feature.properties.tags[key]+"\"")+" "+(wdval.includes("http")?"<"+wdval+">":"\""+wdval+"\"")+" . \n"  
+                        }
                         if(wdval==feature.properties.tags[key]){
 								if(feature.properties.tags[key].includes("http")){
 									popupContent = popupContent + " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\" style=\"color:green\">" + feature.properties.tags[key] + "</a></li>";
@@ -129,37 +129,15 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
 								popupContent +=" | <span style=\"color:orange\">"+wdval+"</span></li>";
 							}
                    }
-                }else if(key in osmToWikidataMap){
+                }else if(key in osmToWikidataMap && feature.properties.tags[key] in osmToWikidataMap[key] && "http://www.wikidata.org/entity/P31" in wdkeyset && Object.values(wdkeyset["http://www.wikidata.org/entity/P31"])[0].substring(0,Object.values(wdkeyset["http://www.wikidata.org/entity/P31"])[0].indexOf(";"))==Object.keys(osmToWikidataMap[key][feature.properties.tags[key]])[0]){
+					 popupContent+="<a style=\"color:green\" href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\">"+key+"</a>"
+					if(feature.properties.tags[key].includes("http")){
+						popupContent = popupContent + " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\" style=\"color:green\">" + feature.properties.tags[key] + "</a></li>";
+					}else{
+						popupContent = popupContent + " - <a href=\""+Object.keys(osmToWikidataMap[key][feature.properties.tags[key]])[0]+"\" target=\"_blank\" style=\"color:green\">" + feature.properties.tags[key] + "</a></li>";
+					}
+				}else if(key in osmToWikidataMap){
 						var color="orange"
-
-						
-
-						if(feature.properties.tags[key] in osmToWikidataMap[key]){
-						var equivwdclass=Object.keys(osmToWikidataMap[key][feature.properties.tags[key]])[0];
-						var wdvall=""
-						if("http://www.wikidata.org/entity/P31" in wdkeyset){
-							wdvall=Object.values(wdkeyset["http://www.wikidata.org/entity/P31"])[0]
-							wdvall=wdvall.substring(0,wdvall.indexOf(";"))
-						}
-						
-						//alert(wdvall+" - "+equivwdclass)
-						if(wdvall==equivwdclass){
-							color="green"
-						}	
-							
-						    //alert(key+" - "/*+JSON.stringify(osmToWikidataMap[key])*/+" - "+JSON.stringify(Object.keys(osmToWikidataMap[key][feature.properties.tags[key]])[0])+" - "+JSON.stringify(Objects.values(wdkeyset["http://www.wikidata.org/entity/P31"]))[0].substring("")
-							//alert(Object.keys(osmToWikidataMap[key][feature.properties.tags[key]])[0])
-							//alert(JSON.stringify(osmToWikidataMap[key][feature.properties.tags[key]]))
-							
-							//alert(JSON.stringify(wdkeyset)+" - "+JSON.stringify(wdkeyset["http://www.wikidata.org/entity/P31"]))
-							//alert(Object.values(wdkeyset[Object.keys(Object.values(osmToWikidataMap[key][feature.properties.tags[key]])[0])[0]])[0].split(";")[1])
-						}
-						//alert(JSON.stringify(wdkeyset))
-						//alert(JSON.stringify(osmToWikidataMap[key])+" - "+key+" - "+feature.properties.tags[key])
-                        
-                        //if(feature.properties.tags[key] in osmToWikidataMap[key] /*&& wdval==Object.keys(osmToWikidataMap[key][feature.properties.tags[key]])[0]*/){
-                         //       color="green"
-                        //}
                         popupContent+="<a style=\"color:"+color+"\" href=\""+Object.keys(osmToWikidataMap[key])[0]+"\" target=\"_blank\">"+key+"</a>"
                                         if(feature.properties.tags[key].includes(".jpg") || feature.properties.tags[key].includes(".JPG") || feature.properties.tags[key].includes(".svg") || feature.properties.tags[key].includes(".SVG")
 						|| feature.properties.tags[key].includes(".png") || feature.properties.tags[key].includes(".PNG") || feature.properties.tags[key].includes(".gif") || feature.properties.tags[key].includes(".GIF")){
