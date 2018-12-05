@@ -14,9 +14,35 @@
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   
 <script>
-var overlayMaps={}
-function getWikidataItemsInView(){
-        //overpass query
+var prefixlist="@prefix owl: <http://www.w3.org/2002/07/owl#> .\n @prefix foaf: <http://xmlns.com/foaf/0.1/> .\n @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> . @prefix xml: <http://www.w3.org/XML/1998/namespace> . \n @prefix xsd: <http://www.w3.org/2001/XMLSchema#> . \n @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> . \n"
+var overlayMaps=[]
+var ttlExport="";
+
+function saveToOWL(){
+    saveTextAsFile();
+}
+
+function saveTextAsFile()
+{
+	/*var collect=prefixlist;
+	for(item in collectRDF){
+		collect+=collectRDF[item]
+	}*/
+    var blob = new Blob([prefixlist+"<http://semgis.i3mainz.de> rdf:type owl:Ontology . \n"+ttlExport], {type:'text/plain'});
+    var filename = "res.ttl";
+    var a = document.createElement('a');
+    a.style = "display: none";  
+    var url = window.URL.createObjectURL(blob);
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+        a.click();
+    setTimeout(function(){
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);  
+    }, 1000);
+    
+    
 }
 
 function buildOverpassApiUrl(map, overpassQuery) {
@@ -50,6 +76,8 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
             onEachFeature: function (feature, layer) {
               var popupContent = "";
               popupContent = popupContent + "<b>" + feature.properties.type + "/" + feature.properties.id + "</b>";
+              var indid="<http://www.linkedgeodata.org/"+feature.properties.type+feature.properties.id+">";
+              
               popupContent+="<br/>OSM Attributes:<ul>"
               wdkeyset={}
               console.log("Wikidata: "+feature.properties.tags["wikidata"])
@@ -57,18 +85,25 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
                     wdkeyset=getAttributesForWikidataID(feature.properties.tags["wikidata"])
              }
               var keys = Object.keys(feature.properties.tags);
+              if(feature.properties.tags.length>0){
+                    ttlExport+="<http://www.linkedgeodata.org/"+feature.properties.type+feature.properties.id+"> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> .\n"
+              }
               keys.forEach(function (key) {
               var ignorekeys=[]
                 popupContent = popupContent + "<li>"
 				if(key=="wikidata"){
 					popupContent = popupContent + "<span style=\"color:#ff0000\">wikidata</span> - <a href=\"https://www.wikidata.org/entity/"+feature.properties.tags[key]+"\"  target=\"_blank\" style=\"color:#ff0000\">" + feature.properties.tags[key] + "</a></li>";
+					ttlExport+=indid+" <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/"+feature.properties.tags[key]+"> . \n"  
 				}else if(key in osmToWikidataMap && Object.keys(osmToWikidataMap[key])[0] in wdkeyset){
                         popupContent+="<a style=\"color:green\" href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\">"+key+"</a>"
-								console.log(key)
+								/*console.log(key)
 								console.log(osmToWikidataMap[key])
 								console.log(JSON.stringify(wdkeyset))
-								console.log(feature.properties.tags[key])
+								console.log(feature.properties.tags[key])*/
 						wdval=Object.values(wdkeyset[Object.keys(osmToWikidataMap[key])[0]])[0].split(";")[1]
+						if(feature.properties.tags[key].includes("http")){
+						ttlExport+=indid+(feature.properties.tags[key].includes("http")?"<"+feature.properties.tags[key]+">":"\""+feature.properties.tags[key]+"\"")+" "+(wdval.includes("http")?"<"+wdval+">":"\""+wdval+"\"")+" . \n"  
+						}
                         if(wdval==feature.properties.tags[key]){
 								if(feature.properties.tags[key].includes("http")){
 									popupContent = popupContent + " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\" style=\"color:green\">" + feature.properties.tags[key] + "</a></li>";
@@ -118,7 +153,8 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
               popupContent = popupContent + "</ul>"
               popupContent+="Wikidata Items: <ul>"
               for(key in wdkeyset){
-						giventag=""
+                    giventag=""
+                    
                         if(!(Object.values(wdkeyset[key])[0].includes("statement"))){
                             spl=Object.values(wdkeyset[key])[0].split(";")
 							wdval=spl[1]
@@ -141,6 +177,7 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
 				|| spl[0].includes(".png") || spl[0].includes(".PNG")){
 			    	popupContent+="<a href=\""+spl[0]+"\" target=\"_blank\"";
 					popupContent+="><img src=\""+spl[1].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"
+					ttlExport+=indid+" <"+key+"> <"+spl[0]+"> . \n"  
 			    }else if(spl[0].includes("http")){
 					if(finished && giventag==spl[1]){
 						popupContent+="<a href=\""+spl[0]+"\" target=\"_blank\" style=\"color:green\">"+spl[1]+"</a></li>"
@@ -149,6 +186,7 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
 					}else{
 						popupContent+="<a href=\""+spl[0]+"\" target=\"_blank\">"+spl[1]+"</a></li>"
 					}	
+					ttlExport+=indid+" <"+key+"> <"+spl[0]+"> . \n"  
 			    }else if(spl[0].startsWith("www.")){
 					if(finished && giventag==spl[1]){
 						popupContent+="<a href=\"https://"+spl[0]+"\" target=\"_blank\" style=\"color:green\">"+spl[1]+"</a></li>"
@@ -156,7 +194,8 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
 						popupContent+="<a href=\"https://"+spl[0]+"\" target=\"_blank\" style=\"color:orange\">"+spl[1]+"</a> | "+(giventag.includes("http")?"<a href=\""+giventag+"\" style=\"color:orange\">"+giventag+"</a>":"<span style=\"color:orange\">"+giventag+"</span>")+"</li>"
 					}else{
 						popupContent+="<a href=\"https://"+spl[0]+"\" target=\"_blank\">"+spl[1]+"</a></li>"
-					}					
+					}		
+					ttlExport+=indid+" <"+key+"> <"+spl[0]+"> . \n"  
 			    }else{
 					if(finished && giventag==spl[1]){
 						popupContent+="<span style=\"color:green\">"+spl[1]+"</span></li>"
@@ -165,12 +204,13 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
 					}else{
 						popupContent+=spl[1]+"</li>"
 					}
-			    	
+			    	ttlExport+=indid+" <"+key+">  \""+spl[0]+"\" . \n"  
 			    }
                         }
               }
               popupContent+="</ul>"
               layer.bindPopup(popupContent,{maxWidth : 560});
+             // console.log(ttlExport)
             }
           }).addTo(map);
         });
@@ -180,8 +220,30 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
 function getWikidataAttributesForCoordinate(){
     //wikidataQuery
 }
+
+function getDistance(origin, destination) {
+    // return distance in meters
+    var lon1 = toRadian(origin[1]),
+        lat1 = toRadian(origin[0]),
+        lon2 = toRadian(destination[1]),
+        lat2 = toRadian(destination[0]);
+
+    var deltaLat = lat2 - lat1;
+    var deltaLon = lon2 - lon1;
+
+    var a = Math.pow(Math.sin(deltaLat/2), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(deltaLon/2), 2);
+    var c = 2 * Math.asin(Math.sqrt(a));
+    var EARTH_RADIUS = 6371;
+    return c * EARTH_RADIUS * 1000;
+}
+function toRadian(degree) {
+    return degree*Math.PI/180;
+}
+
 	
 function wikidataAroundQuery(coord,width){
+var markers=[]
+var wikidatagroup=L.layerGroup().addTo(map)
 var query = [ "PREFIX bd: <http://www.bigdata.com/rdf#>\n",
  "PREFIX wikibase: <http://wikiba.se/ontology#>\n",
  "PREFIX wdt: <http://www.wikidata.org/prop/direct/>\n",
@@ -192,7 +254,7 @@ var query = [ "PREFIX bd: <http://www.bigdata.com/rdf#>\n",
  "SERVICE wikibase:around { 	\n",
   " ?item wdt:P625  ?location .\n",
    "bd:serviceParam wikibase:center \"Point("+coord.lng+" "+coord.lat+")\"^^geo:wktLiteral. \n",
-  " bd:serviceParam wikibase:radius \"1\".\n",
+  " bd:serviceParam wikibase:radius \""+width/1000+"\".\n",
  "}\n",
       "?item ?rell ?val .\n",
       " ?rel wikibase:directClaim ?rell .\n",
@@ -209,26 +271,55 @@ var query = [ "PREFIX bd: <http://www.bigdata.com/rdf#>\n",
         url: queryUrl,
         async:false,
         success: function( _data ) {
-		var wicket = new Wkt.Wkt();
-            console.log(JSON.stringify(_data))
+            var wicket = new Wkt.Wkt();
+            var myLayer = L.geoJSON().addTo(map);
             var results = _data.results.bindings;
+            var mark;
+            lastcoord=""
+            popupBuffer="<ul>"
+            var popupMap={}
              for ( var i in results ) {
-				wicket.read(results[i]["location"]["value"]);
-				// "greenIcon from official documentation noted above.
-				var feature = wicket.toObject({icon: greenIcon});
-				var marker = new L.marker(coordinates,{icon:markerIcon}); //opacity may be set to zero
-                //marker.bindPopup(tooltip, {maxWidth : 560});
-				// Presumably featureGroup is already instantiated and added to your map.
-				//layergroups[geomclass].push(marker)
-				map.getLayer().push(marker)
-				/*featureGroup.addLayer(feature);
-                 if(results[i]["rel"]["value"]!=undefined && results[i]["valLabel"]["value"]!=undefined){
-                        res[results[i]["rel"]["value"]]=JSON.parse("{\""+results[i]["relLabel"]["value"]+"\":\""+results[i]["val"]["value"]+";"+results[i]["valLabel"]["value"]+"\"}")
-                 }*/
+                                //alert(results[i]["location"]["value"])
+                                if(lastcoord!=results[i]["location"]["value"]){
+                                    if(lastcoord!=""){
+                                       Object.keys(popupMap).sort().map(function(cls) {
+                                                    popupBuffer+=popupMap[cls]
+                                       });
+                                        popupBuffer+="</ul>";
+                                        mark.bindPopup(popupBuffer);
+                                        popupBuffer="<ul>";
+                                        popupMap={}
+                                    }
+                                    popupBuffer+="<b><a href=\""+results[i]["item"]["value"]+"\" target=\"_blank\">"+results[i]["itemLabel"]["value"]+"</a></b>"
+                                    popupMap[results[i]["relLabel"]["value"]+results[i]["valLabel"]["value"]]="<li><a href=\""+results[i]["rel"]["value"]+"\" target=\"_blank\">"+results[i]["relLabel"]["value"]+"</a> - <a href=\""+results[i]["val"]["value"]+"\">"+results[i]["valLabel"]["value"]+"</a></li>";
+                                    wicket.read(results[i]["location"]["value"].replace("Point","POINT"));
+                                    // "greenIcon from official documentation noted above.
+                                    var feature = wicket.toJson();
+                                    //alert(JSON.stringify(feature.coordinates))
+                                    var greenIcon = new L.Icon({
+                                        iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+                                        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                                        iconSize: [25, 41],
+                                        iconAnchor: [12, 41],
+                                        popupAnchor: [1, -34],
+                                        shadowSize: [41, 41]
+                                    });
+                                    mark=L.marker([feature.coordinates[1],feature.coordinates[0]],{icon: greenIcon})
+                                    wikidatagroup.addLayer(mark)
+                                    lastcoord=results[i]["location"]["value"]
+                                }else{
+                                   if(results[i]["val"]["value"].includes(".jpg") || results[i]["val"]["value"].includes(".JPG") || results[i]["val"]["value"].includes(".svg") || results[i]["val"]["value"].includes(".SVG")
+						|| results[i]["val"]["value"].includes(".png") || results[i]["val"]["value"].includes(".PNG") || results[i]["val"]["value"].includes(".gif") || results[i]["val"]["value"].includes(".GIF")){
+						popupMap[results[i]["relLabel"]["value"]+results[i]["valLabel"]["value"]]="<a href=\""+results[i]["rel"]["value"]+"\" target=\"_blank\">"+results[i]["relLabel"]["value"]+"</a> - <a href=\""+results[i]["val"]["value"]+"\" target=\"_blank\"><img src=\""+results[i]["val"]["value"].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"	
+                                    
+                                    }else{
+                                         popupMap[results[i]["relLabel"]["value"]+results[i]["valLabel"]["value"]]="<li><a href=\""+results[i]["rel"]["value"]+"\" target=\"_blank\">"+results[i]["relLabel"]["value"]+"</a> - <a href=\""+results[i]["val"]["value"]+"\">"+results[i]["valLabel"]["value"]+"</a></li>";
+                                    }
+                                }
             }
-            //alert(JSON.stringify(res))
         }
     });  
+    layercontrol.addBaseLayer(wikidatagroup, 'wikidata');
     return res;
 }
 
@@ -247,7 +338,6 @@ var query = [ "PREFIX bd: <http://www.bigdata.com/rdf#>\n",
                 "}\n",
                 "ORDER BY ?relLabel"
     ].join(" ");
-    //alert(query)
   var queryUrl = "https://query.wikidata.org/sparql?query="+ encodeURIComponent(query) +"&format=json";
   var res={}
 //var queryUrl = encodeURI( "https://query.wikidata.org/sparql?query="+query+"&format=json" );
@@ -256,7 +346,7 @@ var query = [ "PREFIX bd: <http://www.bigdata.com/rdf#>\n",
         url: queryUrl,
         async:false,
         success: function( _data ) {
-            console.log(JSON.stringify(_data))
+            //console.log(JSON.stringify(_data))
             var results = _data.results.bindings;
              for ( var i in results ) {
                  if(results[i]["rel"]["value"]!=undefined && results[i]["valLabel"]["value"]!=undefined){
@@ -290,7 +380,6 @@ var queryUrl = "https://query.wikidata.org/sparql?query="+ encodeURIComponent(qu
         async: false,
         url: queryUrl,
         success: function( _data ) {
-            console.log(JSON.stringify(_data))
             var results = _data.results.bindings;
             for ( var i in results ) {
                 
@@ -301,7 +390,6 @@ var queryUrl = "https://query.wikidata.org/sparql?query="+ encodeURIComponent(qu
 						 wikidataToOSMMap[results[i]["wdclass"]["value"]]=[]
 					}
 					wikidataToOSMMap[results[i]["wdclass"]["value"]].push(JSON.parse("{\""+osmval+"\":\""+("wdclassLabel" in results[i]?results[i]["wdclassLabel"]["value"]:"")+"\"}"));
-                    //wikidataToOSMMap[results[i]["wdclass"]["value"]]=JSON.parse("{\""+osmval+"\":\""+("wdclassLabel" in results[i]?results[i]["wdclassLabel"]["value"]:"")+"\"}");
                  }
             }
             wikidataToOSMMap["http://www.w3.org/2000/01/rdf-schema#label"]="name"
@@ -318,8 +406,8 @@ function loadItems(){
 }
 
 function loadWDItems(){
-	width=(map.getBounds().getEast()-map.getBounds().getWest())/2
-		alert(width)
+	var distance = getDistance([map.getBounds().getSouth(), map.getBounds().getWest()],[map.getBounds().getNorth(),map.getBounds().getEast()])
+        width=distance/2
 	wikidataAroundQuery(map.getCenter(),width);
 }
 
@@ -346,10 +434,8 @@ var osmToWikidataMap={}
 	}));
         
 getMatchingWikiDataOSMAttributes();
-        getWikidataAttributesForCoordinate();
 		
     map.on('zoomend', function() {
-		console.log("zoomend")
 		if(map.getZoom()>=15){
 			$('#mapid').css("border","5px solid green")
 		}else{
@@ -379,13 +465,13 @@ attribution: '&copy; Bundesamt f&uuml;r Kartographie und Geod&auml;sie 2017, <a 
 	position: 'bottomright',
 	imperial: false
 }).addTo(map);
-layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(map);
+var layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(map);
 
 </script>
 </div>
 <button type="button" id="loadbutton" onClick="loadItems()">Load OSM Items with Wikidata</button>
-<!--<button type="button" id="loadbutton" onClick="loadWDItems()">Load Wikidata Items with Geocoordinate</button>-->
-
+<button type="button" id="loadbutton2" onClick="loadWDItems()">Load Wikidata Items with Geocoordinate</button>
+<button type="button" id="saveOWLButton" onClick="saveToOWL()">Save OSM Items as OWL</button>
 </body>
 </html>
  
