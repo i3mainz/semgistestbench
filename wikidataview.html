@@ -3,12 +3,13 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
+<link rel="stylesheet" href="css/leaflet-search.css" />
 <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
 <script src="https://unpkg.com/osmtogeojson@2.2.12/osmtogeojson.js"></script>
   <script src="js/leaflet.polylinedecorator.js"></script>
   <script src="js/wicket.js" type="text/javascript"></script>
      <script src="js/leaflet.fullscreen.js"></script>
-	 <script src="https://labs.easyblog.it/maps/leaflet-search/dist/leaflet-search.min.js"></script>
+	 <script src="js/leaflet-search.js"></script>
    <script src="js/leaflet_legend.js"></script>
       <script src="js/leaflet_easyprint.js"></script>
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -24,10 +25,6 @@ function saveToOWL(){
 
 function saveTextAsFile()
 {
-	/*var collect=prefixlist;
-	for(item in collectRDF){
-		collect+=collectRDF[item]
-	}*/
     var blob = new Blob([prefixlist+"<http://semgis.i3mainz.de> rdf:type owl:Ontology . \n"+ttlExport], {type:'text/plain'});
     var filename = "res.ttl";
     var a = document.createElement('a');
@@ -60,17 +57,13 @@ function getOSMAttributesForCoordinate(map){
 if(map.getZoom()>=15){
 $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
           var resultAsGeojson = osmtogeojson(osmDataAsJson);
+		  var adminLayer=null
           var resultLayer = L.geoJson(resultAsGeojson, {
             style: function (feature) {
               return {color: "#ff0000"};
             },
-            filter: function (feature, layer) {
-              var isPolygon = (feature.geometry) && (feature.geometry.type !== undefined) && (feature.geometry.type === "Polygon");
-              if (isPolygon) {
-                feature.geometry.type = "Point";
-                var polygonCenter = L.latLngBounds(feature.geometry.coordinates[0]).getCenter();
-                feature.geometry.coordinates = [ polygonCenter.lat, polygonCenter.lng ];
-              }
+            filter: function (feature, layer) {			
+				
               return true;
             },
             onEachFeature: function (feature, layer) {
@@ -86,8 +79,22 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
              }
               var keys = Object.keys(feature.properties.tags);
               if(feature.properties.tags.length>0){
-                    ttlExport+="<http://www.linkedgeodata.org/"+feature.properties.type+feature.properties.id+"> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> .\n"
-              }
+					var wicket = new Wkt.Wkt();
+					wicket.read(JSON.stringify(feature["geometry"]));
+					var wkt = wicket.write();
+					ttlExport+="<http://www.linkedgeodata.org/"+feature.properties.type+feature.properties.id+"> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> .\n"
+					ttlExport+="<http://www.linkedgeodata.org/"+feature.properties.type+feature.properties.id+"> <http://www.opengis.net/ont/geosparql#hasGeometry> \""+wkt+"\"^^<http://www.opengis.net/ont/geosparql#wktLiteral> .\n";
+					var isPolygon = (feature.geometry) && (feature.geometry.type !== undefined) && (feature.geometry.type === "Polygon");
+					if (isPolygon) {
+						feature.geometry.type = "Point";
+						var polygonCenter = L.latLngBounds(feature.geometry.coordinates[0]).getCenter();
+						feature.geometry.coordinates = [ polygonCenter.lat, polygonCenter.lng ];
+						var wicket = new Wkt.Wkt();
+						wicket.read(JSON.stringify(feature.geometry));
+						var wkt = wicket.write();
+						ttlExport+="<http://www.linkedgeodata.org/"+feature.properties.type+feature.properties.id+"> <http://www.opengis.net/ont/geosparql#hasGeometry> \""+wkt+"\"^^<http://www.opengis.net/ont/geosparql#wktLiteral> .\n";
+					}
+                                  }
               keys.forEach(function (key) {
               var ignorekeys=[]
                 popupContent = popupContent + "<li>"
@@ -123,7 +130,33 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
 							}
                    }
                 }else if(key in osmToWikidataMap){
-                        var color="orange"
+						var color="orange"
+
+						
+
+						if(feature.properties.tags[key] in osmToWikidataMap[key]){
+						var equivwdclass=Object.keys(osmToWikidataMap[key][feature.properties.tags[key]])[0];
+						var wdvall=""
+						if("http://www.wikidata.org/entity/P31" in wdkeyset){
+							wdvall=Object.values(wdkeyset["http://www.wikidata.org/entity/P31"])[0]
+							wdvall=wdvall.substring(0,wdvall.indexOf(";"))
+						}
+						
+						//alert(wdvall+" - "+equivwdclass)
+						if(wdvall==equivwdclass){
+							color="green"
+						}	
+							
+						    //alert(key+" - "/*+JSON.stringify(osmToWikidataMap[key])*/+" - "+JSON.stringify(Object.keys(osmToWikidataMap[key][feature.properties.tags[key]])[0])+" - "+JSON.stringify(Objects.values(wdkeyset["http://www.wikidata.org/entity/P31"]))[0].substring("")
+							//alert(Object.keys(osmToWikidataMap[key][feature.properties.tags[key]])[0])
+							//alert(JSON.stringify(osmToWikidataMap[key][feature.properties.tags[key]]))
+							
+							//alert(JSON.stringify(wdkeyset)+" - "+JSON.stringify(wdkeyset["http://www.wikidata.org/entity/P31"]))
+							//alert(Object.values(wdkeyset[Object.keys(Object.values(osmToWikidataMap[key][feature.properties.tags[key]])[0])[0]])[0].split(";")[1])
+						}
+						//alert(JSON.stringify(wdkeyset))
+						//alert(JSON.stringify(osmToWikidataMap[key])+" - "+key+" - "+feature.properties.tags[key])
+                        
                         //if(feature.properties.tags[key] in osmToWikidataMap[key] /*&& wdval==Object.keys(osmToWikidataMap[key][feature.properties.tags[key]])[0]*/){
                          //       color="green"
                         //}
