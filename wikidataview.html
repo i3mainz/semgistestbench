@@ -165,8 +165,11 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
                 }
               });
               popupContent = popupContent + "</ul>"
-              popupContent+="Wikidata Items: <ul>"
+			  //alert(wdkeyset)
+              popupContent+="Wikidata Items: "/*<b>"+Object.values(wdkeyset["rdfs:label"])[0]+"</b>*/+"<ul>"
               for(key in wdkeyset){
+					//if(key=="rdfs:label")
+					//	continue;
 					var isgreen=false;
                     giventag=""
                   if(!(Object.values(wdkeyset[key])[0].includes("statement"))){
@@ -357,9 +360,10 @@ var query = [ "PREFIX bd: <http://www.bigdata.com/rdf#>\n",
                 "PREFIX wdt: <http://www.wikidata.org/prop/direct/>\n",
                 "PREFIX wd: <http://www.wikidata.org/entity/>\n",
                 "PREFIX skos: <http://www.w3.org/2004/02/skos/core#>\n",          
-                "SELECT DISTINCT ?rel ?relLabel ?val ?valLabel\n",
+                "SELECT DISTINCT ?itemLabel ?rel ?relLabel ?val ?valLabel\n",
                 "WHERE\n",
                 "{\n",
+				"\twd:"+qid+" rdfs:label ?itemLabel .",
                 "\twd:"+qid+" ?rell ?val .\n",
                 "\t?rel wikibase:directClaim ?rell .\n",
                 "\tSERVICE wikibase:label { bd:serviceParam wikibase:language \"en\" }\n",
@@ -381,6 +385,7 @@ var query = [ "PREFIX bd: <http://www.bigdata.com/rdf#>\n",
                         res[results[i]["rel"]["value"]]=JSON.parse("{\""+results[i]["relLabel"]["value"]+"\":\""+results[i]["val"]["value"]+";"+results[i]["valLabel"]["value"]+"\"}")
                  }
             }
+			res["rdfs:label"]=JSON.parse("{\"rdfs:label\":\"http://www.wikidata.org/entity/"+qid+";"+results[i]["itemLabel"]["value"]+"\"}")
             //alert(JSON.stringify(res))
         }
     });  
