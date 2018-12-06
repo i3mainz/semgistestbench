@@ -468,7 +468,7 @@ var wikidataToOSMMap={}
 var osmToWikidataMap={}
 	var map = L.map('mapid',{fullscreenControl: true,fullscreenControlOptions: {position: 'topleft'}}).locate({setView: true, maxZoom: 16});//.setView([51.505, -0.09], 13);
 	map.addControl( new L.Control.Search({
-		url: 'http://nominatim.openstreetmap.org/search?format=json&q={s}',
+		url: 'https://nominatim.openstreetmap.org/search?format=json&q={s}',
 		jsonpParam: 'json_callback',
 		propertyName: 'display_name',
 		propertyLoc: ['lat','lon'],
@@ -500,7 +500,7 @@ getMatchingWikiDataOSMAttributes();
 layers: 'web',
 format: 'image/png',
  transparent: true,
-attribution: '&copy; Bundesamt f&uuml;r Kartographie und Geod&auml;sie 2017, <a href="http://sg.geodatenzentrum.de/web_public/Datenquellen_TopPlus_Open.pdf">Datenquellen</a>'
+attribution: '&copy; Bundesamt f&uuml;r Kartographie und Geod&auml;sie 2017, <a href="https://sg.geodatenzentrum.de/web_public/Datenquellen_TopPlus_Open.pdf">Datenquellen</a>'
 }).addTo(map);
 	var baseMaps = {
     "BKG": wmsLayer,
