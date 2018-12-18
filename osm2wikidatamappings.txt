@@ -1,0 +1,5137 @@
+osmToWikidataMap: {
+	"sport": {
+		"8pin": {
+			"http://www.wikidata.org/entity/Q3414499": "Q3414499"
+		},
+		"cliff_diving": {
+			"http://www.wikidata.org/entity/Q14405929": "high diving"
+		},
+		"american_football": {
+			"http://www.wikidata.org/entity/Q41323": "American football"
+		},
+		"australian_football": {
+			"http://www.wikidata.org/entity/Q50776": "Australian rules football"
+		},
+		"base": {
+			"http://www.wikidata.org/entity/Q809831": "BASE jumping"
+		},
+		"pelota": {
+			"http://www.wikidata.org/entity/Q212845": "Basque pelota"
+		},
+		"canadian_football": {
+			"http://www.wikidata.org/entity/Q248534": "Canadian football"
+		},
+		"hapkido": {
+			"http://www.wikidata.org/entity/Q200333": "Hapkido"
+		},
+		"horseshoes": {
+			"http://www.wikidata.org/entity/Q2746282": "Horseshoes"
+		},
+		"laser_tag": {
+			"http://www.wikidata.org/entity/Q998303": "Laser tag"
+		},
+		"paddle": {
+			"http://www.wikidata.org/entity/Q1582389": "Padel"
+		},
+		"aikido": {
+			"http://www.wikidata.org/entity/Q43114": "aikido"
+		},
+		"archery": {
+			"http://www.wikidata.org/entity/Q108429": "archery"
+		},
+		"soccer": {
+			"http://www.wikidata.org/entity/Q2736": "association football"
+		},
+		"athletics": {
+			"http://www.wikidata.org/entity/Q542": "athletics"
+		},
+		"badminton": {
+			"http://www.wikidata.org/entity/Q7291": "badminton"
+		},
+		"bandy": {
+			"http://www.wikidata.org/entity/Q183018": "bandy"
+		},
+		"baseball": {
+			"http://www.wikidata.org/entity/Q5369": "baseball"
+		},
+		"beachvolleyball": {
+			"http://www.wikidata.org/entity/Q4543": "beach volleyball"
+		},
+		"bmx": {
+			"http://www.wikidata.org/entity/Q215184": "bicycle motocross"
+		},
+		"bobsleigh": {
+			"http://www.wikidata.org/entity/Q177275": "bobsleigh"
+		},
+		"climbing": {
+			"http://www.wikidata.org/entity/Q1541373": "sport climbing"
+		},
+		"boules": {
+			"http://www.wikidata.org/entity/Q895060": "boules"
+		},
+		"bowls": {
+			"http://www.wikidata.org/entity/Q895471": "bowls"
+		},
+		"boxing": {
+			"http://www.wikidata.org/entity/Q32112": "boxing"
+		},
+		"chess": {
+			"http://www.wikidata.org/entity/Q718": "chess"
+		},
+		"cockfighting": {
+			"http://www.wikidata.org/entity/Q319771": "cockfight"
+		},
+		"cricket": {
+			"http://www.wikidata.org/entity/Q682943": "cricket field"
+		},
+		"croquet": {
+			"http://www.wikidata.org/entity/Q193387": "croquet"
+		},
+		"billiards": {
+			"http://www.wikidata.org/entity/Q3341285": "cue sports"
+		},
+		"curling": {
+			"http://www.wikidata.org/entity/Q136851": "curling"
+		},
+		"cycling": {
+			"http://www.wikidata.org/entity/Q2215841": "cycle sport"
+		},
+		"darts": {
+			"http://www.wikidata.org/entity/Q131471": "darts"
+		},
+		"disc_golf": {
+			"http://www.wikidata.org/entity/Q876737": "disc golf"
+		},
+		"dog_racing": {
+			"http://www.wikidata.org/entity/Q1345388": "greyhound racing"
+		},
+		"equestrian": {
+			"http://www.wikidata.org/entity/Q902378": "equestrian sport"
+		},
+		"field_hockey": {
+			"http://www.wikidata.org/entity/Q1455": "field hockey"
+		},
+		"free_flying": {
+			"http://www.wikidata.org/entity/Q1453560": "freeflying"
+		},
+		"gaelic_games": {
+			"http://www.wikidata.org/entity/Q2447366": "gaelic games"
+		},
+		"golf": {
+			"http://www.wikidata.org/entity/Q5377": "golf"
+		},
+		"gymnastics": {
+			"http://www.wikidata.org/entity/Q43450": "gymnastics"
+		},
+		"handball": {
+			"http://www.wikidata.org/entity/Q8418": "handball"
+		},
+		"horse_racing": {
+			"http://www.wikidata.org/entity/Q187916": "horse racing"
+		},
+		"ice_hockey": {
+			"http://www.wikidata.org/entity/Q41466": "ice hockey"
+		},
+		"ice_skating": {
+			"http://www.wikidata.org/entity/Q779272": "ice skating"
+		},
+		"ice_stock": {
+			"http://www.wikidata.org/entity/Q1070325": "ice stock sport"
+		},
+		"judo": {
+			"http://www.wikidata.org/entity/Q11420": "judo"
+		},
+		"karting": {
+			"http://www.wikidata.org/entity/Q192420": "kart racing"
+		},
+		"kurfball": {
+			"http://www.wikidata.org/entity/Q192937": "korfball"
+		},
+		"toboggan": {
+			"http://www.wikidata.org/entity/Q273285": "luge"
+		},
+		"motocross": {
+			"http://www.wikidata.org/entity/Q215862": "motocross"
+		},
+		"motor": {
+			"http://www.wikidata.org/entity/Q5367": "motorsport"
+		},
+		"9pin": {
+			"http://www.wikidata.org/entity/Q706199": "nine-pin bowling"
+		},
+		"obstacle_course": {
+			"http://www.wikidata.org/entity/Q933851": "obstacle course"
+		},
+		"orienteering": {
+			"http://www.wikidata.org/entity/Q29358": "orienteering"
+		},
+		"paddle_tennis": {
+			"http://www.wikidata.org/entity/Q3805008": "paddle tennis"
+		},
+		"paragliding": {
+			"http://www.wikidata.org/entity/Q178380": "paragliding"
+		},
+		"racquet": {
+			"http://www.wikidata.org/entity/Q754586": "racquetball"
+		},
+		"model_aerodrome": {
+			"http://www.wikidata.org/entity/Q2475583": "radio-controlled aircraft"
+		},
+		"rc_car": {
+			"http://www.wikidata.org/entity/Q1419833": "radio-controlled car"
+		},
+		"scuba_diving": {
+			"http://www.wikidata.org/entity/Q1719546": "recreational diving"
+		},
+		"roller_skating": {
+			"http://www.wikidata.org/entity/Q1707432": "roller skating"
+		},
+		"climbing_adventure": {
+			"http://www.wikidata.org/entity/Q1939700": "rope course"
+		},
+		"rowing": {
+			"http://www.wikidata.org/entity/Q159354": "rowing"
+		},
+		"rugby_league": {
+			"http://www.wikidata.org/entity/Q10962": "rugby league"
+		},
+		"rugby_union": {
+			"http://www.wikidata.org/entity/Q5849": "rugby union"
+		},
+		"sailing": {
+			"http://www.wikidata.org/entity/Q14085739": "sailing"
+		},
+		"shooting": {
+			"http://www.wikidata.org/entity/Q206989": "shooting sport"
+		},
+		"skateboard": {
+			"http://www.wikidata.org/entity/Q909906": "skatepark"
+		},
+		"skiing": {
+			"http://www.wikidata.org/entity/Q130949": "skiing"
+		},
+		"": {
+			"http://www.wikidata.org/entity/P641": "sport"
+		},
+		"surfing": {
+			"http://www.wikidata.org/entity/Q159992": "surfing"
+		},
+		"swimming": {
+			"http://www.wikidata.org/entity/Q31920": "swimming"
+		},
+		"table_soccer": {
+			"http://www.wikidata.org/entity/Q14922": "table football"
+		},
+		"table_tennis": {
+			"http://www.wikidata.org/entity/Q3930": "table tennis"
+		},
+		"taekwondo": {
+			"http://www.wikidata.org/entity/Q36389": "taekwondo"
+		},
+		"10pin": {
+			"http://www.wikidata.org/entity/Q172809": "ten-pin bowling"
+		},
+		"tennis": {
+			"http://www.wikidata.org/entity/Q847": "tennis"
+		},
+		"trampoline": {
+			"http://www.wikidata.org/entity/Q465014": "trampolining"
+		},
+		"volleyball": {
+			"http://www.wikidata.org/entity/Q1734": "volleyball"
+		},
+		"water_polo": {
+			"http://www.wikidata.org/entity/Q7707": "water polo"
+		},
+		"water_ski": {
+			"http://www.wikidata.org/entity/Q472827": "waterskiing"
+		},
+		"weightlifting": {
+			"http://www.wikidata.org/entity/Q83462": "weightlifting"
+		},
+		"wrestling": {
+			"http://www.wikidata.org/entity/Q42486": "wrestling"
+		}
+	},
+	"entrance": {
+		"staircase": {
+			"http://www.wikidata.org/entity/Q4368472": "Q4368472"
+		},
+		"": {
+			"http://www.wikidata.org/entity/Q1137365": "entrance"
+		}
+	},
+	"crossing:on_demand": {
+		"yes": {
+			"http://www.wikidata.org/entity/Q568719": "Q568719"
+		}
+	},
+	"NHS": {
+		"STRAHNET": {
+			"http://www.wikidata.org/entity/Q57830222": "Q57830222"
+		}
+	},
+	"gauge": {
+		"597": {
+			"http://www.wikidata.org/entity/Q52330131": "1-foot 11½-inch track gauge"
+		},
+		"600": {
+			"http://www.wikidata.org/entity/Q10676739": "600 mm track gauge"
+		},
+		"750": {
+			"http://www.wikidata.org/entity/Q4032352": "750 mm track gauge"
+		},
+		"762": {
+			"http://www.wikidata.org/entity/Q13218963": "762 mm track gauge"
+		},
+		"900": {
+			"http://www.wikidata.org/entity/Q10397424": "900 mm track gauge"
+		},
+		"1000": {
+			"http://www.wikidata.org/entity/Q24609": "1000 mm track gauge"
+		},
+		"1067": {
+			"http://www.wikidata.org/entity/Q1193463": "1067 mm track gauge"
+		},
+		"1093": {
+			"http://www.wikidata.org/entity/Q10397058": "1093 mm track gauge"
+		},
+		"1100": {
+			"http://www.wikidata.org/entity/Q26270021": "1100 mm track gauge"
+		},
+		"1432": {
+			"http://www.wikidata.org/entity/Q7831510": "1432 mm track gauge"
+		},
+		"1435": {
+			"http://www.wikidata.org/entity/Q1999572": "1435 mm track gauge"
+		},
+		"1445": {
+			"http://www.wikidata.org/entity/Q30106213": "1445 mm track gauge"
+		},
+		"1520": {
+			"http://www.wikidata.org/entity/Q1197451": "1520 mm track gauge"
+		},
+		"1522": {
+			"http://www.wikidata.org/entity/Q21062105": "1522 mm track gauge"
+		},
+		"1524": {
+			"http://www.wikidata.org/entity/Q1197451": "1520 mm track gauge"
+		},
+		"1600": {
+			"http://www.wikidata.org/entity/Q6071527": "1600 mm track gauge"
+		},
+		"1668": {
+			"http://www.wikidata.org/entity/Q3319112": "1668 mm track gauge"
+		},
+		"1676": {
+			"http://www.wikidata.org/entity/Q1493335": "1676 mm track gauge"
+		},
+		"": {
+			"http://www.wikidata.org/entity/P1064": "track gauge"
+		}
+	},
+	"frequency": {
+		"16.7": {
+			"http://www.wikidata.org/entity/Q1415234": "15 kV, 16.7 Hz AC railway electrification"
+		},
+		"": {
+			"http://www.wikidata.org/entity/Q388201": "railway electrification system"
+		}
+	},
+	"voltage": {
+		"15000": {
+			"http://www.wikidata.org/entity/Q1415234": "15 kV, 16.7 Hz AC railway electrification"
+		},
+		"": {
+			"http://www.wikidata.org/entity/Q25428": "voltage"
+		}
+	},
+	"electrified": {
+		"contact_line": {
+			"http://www.wikidata.org/entity/Q110701": "overhead line"
+		},
+		"ground-level_power_supply": {
+			"http://www.wikidata.org/entity/Q2312102": "Ground-level power supply"
+		},
+		"": {
+			"http://www.wikidata.org/entity/Q388201": "railway electrification system"
+		},
+		"rail": {
+			"http://www.wikidata.org/entity/Q748825": "third rail"
+		}
+	},
+	"seamark:light:reference": {
+		"": {
+			"http://www.wikidata.org/entity/P3562": "Admiralty number"
+		}
+	},
+	"denomination": {
+		"ahmadiyya": {
+			"http://www.wikidata.org/entity/Q171764": "Ahmadiyya"
+		},
+		"alevi": {
+			"http://www.wikidata.org/entity/Q137097": "Alevi"
+		},
+		"anglican": {
+			"http://www.wikidata.org/entity/Q193312": "Anglican Communion"
+		},
+		"apostolic_faith": {
+			"http://www.wikidata.org/entity/Q3357705": "Apostolic Faith Church"
+		},
+		"armenian_apostolic": {
+			"http://www.wikidata.org/entity/Q683724": "Armenian Apostolic Church"
+		},
+		"armenian_catholic": {
+			"http://www.wikidata.org/entity/Q64842": "Armenian Catholic Church"
+		},
+		"assemblies_of_god": {
+			"http://www.wikidata.org/entity/Q494890": "Assemblies of God"
+		},
+		"assyrian": {
+			"http://www.wikidata.org/entity/Q203179": "Assyrian Church of the East"
+		},
+		"baptist": {
+			"http://www.wikidata.org/entity/Q93191": "Baptists"
+		},
+		"bektashi": {
+			"http://www.wikidata.org/entity/Q467692": "Bektashi Order"
+		},
+		"reformed": {
+			"http://www.wikidata.org/entity/Q101849": "Calvinism"
+		},
+		"catholic_apostolic": {
+			"http://www.wikidata.org/entity/Q204405": "Catholic Apostolic Church"
+		},
+		"catholic": {
+			"http://www.wikidata.org/entity/Q9592": "Catholic Church"
+		},
+		"roman_catholic": {
+			"http://www.wikidata.org/entity/Q9592": "Catholic Church"
+		},
+		"catholic_mariavite": {
+			"http://www.wikidata.org/entity/Q1736372": "Catholic Mariavite Church"
+		},
+		"celtic": {
+			"http://www.wikidata.org/entity/Q263031": "Celtic polytheism"
+		},
+		"chaldean_catholic": {
+			"http://www.wikidata.org/entity/Q64868": "Chaldean Catholic Church"
+		},
+		"charismatic": {
+			"http://www.wikidata.org/entity/Q324640": "Charismatic Movement"
+		},
+		"disciples_of_christ": {
+			"http://www.wikidata.org/entity/Q1541206": "Christian Church (Disciples of Christ)"
+		},
+		"alliance": {
+			"http://www.wikidata.org/entity/Q2272897": "Christian and Missionary Alliance"
+		},
+		"christ_scientist": {
+			"http://www.wikidata.org/entity/Q11682820": "Church of Christ, Scientist"
+		},
+		"church_of_god_in_christ": {
+			"http://www.wikidata.org/entity/Q391499": "Church of God in Christ"
+		},
+		"church_of_scotland": {
+			"http://www.wikidata.org/entity/Q922480": "Church of Scotland"
+		},
+		"church_of_sweden": {
+			"http://www.wikidata.org/entity/Q749243": "Church of Sweden"
+		},
+		"nazarene": {
+			"http://www.wikidata.org/entity/Q1189165": "Church of the Nazarene"
+		},
+		"churches_of_christ": {
+			"http://www.wikidata.org/entity/Q1272775": "Churches of Christ"
+		},
+		"conservative": {
+			"http://www.wikidata.org/entity/Q205644": "Conservative Judaism"
+		},
+		"coptic_catholic": {
+			"http://www.wikidata.org/entity/Q49378": "Coptic Catholic Church"
+		},
+		"coptic_orthodox": {
+			"http://www.wikidata.org/entity/Q198998": "Coptic Orthodox Church of Alexandria"
+		},
+		"czechoslovak_hussite": {
+			"http://www.wikidata.org/entity/Q2060869": "Czechoslovak Hussite Church"
+		},
+		"yogacara": {
+			"http://www.wikidata.org/entity/Q349849": "East Asian Yogācāra"
+		},
+		"orthodox": {
+			"http://www.wikidata.org/entity/Q80970": "Orthodox Judaism"
+		},
+		"episcopal": {
+			"http://www.wikidata.org/entity/Q3586152": "Episcopal Church"
+		},
+		"eritrean_catholic": {
+			"http://www.wikidata.org/entity/Q18813575": "Eritrean Catholic Church"
+		},
+		"eritrean_orthodox": {
+			"http://www.wikidata.org/entity/Q844083": "Eritrean Orthodox Tewahedo Church"
+		},
+		"ethiopian_catholic": {
+			"http://www.wikidata.org/entity/Q64849": "Ethiopian Catholic Church"
+		},
+		"ethiopian_orthodox": {
+			"http://www.wikidata.org/entity/Q179829": "Ethiopian Orthodox Tewahedo Church"
+		},
+		"evangelical": {
+			"http://www.wikidata.org/entity/Q194253": "Evangelical Christianity"
+		},
+		"evangelical_covenant": {
+			"http://www.wikidata.org/entity/Q5415672": "Evangelical Covenant Church"
+		},
+		"evangelical_free_church_of_america": {
+			"http://www.wikidata.org/entity/Q5415680": "Evangelical Free Church of America"
+		},
+		"exclusive_brethren": {
+			"http://www.wikidata.org/entity/Q1429373": "Exclusive Brethren"
+		},
+		"gelug": {
+			"http://www.wikidata.org/entity/Q319218": "Gelug"
+		},
+		"greek_orthodox": {
+			"http://www.wikidata.org/entity/Q7970362": "Greek Orthodox Church"
+		},
+		"ultra_orthodox": {
+			"http://www.wikidata.org/entity/Q212912": "Haredi Judaism"
+		},
+		"hasidic": {
+			"http://www.wikidata.org/entity/Q171201": "Hasidism"
+		},
+		"asatru": {
+			"http://www.wikidata.org/entity/Q285441": "Heathenry"
+		},
+		"huayan": {
+			"http://www.wikidata.org/entity/Q1198075": "Huayan school"
+		},
+		"hungarian_greek_catholic": {
+			"http://www.wikidata.org/entity/Q950310": "Hungarian Greek Catholic Church"
+		},
+		"ibadi": {
+			"http://www.wikidata.org/entity/Q243551": "Ibadi"
+		},
+		"iglesia_ni_cristo": {
+			"http://www.wikidata.org/entity/Q1138908": "Iglesia ni Cristo"
+		},
+		"foursquare": {
+			"http://www.wikidata.org/entity/Q163218": "International Church of the Foursquare Gospel"
+		},
+		"ismaili": {
+			"http://www.wikidata.org/entity/Q230386": "Isma'ilism"
+		},
+		"jehovahs_witness": {
+			"http://www.wikidata.org/entity/Q35269": "Jehovah's Witnesses"
+		},
+		"renewal": {
+			"http://www.wikidata.org/entity/Q27712": "Jewish Renewal"
+		},
+		"jishu": {
+			"http://www.wikidata.org/entity/Q696966": "Ji-shū"
+		},
+		"jodo_shinshu": {
+			"http://www.wikidata.org/entity/Q912221": "Jōdo Shinshū"
+		},
+		"jodo_shu": {
+			"http://www.wikidata.org/entity/Q912208": "Jōdo-shū"
+		},
+		"kimbanguist": {
+			"http://www.wikidata.org/entity/Q1549204": "Kimbanguism"
+		},
+		"liberal_catholic": {
+			"http://www.wikidata.org/entity/Q1468349": "Liberal Catholic Church"
+		},
+		"lutheran": {
+			"http://www.wikidata.org/entity/Q75809": "Lutheranism"
+		},
+		"mariavite": {
+			"http://www.wikidata.org/entity/Q819290": "Mariavite Church"
+		},
+		"maronite": {
+			"http://www.wikidata.org/entity/Q64900": "Maronite Church"
+		},
+		"mennonite": {
+			"http://www.wikidata.org/entity/Q110223": "Mennonites"
+		},
+		"messianic_jewish": {
+			"http://www.wikidata.org/entity/Q216952": "Messianic Judaism"
+		},
+		"mission_covenant_church_of_sweden": {
+			"http://www.wikidata.org/entity/Q677704": "Mission Covenant Church of Sweden"
+		},
+		"mormon": {
+			"http://www.wikidata.org/entity/Q747802": "Mormonism"
+		},
+		"new_apostolic": {
+			"http://www.wikidata.org/entity/Q512232": "New Apostolic Church"
+		},
+		"new_frontiers": {
+			"http://www.wikidata.org/entity/Q2711949": "Newfrontiers"
+		},
+		"nichiren": {
+			"http://www.wikidata.org/entity/Q871371": "Nichiren Buddhism"
+		},
+		"nyingma": {
+			"http://www.wikidata.org/entity/Q848771": "Nyingma"
+		},
+		"old_believers": {
+			"http://www.wikidata.org/entity/Q223710": "Old Believers"
+		},
+		"old_catholic": {
+			"http://www.wikidata.org/entity/Q5169816": "Old Catholic Church"
+		},
+		"pentecostal": {
+			"http://www.wikidata.org/entity/Q483978": "Pentecostalism"
+		},
+		"philippine_independent": {
+			"http://www.wikidata.org/entity/Q771902": "Philippine Independent Church"
+		},
+		"polish_catholic": {
+			"http://www.wikidata.org/entity/Q1777360": "Polish Catholic Church"
+		},
+		"polish_national_catholic": {
+			"http://www.wikidata.org/entity/Q32731": "Polish National Catholic Church"
+		},
+		"presbyterian": {
+			"http://www.wikidata.org/entity/Q178169": "Presbyterianism"
+		},
+		"pkn": {
+			"http://www.wikidata.org/entity/Q391951": "Protestant Church in the Netherlands"
+		},
+		"protestant": {
+			"http://www.wikidata.org/entity/Q23540": "Protestantism"
+		},
+		"reconstructionist": {
+			"http://www.wikidata.org/entity/Q339284": "Reconstructionist Judaism"
+		},
+		"quaker": {
+			"http://www.wikidata.org/entity/Q170208": "Religious Society of Friends"
+		},
+		"rinzai": {
+			"http://www.wikidata.org/entity/Q639625": "Rinzai school"
+		},
+		"risshu": {
+			"http://www.wikidata.org/entity/Q1351551": "Risshū"
+		},
+		"romanian_catholic": {
+			"http://www.wikidata.org/entity/Q856349": "Romanian Greek Catholic Church"
+		},
+		"romanian_orthodox": {
+			"http://www.wikidata.org/entity/Q181901": "Romanian Orthodox Church"
+		},
+		"russian_orthodox": {
+			"http://www.wikidata.org/entity/Q60995": "Russian Orthodox Church"
+		},
+		"salvation_army": {
+			"http://www.wikidata.org/entity/Q188307": "Salvation Army"
+		},
+		"samaritan": {
+			"http://www.wikidata.org/entity/Q182651": "Samaritan"
+		},
+		"santo_daime": {
+			"http://www.wikidata.org/entity/Q2032421": "Santo Daime"
+		},
+		"scottish_episcopal": {
+			"http://www.wikidata.org/entity/Q1205829": "Scottish Episcopal Church"
+		},
+		"serbian_orthodox": {
+			"http://www.wikidata.org/entity/Q188814": "Serbian Orthodox Church"
+		},
+		"adventist": {
+			"http://www.wikidata.org/entity/Q104319": "Seventh-day Adventist Church"
+		},
+		"seventh_day_adventist": {
+			"http://www.wikidata.org/entity/Q104319": "Seventh-day Adventist Church"
+		},
+		"shaivism": {
+			"http://www.wikidata.org/entity/Q234953": "Shaivism"
+		},
+		"shaktism": {
+			"http://www.wikidata.org/entity/Q849345": "Shaktism"
+		},
+		"shia": {
+			"http://www.wikidata.org/entity/Q9585": "Shia Islam"
+		},
+		"shingon_shu": {
+			"http://www.wikidata.org/entity/Q550182": "Shingon Buddhism"
+		},
+		"slavic": {
+			"http://www.wikidata.org/entity/Q201571": "Slavic mythology"
+		},
+		"smartism": {
+			"http://www.wikidata.org/entity/Q558585": "Smartha Tradition"
+		},
+		"sufi": {
+			"http://www.wikidata.org/entity/Q9603": "Sufism"
+		},
+		"sunni": {
+			"http://www.wikidata.org/entity/Q483654": "Sunni Islam"
+		},
+		"soto": {
+			"http://www.wikidata.org/entity/Q749085": "Sōtō"
+		},
+		"christian_community": {
+			"http://www.wikidata.org/entity/Q666614": "The Christian Community"
+		},
+		"tiantai": {
+			"http://www.wikidata.org/entity/Q668188": "Tiantai"
+		},
+		"tibetan": {
+			"http://www.wikidata.org/entity/Q483889": "Tibetan Buddhism"
+		},
+		"ukrainian_greek_catholic": {
+			"http://www.wikidata.org/entity/Q472189": "Ukrainian Greek Catholic Church"
+		},
+		"united": {
+			"http://www.wikidata.org/entity/Q198745": "United Church of Canada"
+		},
+		"united_church_of_christ": {
+			"http://www.wikidata.org/entity/Q426316": "United Church of Christ"
+		},
+		"united_free_church_of_scotland": {
+			"http://www.wikidata.org/entity/Q2495176": "United Free Church of Scotland"
+		},
+		"united_methodist": {
+			"http://www.wikidata.org/entity/Q329646": "United Methodist Church"
+		},
+		"united_reformed": {
+			"http://www.wikidata.org/entity/Q1458238": "United Reformed Church"
+		},
+		"uniting": {
+			"http://www.wikidata.org/entity/Q523620": "Uniting Church in Australia"
+		},
+		"vaishnavism": {
+			"http://www.wikidata.org/entity/Q45584": "Vaishnavism"
+		},
+		"vajrayana": {
+			"http://www.wikidata.org/entity/Q172175": "Vajrayana"
+		},
+		"wicca": {
+			"http://www.wikidata.org/entity/Q59774": "Wicca"
+		},
+		"won": {
+			"http://www.wikidata.org/entity/Q562984": "Won Buddhism"
+		},
+		"yuzu_nembutsu": {
+			"http://www.wikidata.org/entity/Q578719": "Yuzu Nembutsu"
+		},
+		"zen": {
+			"http://www.wikidata.org/entity/Q7953": "Zen"
+		},
+		"digambara": {
+			"http://www.wikidata.org/entity/Q9436": "digambara"
+		},
+		"pure_land": {
+			"http://www.wikidata.org/entity/Q262244": "pure land buddhism"
+		},
+		"": {
+			"http://www.wikidata.org/entity/P140": "religion"
+		},
+		"spiritist": {
+			"http://www.wikidata.org/entity/Q214255": "spiritism"
+		},
+		"svetambara": {
+			"http://www.wikidata.org/entity/Q280522": "svetambara"
+		},
+		"obaku": {
+			"http://www.wikidata.org/entity/Q384728": "Ōbaku"
+		}
+	},
+	"payment:alipay": {
+		"": {
+			"http://www.wikidata.org/entity/Q493556": "Alipay"
+		}
+	},
+	"healthcare:speciality": {
+		"anthroposophical": {
+			"http://www.wikidata.org/entity/Q574514": "Anthroposophical medicine"
+		},
+		"applied_kinesiology": {
+			"http://www.wikidata.org/entity/Q913842": "Applied kinesiology"
+		},
+		"chiropractic": {
+			"http://www.wikidata.org/entity/Q658096": "Chiropractic"
+		},
+		"reiki": {
+			"http://www.wikidata.org/entity/Q183057": "Reiki"
+		},
+		"shiatsu": {
+			"http://www.wikidata.org/entity/Q833228": "Shiatsu"
+		},
+		"tuina": {
+			"http://www.wikidata.org/entity/Q1399328": "Tui na"
+		},
+		"acupuncture": {
+			"http://www.wikidata.org/entity/Q121713": "acupuncture"
+		},
+		"allergology": {
+			"http://www.wikidata.org/entity/Q1046686": "allergology"
+		},
+		"anaesthetics": {
+			"http://www.wikidata.org/entity/Q615057": "anaesthesiology"
+		},
+		"pathology": {
+			"http://www.wikidata.org/entity/Q683455": "anatomical pathology"
+		},
+		"anatomy": {
+			"http://www.wikidata.org/entity/Q514": "anatomy"
+		},
+		"aromatherapy": {
+			"http://www.wikidata.org/entity/Q206202": "aromatherapy"
+		},
+		"ayurveda": {
+			"http://www.wikidata.org/entity/Q132325": "ayurveda"
+		},
+		"behavior": {
+			"http://www.wikidata.org/entity/Q1483649": "behaviour therapy"
+		},
+		"biochemistry": {
+			"http://www.wikidata.org/entity/Q7094": "biochemistry"
+		},
+		"body": {
+			"http://www.wikidata.org/entity/Q1416259": "body psychotherapy"
+		},
+		"cardiac_surgery": {
+			"http://www.wikidata.org/entity/Q235007": "cardiac surgery"
+		},
+		"cardiology": {
+			"http://www.wikidata.org/entity/Q10379": "cardiology"
+		},
+		"child_psychiatry": {
+			"http://www.wikidata.org/entity/Q1741745": "child and adolescent psychiatry"
+		},
+		"biology": {
+			"http://www.wikidata.org/entity/Q18500556": "clinical biology"
+		},
+		"proctology": {
+			"http://www.wikidata.org/entity/Q1413084": "colorectal surgery"
+		},
+		"depth": {
+			"http://www.wikidata.org/entity/Q171741": "depth psychology"
+		},
+		"dermatology": {
+			"http://www.wikidata.org/entity/Q171171": "dermatology"
+		},
+		"dermatovenereology": {
+			"http://www.wikidata.org/entity/Q25543366": "dermatovenereologist"
+		},
+		"emergency": {
+			"http://www.wikidata.org/entity/Q2861470": "emergency medicine"
+		},
+		"endocrinology": {
+			"http://www.wikidata.org/entity/Q162606": "endocrinology"
+		},
+		"general": {
+			"http://www.wikidata.org/entity/Q3505712": "family medicine"
+		},
+		"fertility": {
+			"http://www.wikidata.org/entity/Q5445579": "fertility clinic"
+		},
+		"gastroenterology": {
+			"http://www.wikidata.org/entity/Q120569": "gastroenterology"
+		},
+		"geriatrics": {
+			"http://www.wikidata.org/entity/Q10384": "geriatrics"
+		},
+		"haematology": {
+			"http://www.wikidata.org/entity/Q103824": "hematology"
+		},
+		"hepatology": {
+			"http://www.wikidata.org/entity/Q668064": "hepatology"
+		},
+		"herbalism": {
+			"http://www.wikidata.org/entity/Q861699": "herbalism"
+		},
+		"homeopathy": {
+			"http://www.wikidata.org/entity/Q81058": "homeopathy"
+		},
+		"humanistic": {
+			"http://www.wikidata.org/entity/Q23364": "humanistic psychology"
+		},
+		"hydrotherapy": {
+			"http://www.wikidata.org/entity/Q622676": "hydrotherapy"
+		},
+		"hypnosis": {
+			"http://www.wikidata.org/entity/Q8609": "hypnosis"
+		},
+		"immunology": {
+			"http://www.wikidata.org/entity/Q101929": "immunology"
+		},
+		"infectious_diseases": {
+			"http://www.wikidata.org/entity/Q788926": "infectious disease"
+		},
+		"intensive": {
+			"http://www.wikidata.org/entity/Q679690": "intensive care medicine"
+		},
+		"internal": {
+			"http://www.wikidata.org/entity/Q11180": "internal medicine"
+		},
+		"diagnostic_radiology": {
+			"http://www.wikidata.org/entity/Q931309": "medical imaging"
+		},
+		"microbiology": {
+			"http://www.wikidata.org/entity/Q7193": "microbiology"
+		},
+		"naturopathy": {
+			"http://www.wikidata.org/entity/Q213403": "naturopathy"
+		},
+		"nephrology": {
+			"http://www.wikidata.org/entity/Q177635": "nephrology"
+		},
+		"neurology": {
+			"http://www.wikidata.org/entity/Q83042": "neurology"
+		},
+		"neurophysiology": {
+			"http://www.wikidata.org/entity/Q660910": "neurophysiology"
+		},
+		"neuropsychiatry": {
+			"http://www.wikidata.org/entity/Q2699874": "neuropsychiatry"
+		},
+		"neurosurgery": {
+			"http://www.wikidata.org/entity/Q188449": "neurosurgery"
+		},
+		"nuclear": {
+			"http://www.wikidata.org/entity/Q214963": "nuclear medicine"
+		},
+		"gynaecology": {
+			"http://www.wikidata.org/entity/Q80015": "obstetrics gynecology"
+		},
+		"occupational": {
+			"http://www.wikidata.org/entity/Q628764": "occupational medicine"
+		},
+		"oncology": {
+			"http://www.wikidata.org/entity/Q162555": "oncology"
+		},
+		"ophthalmology": {
+			"http://www.wikidata.org/entity/Q161437": "ophthalmology"
+		},
+		"dental_oral_maxillo_facial_surgery": {
+			"http://www.wikidata.org/entity/Q504033": "oral and maxillofacial surgery"
+		},
+		"stomatology": {
+			"http://www.wikidata.org/entity/Q3673891": "oral medicine"
+		},
+		"orthodontics": {
+			"http://www.wikidata.org/entity/Q118301": "orthodontics"
+		},
+		"orthopaedics": {
+			"http://www.wikidata.org/entity/Q216685": "orthopedics"
+		},
+		"osteopathy": {
+			"http://www.wikidata.org/entity/Q325253": "osteopathy"
+		},
+		"otolaryngology": {
+			"http://www.wikidata.org/entity/Q189553": "otolaryngology"
+		},
+		"palliative": {
+			"http://www.wikidata.org/entity/Q29483": "palliative care"
+		},
+		"paediatric_surgery": {
+			"http://www.wikidata.org/entity/Q1430816": "pediatric surgery"
+		},
+		"paediatrics": {
+			"http://www.wikidata.org/entity/Q123028": "pediatrics"
+		},
+		"pharmacology": {
+			"http://www.wikidata.org/entity/Q128406": "pharmacology"
+		},
+		"physiatry": {
+			"http://www.wikidata.org/entity/Q2678675": "physical medicine and rehabilitation"
+		},
+		"plastic_surgery": {
+			"http://www.wikidata.org/entity/Q182442": "plastic surgery"
+		},
+		"podiatry": {
+			"http://www.wikidata.org/entity/Q18011356": "podiatry"
+		},
+		"psychiatry": {
+			"http://www.wikidata.org/entity/Q7867": "psychiatry"
+		},
+		"community": {
+			"http://www.wikidata.org/entity/Q189603": "public health"
+		},
+		"pulmonology": {
+			"http://www.wikidata.org/entity/Q203337": "pulmonology"
+		},
+		"radiotherapy": {
+			"http://www.wikidata.org/entity/Q180507": "radiation therapy"
+		},
+		"radiology": {
+			"http://www.wikidata.org/entity/Q77604": "radiology"
+		},
+		"reflexology": {
+			"http://www.wikidata.org/entity/Q449058": "reflexology"
+		},
+		"rheumatology": {
+			"http://www.wikidata.org/entity/Q327657": "rheumatology"
+		},
+		"surgery": {
+			"http://www.wikidata.org/entity/Q40821": "surgery"
+		},
+		"surgical_oncology": {
+			"http://www.wikidata.org/entity/Q3545481": "surgical oncology"
+		},
+		"systemic": {
+			"http://www.wikidata.org/entity/Q1929812": "systemic therapy"
+		},
+		"thoracic_surgery": {
+			"http://www.wikidata.org/entity/Q2964004": "thoracic surgery"
+		},
+		"traditional_chinese_medicine": {
+			"http://www.wikidata.org/entity/Q200253": "traditional Chinese medicine"
+		},
+		"transplant": {
+			"http://www.wikidata.org/entity/Q1049976": "transplantology"
+		},
+		"trauma": {
+			"http://www.wikidata.org/entity/Q338379": "trauma surgery"
+		},
+		"tropical": {
+			"http://www.wikidata.org/entity/Q1365243": "tropical medicine"
+		},
+		"unani": {
+			"http://www.wikidata.org/entity/Q1520176": "unani"
+		},
+		"urology": {
+			"http://www.wikidata.org/entity/Q105650": "urology"
+		},
+		"vaccination": {
+			"http://www.wikidata.org/entity/Q192995": "vaccination"
+		},
+		"vascular_surgery": {
+			"http://www.wikidata.org/entity/Q1498222": "vascular surgery"
+		},
+		"venereology": {
+			"http://www.wikidata.org/entity/Q1784782": "venereology"
+		}
+	},
+	"cuisine": {
+		"arab": {
+			"http://www.wikidata.org/entity/Q623970": "Arab cuisine"
+		},
+		"argentinian": {
+			"http://www.wikidata.org/entity/Q579500": "Argentine cuisine"
+		},
+		"asian": {
+			"http://www.wikidata.org/entity/Q728206": "Asian cuisine"
+		},
+		"australian": {
+			"http://www.wikidata.org/entity/Q783010": "Australian cuisine"
+		},
+		"balkan": {
+			"http://www.wikidata.org/entity/Q805060": "Balkan cuisine"
+		},
+		"bolivian": {
+			"http://www.wikidata.org/entity/Q3006895": "Bolivian cuisine"
+		},
+		"brazilian": {
+			"http://www.wikidata.org/entity/Q614394": "Brazilian cuisine"
+		},
+		"caribbean": {
+			"http://www.wikidata.org/entity/Q1729345": "Caribbean cuisine"
+		},
+		"chinese": {
+			"http://www.wikidata.org/entity/Q27477249": "Chinese cuisine"
+		},
+		"croatian": {
+			"http://www.wikidata.org/entity/Q1789628": "Croatian cuisine"
+		},
+		"czech": {
+			"http://www.wikidata.org/entity/Q871595": "Czech cuisine"
+		},
+		"danish": {
+			"http://www.wikidata.org/entity/Q1196267": "Danish cuisine"
+		},
+		"french": {
+			"http://www.wikidata.org/entity/Q6661": "French cuisine"
+		},
+		"german": {
+			"http://www.wikidata.org/entity/Q47629": "German cuisine"
+		},
+		"greek": {
+			"http://www.wikidata.org/entity/Q744027": "Greek cuisine"
+		},
+		"hungarian": {
+			"http://www.wikidata.org/entity/Q264327": "Hungarian cuisine"
+		},
+		"indian": {
+			"http://www.wikidata.org/entity/Q192087": "Indian cuisine"
+		},
+		"iranian": {
+			"http://www.wikidata.org/entity/Q1342397": "Iranian cuisine"
+		},
+		"italian": {
+			"http://www.wikidata.org/entity/Q192786": "Italian cuisine"
+		},
+		"japanese": {
+			"http://www.wikidata.org/entity/Q234138": "Japanese cuisine"
+		},
+		"jewish": {
+			"http://www.wikidata.org/entity/Q284288": "Jewish cuisine"
+		},
+		"korean": {
+			"http://www.wikidata.org/entity/Q647500": "Korean cuisine"
+		},
+		"lebanese": {
+			"http://www.wikidata.org/entity/Q929239": "Lebanese cuisine"
+		},
+		"mediterranean": {
+			"http://www.wikidata.org/entity/Q934309": "Mediterranean cuisine"
+		},
+		"mexican": {
+			"http://www.wikidata.org/entity/Q207965": "Mexican cuisine"
+		},
+		"new_mexican": {
+			"http://www.wikidata.org/entity/Q7010123": "New Mexican cuisine"
+		},
+		"kyo_ryouri": {
+			"http://www.wikidata.org/entity/Q11262318": "Obanzai"
+		},
+		"okinawa_ryori": {
+			"http://www.wikidata.org/entity/Q41927": "Okinawan cuisine"
+		},
+		"peruvian": {
+			"http://www.wikidata.org/entity/Q749847": "Peruvian cuisine"
+		},
+		"polish": {
+			"http://www.wikidata.org/entity/Q756020": "Polish cuisine"
+		},
+		"portuguese": {
+			"http://www.wikidata.org/entity/Q180817": "Portuguese cuisine"
+		},
+		"rhenish": {
+			"http://www.wikidata.org/entity/Q2147761": "Rhenish cuisine"
+		},
+		"russian": {
+			"http://www.wikidata.org/entity/Q12505": "Russian cuisine"
+		},
+		"spanish": {
+			"http://www.wikidata.org/entity/Q622512": "Spanish cuisine"
+		},
+		"thai": {
+			"http://www.wikidata.org/entity/Q841984": "Thai cuisine"
+		},
+		"turkish": {
+			"http://www.wikidata.org/entity/Q654493": "Turkish cuisine"
+		},
+		"vietnamese": {
+			"http://www.wikidata.org/entity/Q826059": "Vietnamese cuisine"
+		},
+		"bagel": {
+			"http://www.wikidata.org/entity/Q272502": "bagel"
+		},
+		"": {
+			"http://www.wikidata.org/entity/Q1778821": "cuisine"
+		},
+		"mineira": {
+			"http://www.wikidata.org/entity/Q10262188": "cuisine of Minas Gerais"
+		},
+		"friture": {
+			"http://www.wikidata.org/entity/Q1814211": "friterie"
+		},
+		"pizza": {
+			"http://www.wikidata.org/entity/Q1501212": "pizzeria"
+		},
+		"regional": {
+			"http://www.wikidata.org/entity/Q94951": "regional cuisine"
+		},
+		"steak_house": {
+			"http://www.wikidata.org/entity/Q3109696": "steakhouse"
+		},
+		"westphalian": {
+			"http://www.wikidata.org/entity/Q2565249": "westphalian cuisine"
+		}
+	},
+	"designation": {
+		"area_of_outstanding_natural_beauty": {
+			"http://www.wikidata.org/entity/Q174945": "Area of Outstanding Natural Beauty"
+		},
+		"civil_parish": {
+			"http://www.wikidata.org/entity/Q4976993": "civil parish"
+		},
+		"metropolitan_district": {
+			"http://www.wikidata.org/entity/Q1002812": "metropolitan borough"
+		},
+		"non_metropolitan_county": {
+			"http://www.wikidata.org/entity/Q769603": "non-metropolitan county"
+		},
+		"non_metropolitan_district": {
+			"http://www.wikidata.org/entity/Q1187580": "non-metropolitan district"
+		},
+		"principal_area": {
+			"http://www.wikidata.org/entity/Q7245071": "principal area"
+		}
+	},
+	"building:architecture": {
+		"art_deco": {
+			"http://www.wikidata.org/entity/Q12720942": "Art Deco architecture"
+		},
+		"queen_anne": {
+			"http://www.wikidata.org/entity/Q529819": "Queen Anne style architecture"
+		},
+		"stalinist_neoclassicism": {
+			"http://www.wikidata.org/entity/Q1134824": "Stalinist architecture"
+		},
+		"neoclassicism": {
+			"http://www.wikidata.org/entity/Q54111": "neoclassical architecture"
+		}
+	},
+	"ref:at:gkz": {
+		"": {
+			"http://www.wikidata.org/entity/P964": "Austrian municipality key"
+		}
+	},
+	"man_made": {
+		"snow_fence": {
+			"http://www.wikidata.org/entity/Q4827510": "Avalanche net"
+		},
+		"goods_conveyor": {
+			"http://www.wikidata.org/entity/Q577998": "Conveyor system"
+		},
+		"surveillance": {
+			"http://www.wikidata.org/entity/Q334415": "Security Camera"
+		},
+		"water_tap": {
+			"http://www.wikidata.org/entity/Q4114147": "Standpipe"
+		},
+		"tower": {
+			"http://www.wikidata.org/entity/Q12518": "tower"
+		},
+		"adit": {
+			"http://www.wikidata.org/entity/Q58917": "adit"
+		},
+		"beacon": {
+			"http://www.wikidata.org/entity/Q17484395": "beacon"
+		},
+		"breakwater": {
+			"http://www.wikidata.org/entity/Q215635": "breakwater"
+		},
+		"bridge": {
+			"http://www.wikidata.org/entity/Q12280": "bridge"
+		},
+		"cairn": {
+			"http://www.wikidata.org/entity/Q7321974": "cairn"
+		},
+		"campanile": {
+			"http://www.wikidata.org/entity/Q1864226": "campanile"
+		},
+		"chimney": {
+			"http://www.wikidata.org/entity/Q170477": "chimney"
+		},
+		"clearcut": {
+			"http://www.wikidata.org/entity/Q1721219": "clearcutting"
+		},
+		"crane": {
+			"http://www.wikidata.org/entity/Q178692": "crane"
+		},
+		"cutline": {
+			"http://www.wikidata.org/entity/Q487843": "cutline"
+		},
+		"flagpole": {
+			"http://www.wikidata.org/entity/Q1971570": "flagpole"
+		},
+		"gasometer": {
+			"http://www.wikidata.org/entity/Q962715": "gas holder"
+		},
+		"groyne": {
+			"http://www.wikidata.org/entity/Q153084": "groyne"
+		},
+		"kiln": {
+			"http://www.wikidata.org/entity/Q1724341": "kiln"
+		},
+		"dyke": {
+			"http://www.wikidata.org/entity/Q105190": "levee"
+		},
+		"lighthouse": {
+			"http://www.wikidata.org/entity/Q39715": "lighthouse"
+		},
+		"monitoring_station": {
+			"http://www.wikidata.org/entity/Q1924376": "monitoring station"
+		},
+		"cross": {
+			"http://www.wikidata.org/entity/Q17172602": "monumental cross"
+		},
+		"observatory": {
+			"http://www.wikidata.org/entity/Q62832": "observatory"
+		},
+		"offshore_platform": {
+			"http://www.wikidata.org/entity/Q689880": "oil platform"
+		},
+		"petroleum_well": {
+			"http://www.wikidata.org/entity/Q587682": "oil well"
+		},
+		"pier": {
+			"http://www.wikidata.org/entity/Q863454": "pier"
+		},
+		"pipeline": {
+			"http://www.wikidata.org/entity/Q16885408": "pipeline"
+		},
+		"reservoir": {
+			"http://www.wikidata.org/entity/Q131681": "reservoir"
+		},
+		"mineshaft": {
+			"http://www.wikidata.org/entity/Q556186": "shaft mining"
+		},
+		"silo": {
+			"http://www.wikidata.org/entity/Q213643": "silo"
+		},
+		"storage_tank": {
+			"http://www.wikidata.org/entity/Q1756525": "storage tank"
+		},
+		"telescope": {
+			"http://www.wikidata.org/entity/Q4213": "telescope"
+		},
+		"survey_point": {
+			"http://www.wikidata.org/entity/Q131862": "triangulation station"
+		},
+		"wastewater_plant": {
+			"http://www.wikidata.org/entity/Q15242449": "wastewater treatment plant"
+		},
+		"water_tower": {
+			"http://www.wikidata.org/entity/Q274153": "water tower"
+		},
+		"water_well": {
+			"http://www.wikidata.org/entity/Q43483": "water well"
+		},
+		"watermill": {
+			"http://www.wikidata.org/entity/Q185187": "watermill"
+		},
+		"water_works": {
+			"http://www.wikidata.org/entity/Q11849395": "waterworks"
+		},
+		"quay": {
+			"http://www.wikidata.org/entity/Q828909": "wharf"
+		},
+		"windmill": {
+			"http://www.wikidata.org/entity/Q38720": "windmill"
+		}
+	},
+	"railway:vacancy_detection": {
+		"axle_counter": {
+			"http://www.wikidata.org/entity/Q340774": "Axle counter"
+		}
+	},
+	"religion": {
+		"bahai": {
+			"http://www.wikidata.org/entity/Q22679": "Bahá'í Faith"
+		},
+		"buddhist": {
+			"http://www.wikidata.org/entity/Q748": "Buddhism"
+		},
+		"caodaism": {
+			"http://www.wikidata.org/entity/Q470364": "Cao Đài"
+		},
+		"christian": {
+			"http://www.wikidata.org/entity/Q5043": "Christianity"
+		},
+		"confucian": {
+			"http://www.wikidata.org/entity/Q9581": "Confucianism"
+		},
+		"voodoo": {
+			"http://www.wikidata.org/entity/Q302729": "Haitian Vodou"
+		},
+		"hindu": {
+			"http://www.wikidata.org/entity/Q9089": "Hinduism"
+		},
+		"muslim": {
+			"http://www.wikidata.org/entity/Q432": "Islam"
+		},
+		"jain": {
+			"http://www.wikidata.org/entity/Q9232": "Jainism"
+		},
+		"jewish": {
+			"http://www.wikidata.org/entity/Q9268": "Judaism"
+		},
+		"pastafarian": {
+			"http://www.wikidata.org/entity/Q14397660": "Pastafarianism"
+		},
+		"scientologist": {
+			"http://www.wikidata.org/entity/Q131036": "Scientology"
+		},
+		"shinto": {
+			"http://www.wikidata.org/entity/Q812767": "Shinto"
+		},
+		"sikh": {
+			"http://www.wikidata.org/entity/Q9316": "Sikhism"
+		},
+		"taoist": {
+			"http://www.wikidata.org/entity/Q9598": "Taoism"
+		},
+		"unitarian_universalist": {
+			"http://www.wikidata.org/entity/Q1622507": "Unitarian Universalism"
+		},
+		"yazidi": {
+			"http://www.wikidata.org/entity/Q200885": "Yazidis"
+		},
+		"zoroastrian": {
+			"http://www.wikidata.org/entity/Q9601": "Zoroastrianism"
+		},
+		"animist": {
+			"http://www.wikidata.org/entity/Q43004": "animism"
+		},
+		"pagan": {
+			"http://www.wikidata.org/entity/Q189753": "modern paganism"
+		},
+		"": {
+			"http://www.wikidata.org/entity/P140": "religion"
+		},
+		"spiritualist": {
+			"http://www.wikidata.org/entity/Q829348": "spiritualism"
+		}
+	},
+	"cycleway": {
+		"opposite": {
+			"http://www.wikidata.org/entity/Q54913746": "Bicycle contraflow lanes"
+		},
+		"lane": {
+			"http://www.wikidata.org/entity/Q1378400": "cycle lane"
+		}
+	},
+	"protection_title": {
+		"Bien de Interés Cultural": {
+			"http://www.wikidata.org/entity/Q23712": "Bien de Interés Cultural"
+		},
+		"landskapsvernområde": {
+			"http://www.wikidata.org/entity/Q18376486": "Landscape conservation area"
+		},
+		"National_Monument": {
+			"http://www.wikidata.org/entity/Q893775": "National Monument of the United States"
+		},
+		"National Wildlife Refuge": {
+			"http://www.wikidata.org/entity/Q1410668": "National Wildlife Refuge"
+		},
+		"Naturschutzgebiet": {
+			"http://www.wikidata.org/entity/Q759421": "Naturschutzgebiet"
+		},
+		"Přírodní památka (PP)": {
+			"http://www.wikidata.org/entity/Q21100463": "natural monument in the Czech Republic"
+		},
+		"Přírodní rezervace (PR)": {
+			"http://www.wikidata.org/entity/Q21101734": "nature reserve in the Czech Republic"
+		},
+		"State_Forest": {
+			"http://www.wikidata.org/entity/Q7603683": "state forest"
+		},
+		"Wilderness_Area": {
+			"http://www.wikidata.org/entity/Q2445527": "wilderness area"
+		},
+		"Wilderness Study Area": {
+			"http://www.wikidata.org/entity/Q8001184": "wilderness study area"
+		}
+	},
+	"currency:XBT": {
+		"": {
+			"http://www.wikidata.org/entity/Q131723": "Bitcoin"
+		}
+	},
+	"payment:bitcoin": {
+		"": {
+			"http://www.wikidata.org/entity/Q131723": "Bitcoin"
+		}
+	},
+	"tower:type": {
+		"bridge": {
+			"http://www.wikidata.org/entity/Q996564": "Bridge tower"
+		},
+		"diving": {
+			"http://www.wikidata.org/entity/Q579772": "Diving platform"
+		},
+		"communication": {
+			"http://www.wikidata.org/entity/Q11166728": "TV tower"
+		},
+		"klockstapel": {
+			"http://www.wikidata.org/entity/Q699873": "belfry"
+		},
+		"bell_tower": {
+			"http://www.wikidata.org/entity/Q200334": "bell tower"
+		},
+		"airport_control": {
+			"http://www.wikidata.org/entity/Q918324": "control tower"
+		},
+		"cooling": {
+			"http://www.wikidata.org/entity/Q193886": "cooling tower"
+		},
+		"intake": {
+			"http://www.wikidata.org/entity/Q28861301": "intake tower"
+		},
+		"minaret": {
+			"http://www.wikidata.org/entity/Q48356": "minaret"
+		},
+		"observation": {
+			"http://www.wikidata.org/entity/Q1440300": "observation tower"
+		},
+		"radar": {
+			"http://www.wikidata.org/entity/Q1772282": "radar tower"
+		},
+		"stupa": {
+			"http://www.wikidata.org/entity/Q180987": "stupa"
+		},
+		"watchtower": {
+			"http://www.wikidata.org/entity/Q947103": "watchtower"
+		}
+	},
+	"barrier": {
+		"bus_trap": {
+			"http://www.wikidata.org/entity/Q251013": "Bus trap"
+		},
+		"jersey_barrier": {
+			"http://www.wikidata.org/entity/Q2300314": "Jersey barrier"
+		},
+		"cycle_barrier": {
+			"http://www.wikidata.org/entity/Q1661732": "Pedestrian chicane"
+		},
+		"sump_buster": {
+			"http://www.wikidata.org/entity/Q7638033": "Sump buster"
+		},
+		"": {
+			"http://www.wikidata.org/entity/Q264661": "obstacle"
+		},
+		"bollard": {
+			"http://www.wikidata.org/entity/Q1148389": "bollard"
+		},
+		"lift_gate": {
+			"http://www.wikidata.org/entity/Q852010": "boom barrier"
+		},
+		"border_control": {
+			"http://www.wikidata.org/entity/Q218719": "border control"
+		},
+		"bump_gate": {
+			"http://www.wikidata.org/entity/Q4997309": "bump gate"
+		},
+		"cable_barrier": {
+			"http://www.wikidata.org/entity/Q2520860": "cable barrier"
+		},
+		"cattle_grid": {
+			"http://www.wikidata.org/entity/Q2164694": "cattle grid"
+		},
+		"kerb": {
+			"http://www.wikidata.org/entity/Q37442": "curb"
+		},
+		"fence": {
+			"http://www.wikidata.org/entity/Q148571": "fence"
+		},
+		"gate": {
+			"http://www.wikidata.org/entity/Q53060": "gate"
+		},
+		"hedge": {
+			"http://www.wikidata.org/entity/Q235779": "hedge"
+		},
+		"kissing_gate": {
+			"http://www.wikidata.org/entity/Q1521153": "kissing gate"
+		},
+		"retaining_wall": {
+			"http://www.wikidata.org/entity/Q1076291": "retaining wall"
+		},
+		"sally_port": {
+			"http://www.wikidata.org/entity/Q15930902": "sally port"
+		},
+		"stile": {
+			"http://www.wikidata.org/entity/Q166557": "stile"
+		},
+		"toll_booth": {
+			"http://www.wikidata.org/entity/Q1364150": "toll booth"
+		},
+		"guard_rail": {
+			"http://www.wikidata.org/entity/Q1344551": "traffic barrier"
+		},
+		"turnstile": {
+			"http://www.wikidata.org/entity/Q1146283": "turnstile"
+		},
+		"city_wall": {
+			"http://www.wikidata.org/entity/Q16748868": "urban defence"
+		},
+		"wall": {
+			"http://www.wikidata.org/entity/Q42948": "wall"
+		}
+	},
+	"network": {
+		"call-a-bike": {
+			"http://www.wikidata.org/entity/Q1060525": "Call a Bike"
+		},
+		"DLR": {
+			"http://www.wikidata.org/entity/Q18516630": "Docklands Light Railway station"
+		},
+		"nextbike": {
+			"http://www.wikidata.org/entity/Q2351279": "nextbike"
+		}
+	},
+	"crop": {
+		"tea": {
+			"http://www.wikidata.org/entity/Q16670382": "tea estate"
+		},
+		"strawberry": {
+			"http://www.wikidata.org/entity/Q13158": "Fragaria ×ananassa"
+		},
+		"coffee": {
+			"http://www.wikidata.org/entity/Q153697": "coffee bean"
+		},
+		"flowers": {
+			"http://www.wikidata.org/entity/Q886167": "flower"
+		},
+		"wheat": {
+			"http://www.wikidata.org/entity/Q15645384": "wheat"
+		}
+	},
+	"irrigation": {
+		"pivot": {
+			"http://www.wikidata.org/entity/Q2744831": "Center pivot irrigation"
+		}
+	},
+	"garden:style": {
+		"chinese": {
+			"http://www.wikidata.org/entity/Q47692": "Chinese garden"
+		},
+		"english": {
+			"http://www.wikidata.org/entity/Q12783": "English garden"
+		},
+		"japanese": {
+			"http://www.wikidata.org/entity/Q15835": "Japanese garden"
+		},
+		"zen": {
+			"http://www.wikidata.org/entity/Q244226": "Japanese rock garden"
+		},
+		"herb_garden": {
+			"http://www.wikidata.org/entity/Q3522256": "herb garden"
+		},
+		"kitchen": {
+			"http://www.wikidata.org/entity/Q624114": "kitchen garden"
+		},
+		"rosarium": {
+			"http://www.wikidata.org/entity/Q291177": "rose garden"
+		}
+	},
+	"abandoned:amenity": {
+		"prison_camp": {
+			"http://www.wikidata.org/entity/Q2944950": "Clandestine detention centre"
+		}
+	},
+	"railway": {
+		"signal_box": {
+			"http://www.wikidata.org/entity/Q39015397": "signal box"
+		},
+		"railway_crossing": {
+			"http://www.wikidata.org/entity/Q46995345": "Level junction"
+		},
+		"blockpost": {
+			"http://www.wikidata.org/entity/Q350114": "block post"
+		},
+		"buffer_stop": {
+			"http://www.wikidata.org/entity/Q12162": "buffer stop"
+		},
+		"crossover": {
+			"http://www.wikidata.org/entity/Q1928330": "crossover"
+		},
+		"derail": {
+			"http://www.wikidata.org/entity/Q996850": "derail"
+		},
+		"disused_station": {
+			"http://www.wikidata.org/entity/Q4663385": "former railway station"
+		},
+		"funicular": {
+			"http://www.wikidata.org/entity/Q142031": "funicular"
+		},
+		"yard": {
+			"http://www.wikidata.org/entity/Q55493": "goods station"
+		},
+		"preserved": {
+			"http://www.wikidata.org/entity/Q420962": "heritage railway"
+		},
+		"level_crossing": {
+			"http://www.wikidata.org/entity/Q171448": "level crossing"
+		},
+		"light_rail": {
+			"http://www.wikidata.org/entity/Q1268865": "light rail"
+		},
+		"monorail": {
+			"http://www.wikidata.org/entity/Q187934": "monorail"
+		},
+		"depot": {
+			"http://www.wikidata.org/entity/Q10283556": "motive power depot"
+		},
+		"narrow_gauge": {
+			"http://www.wikidata.org/entity/Q1112477": "narrow-gauge railway"
+		},
+		"proposed": {
+			"http://www.wikidata.org/entity/Q28109475": "proposed railway line"
+		},
+		"": {
+			"http://www.wikidata.org/entity/Q350783": "rail guided transport"
+		},
+		"abandoned": {
+			"http://www.wikidata.org/entity/Q2116321": "rail trail"
+		},
+		"rail": {
+			"http://www.wikidata.org/entity/Q728937": "railroad line"
+		},
+		"switch": {
+			"http://www.wikidata.org/entity/Q82818": "railroad switch"
+		},
+		"halt": {
+			"http://www.wikidata.org/entity/Q55678": "railway halt"
+		},
+		"platform": {
+			"http://www.wikidata.org/entity/Q325358": "railway platform"
+		},
+		"signal": {
+			"http://www.wikidata.org/entity/Q862562": "railway signal"
+		},
+		"station": {
+			"http://www.wikidata.org/entity/Q55488": "railway station"
+		},
+		"turntable": {
+			"http://www.wikidata.org/entity/Q730493": "railway turntable"
+		},
+		"vacancy_detection": {
+			"http://www.wikidata.org/entity/Q1530516": "railway vacancy detection"
+		},
+		"subway": {
+			"http://www.wikidata.org/entity/Q5503": "rapid transit"
+		},
+		"miniature": {
+			"http://www.wikidata.org/entity/Q20820102": "rideable miniature railway"
+		},
+		"roundhouse": {
+			"http://www.wikidata.org/entity/Q1365704": "roundhouse"
+		},
+		"service_station": {
+			"http://www.wikidata.org/entity/Q831844": "staff halt"
+		},
+		"tram_stop": {
+			"http://www.wikidata.org/entity/Q2175765": "tram stop"
+		},
+		"tram": {
+			"http://www.wikidata.org/entity/Q15640053": "tram system"
+		}
+	},
+	"railway:signal_box": {
+		"electronic": {
+			"http://www.wikidata.org/entity/Q15807769": "Computer-based interlocking"
+		},
+		"mechanical": {
+			"http://www.wikidata.org/entity/Q914057": "lever frame"
+		}
+	},
+	"dennert_fir_tree": {
+		"yes": {
+			"http://www.wikidata.org/entity/Q289429": "Dennert Fir Tree"
+		}
+	},
+	"railway:station_category": {
+		"": {
+			"http://www.wikidata.org/entity/P5105": "Deutsche Bahn station category"
+		}
+	},
+	"currency:DEM": {
+		"": {
+			"http://www.wikidata.org/entity/Q16068": "Deutsche Mark"
+		}
+	},
+	"ref:edubase": {
+		"": {
+			"http://www.wikidata.org/entity/P2253": "DfE URN"
+		}
+	},
+	"currency:DOGE": {
+		"": {
+			"http://www.wikidata.org/entity/Q15377916": "Dogecoin"
+		}
+	},
+	"payment:dogecoin": {
+		"": {
+			"http://www.wikidata.org/entity/Q15377916": "Dogecoin"
+		}
+	},
+	"ref:vatin": {
+		"": {
+			"http://www.wikidata.org/entity/P3608": "EU VAT number"
+		}
+	},
+	"amenity": {
+		"charging_station": {
+			"http://www.wikidata.org/entity/Q2140665": "EV charging station"
+		},
+		"feeding_place": {
+			"http://www.wikidata.org/entity/Q2673976": "manger"
+		},
+		"watering_place": {
+			"http://www.wikidata.org/entity/Q932689": "abreuvoir"
+		},
+		"animal_boarding": {
+			"http://www.wikidata.org/entity/Q47520149": "animal boarding"
+		},
+		"animal_shelter": {
+			"http://www.wikidata.org/entity/Q1411287": "animal shelter"
+		},
+		"archive": {
+			"http://www.wikidata.org/entity/Q166118": "archive"
+		},
+		"events_centre": {
+			"http://www.wikidata.org/entity/Q641226": "arena"
+		},
+		"arts_centre": {
+			"http://www.wikidata.org/entity/Q2190251": "arts centre"
+		},
+		"financial_advice": {
+			"http://www.wikidata.org/entity/Q873442": "asset management"
+		},
+		"audiologist": {
+			"http://www.wikidata.org/entity/Q1644347": "audiologist"
+		},
+		"atm": {
+			"http://www.wikidata.org/entity/Q81235": "automated teller machine"
+		},
+		"baby_hatch": {
+			"http://www.wikidata.org/entity/Q745455": "baby hatch"
+		},
+		"bank": {
+			"http://www.wikidata.org/entity/Q18761864": "bank building"
+		},
+		"bar": {
+			"http://www.wikidata.org/entity/Q187456": "bar"
+		},
+		"bbq": {
+			"http://www.wikidata.org/entity/Q1546788": "barbecue"
+		},
+		"bts": {
+			"http://www.wikidata.org/entity/Q17005322": "base transceiver station"
+		},
+		"biergarten": {
+			"http://www.wikidata.org/entity/Q857909": "beer garden"
+		},
+		"bench": {
+			"http://www.wikidata.org/entity/Q204776": "bench"
+		},
+		"bicycle_parking": {
+			"http://www.wikidata.org/entity/Q16243822": "bicycle parking"
+		},
+		"bicycle_repair_station": {
+			"http://www.wikidata.org/entity/Q47519912": "bicycle repair station"
+		},
+		"bicycle_rental": {
+			"http://www.wikidata.org/entity/Q1358919": "bicycle-sharing system"
+		},
+		"boat_rental": {
+			"http://www.wikidata.org/entity/Q25384001": "boat rental"
+		},
+		"boat_sharing": {
+			"http://www.wikidata.org/entity/Q4931514": "boat sharing"
+		},
+		"mobile_library": {
+			"http://www.wikidata.org/entity/Q720920": "bookmobile"
+		},
+		"brothel": {
+			"http://www.wikidata.org/entity/Q131295": "brothel"
+		},
+		"bus_garage": {
+			"http://www.wikidata.org/entity/Q1191753": "bus garage"
+		},
+		"bus_station": {
+			"http://www.wikidata.org/entity/Q494829": "bus station"
+		},
+		"cafe": {
+			"http://www.wikidata.org/entity/Q30022": "café"
+		},
+		"car_pooling": {
+			"http://www.wikidata.org/entity/Q47525548": "car pooling facility"
+		},
+		"car_rental": {
+			"http://www.wikidata.org/entity/Q291240": "car rental"
+		},
+		"car_wash": {
+			"http://www.wikidata.org/entity/Q1139861": "car wash"
+		},
+		"car_sharing": {
+			"http://www.wikidata.org/entity/Q847201": "carsharing"
+		},
+		"casino": {
+			"http://www.wikidata.org/entity/Q133215": "casino"
+		},
+		"grave_yard": {
+			"http://www.wikidata.org/entity/Q39614": "cemetery"
+		},
+		"stool": {
+			"http://www.wikidata.org/entity/Q15026": "chair"
+		},
+		"childcare": {
+			"http://www.wikidata.org/entity/Q1455871": "child care"
+		},
+		"townhall": {
+			"http://www.wikidata.org/entity/Q543654": "city hall"
+		},
+		"clinic": {
+			"http://www.wikidata.org/entity/Q1774898": "clinic"
+		},
+		"clock": {
+			"http://www.wikidata.org/entity/Q188298": "turret clock"
+		},
+		"college": {
+			"http://www.wikidata.org/entity/Q189004": "college"
+		},
+		"community_centre": {
+			"http://www.wikidata.org/entity/Q77115": "community center"
+		},
+		"compressed_air": {
+			"http://www.wikidata.org/entity/Q143746": "compressed air"
+		},
+		"concert_hall": {
+			"http://www.wikidata.org/entity/Q1060829": "concert hall"
+		},
+		"conference_centre": {
+			"http://www.wikidata.org/entity/Q1378975": "convention center"
+		},
+		"courthouse": {
+			"http://www.wikidata.org/entity/Q1137809": "courthouse"
+		},
+		"coworking_space": {
+			"http://www.wikidata.org/entity/Q869457": "coworking"
+		},
+		"crematorium": {
+			"http://www.wikidata.org/entity/Q157570": "crematory"
+		},
+		"crypt": {
+			"http://www.wikidata.org/entity/Q192619": "crypt"
+		},
+		"bureau_de_change": {
+			"http://www.wikidata.org/entity/Q2002539": "currency exchange"
+		},
+		"dentist": {
+			"http://www.wikidata.org/entity/Q27349": "dentist"
+		},
+		"dive_centre": {
+			"http://www.wikidata.org/entity/Q3664857": "dive center"
+		},
+		"doctors": {
+			"http://www.wikidata.org/entity/Q718966": "doctor's office"
+		},
+		"drinking_water": {
+			"http://www.wikidata.org/entity/Q1630622": "drinking fountain"
+		},
+		"driving_school": {
+			"http://www.wikidata.org/entity/Q1340098": "driver's education"
+		},
+		"dojo": {
+			"http://www.wikidata.org/entity/Q203609": "dōjō"
+		},
+		"embassy": {
+			"http://www.wikidata.org/entity/Q3917681": "embassy"
+		},
+		"jobcentre": {
+			"http://www.wikidata.org/entity/Q261362": "employment agency"
+		},
+		"events_venue": {
+			"http://www.wikidata.org/entity/Q18674739": "event venue"
+		},
+		"": {
+			"http://www.wikidata.org/entity/Q13226383": "facility"
+		},
+		"fast_food": {
+			"http://www.wikidata.org/entity/Q1814211": "friterie"
+		},
+		"ferry_terminal": {
+			"http://www.wikidata.org/entity/Q4303352": "ferry terminal"
+		},
+		"fire_station": {
+			"http://www.wikidata.org/entity/Q1195942": "fire station"
+		},
+		"flowerpot": {
+			"http://www.wikidata.org/entity/Q869381": "flowerpot"
+		},
+		"food_court": {
+			"http://www.wikidata.org/entity/Q1192284": "food court"
+		},
+		"fountain": {
+			"http://www.wikidata.org/entity/Q483453": "fountain"
+		},
+		"gambling": {
+			"http://www.wikidata.org/entity/Q47520173": "gambling facility"
+		},
+		"fuel": {
+			"http://www.wikidata.org/entity/Q205495": "gas station"
+		},
+		"grit_bin": {
+			"http://www.wikidata.org/entity/Q2878124": "grit bin"
+		},
+		"harbourmaster": {
+			"http://www.wikidata.org/entity/Q1489454": "harbourmaster"
+		},
+		"gym": {
+			"http://www.wikidata.org/entity/Q1065656": "health club"
+		},
+		"hospice": {
+			"http://www.wikidata.org/entity/Q608152": "hospice"
+		},
+		"hospital": {
+			"http://www.wikidata.org/entity/Q16917": "hospital"
+		},
+		"ice_cream": {
+			"http://www.wikidata.org/entity/Q1311064": "ice cream parlor"
+		},
+		"internet_cafe": {
+			"http://www.wikidata.org/entity/Q272399": "internet café"
+		},
+		"kindergarten": {
+			"http://www.wikidata.org/entity/Q126807": "kindergarten"
+		},
+		"language_school": {
+			"http://www.wikidata.org/entity/Q897403": "language school"
+		},
+		"letter_box": {
+			"http://www.wikidata.org/entity/Q1587360": "letter box"
+		},
+		"library": {
+			"http://www.wikidata.org/entity/Q7075": "library"
+		},
+		"lifeboat_station": {
+			"http://www.wikidata.org/entity/Q11997323": "lifeboat station"
+		},
+		"life_ring": {
+			"http://www.wikidata.org/entity/Q587334": "lifebuoy"
+		},
+		"loading_dock": {
+			"http://www.wikidata.org/entity/Q1799919": "loading dock"
+		},
+		"marae": {
+			"http://www.wikidata.org/entity/Q186685": "marae"
+		},
+		"marketplace": {
+			"http://www.wikidata.org/entity/Q330284": "marketplace"
+		},
+		"studio": {
+			"http://www.wikidata.org/entity/Q19364326": "media studio facility"
+		},
+		"monastery": {
+			"http://www.wikidata.org/entity/Q44613": "monastery"
+		},
+		"mortuary": {
+			"http://www.wikidata.org/entity/Q6451172": "morgue"
+		},
+		"motorcycle_parking": {
+			"http://www.wikidata.org/entity/Q47520009": "motorcycle parking"
+		},
+		"cinema": {
+			"http://www.wikidata.org/entity/Q41253": "movie theater"
+		},
+		"music_school": {
+			"http://www.wikidata.org/entity/Q1021290": "music school"
+		},
+		"music_venue": {
+			"http://www.wikidata.org/entity/Q8719053": "music venue"
+		},
+		"nightclub": {
+			"http://www.wikidata.org/entity/Q622425": "nightclub"
+		},
+		"nursing_home": {
+			"http://www.wikidata.org/entity/Q837142": "nursing home"
+		},
+		"baking_oven": {
+			"http://www.wikidata.org/entity/Q36539": "oven"
+		},
+		"parking_entrance": {
+			"http://www.wikidata.org/entity/Q47520013": "parking entrance"
+		},
+		"parking": {
+			"http://www.wikidata.org/entity/Q6501349": "parking lot"
+		},
+		"parking_space": {
+			"http://www.wikidata.org/entity/Q1433633": "parking space"
+		},
+		"parliament": {
+			"http://www.wikidata.org/entity/Q7138926": "parliament building"
+		},
+		"telephone": {
+			"http://www.wikidata.org/entity/Q11035": "telephone"
+		},
+		"pharmacy": {
+			"http://www.wikidata.org/entity/Q13107184": "pharmacy"
+		},
+		"photo_booth": {
+			"http://www.wikidata.org/entity/Q494312": "photo booth"
+		},
+		"place_of_worship": {
+			"http://www.wikidata.org/entity/Q1370598": "place of worship"
+		},
+		"planetarium": {
+			"http://www.wikidata.org/entity/Q148319": "planetarium"
+		},
+		"police": {
+			"http://www.wikidata.org/entity/Q861951": "police station"
+		},
+		"post_box": {
+			"http://www.wikidata.org/entity/Q49844": "post box"
+		},
+		"post_office": {
+			"http://www.wikidata.org/entity/Q35054": "post office"
+		},
+		"printer": {
+			"http://www.wikidata.org/entity/Q82": "printer"
+		},
+		"prison": {
+			"http://www.wikidata.org/entity/Q40357": "prison"
+		},
+		"pub": {
+			"http://www.wikidata.org/entity/Q212198": "pub"
+		},
+		"public_bath": {
+			"http://www.wikidata.org/entity/Q785952": "public bath"
+		},
+		"public_bookcase": {
+			"http://www.wikidata.org/entity/Q294297": "public bookcase"
+		},
+		"public_building": {
+			"http://www.wikidata.org/entity/Q294422": "public building"
+		},
+		"kitchen": {
+			"http://www.wikidata.org/entity/Q47520281": "public kitchen"
+		},
+		"toilets": {
+			"http://www.wikidata.org/entity/Q813966": "public toilet"
+		},
+		"ranger_station": {
+			"http://www.wikidata.org/entity/Q36728566": "ranger station"
+		},
+		"recycling": {
+			"http://www.wikidata.org/entity/Q47520309": "recycling facility"
+		},
+		"rescue_station": {
+			"http://www.wikidata.org/entity/Q47520327": "rescue station"
+		},
+		"restaurant": {
+			"http://www.wikidata.org/entity/Q11707": "restaurant"
+		},
+		"sanitary_dump_station": {
+			"http://www.wikidata.org/entity/Q47520332": "sanitary dump station"
+		},
+		"sauna": {
+			"http://www.wikidata.org/entity/Q57036": "sauna"
+		},
+		"science_park": {
+			"http://www.wikidata.org/entity/Q1976594": "science park"
+		},
+		"seat": {
+			"http://www.wikidata.org/entity/Q2731419": "seat"
+		},
+		"swingerclub": {
+			"http://www.wikidata.org/entity/Q336078": "sex club"
+		},
+		"love_hotel": {
+			"http://www.wikidata.org/entity/Q971929": "sex hotel"
+		},
+		"shelter": {
+			"http://www.wikidata.org/entity/Q7493941": "shelter"
+		},
+		"shower": {
+			"http://www.wikidata.org/entity/Q7863": "shower"
+		},
+		"social_centre": {
+			"http://www.wikidata.org/entity/Q8536775": "social center"
+		},
+		"social_facility": {
+			"http://www.wikidata.org/entity/Q47520019": "social facility"
+		},
+		"sorting_office": {
+			"http://www.wikidata.org/entity/Q915063": "sorting office"
+		},
+		"stables": {
+			"http://www.wikidata.org/entity/Q214252": "stable"
+		},
+		"stripclub": {
+			"http://www.wikidata.org/entity/Q6586445": "strip club"
+		},
+		"swimming_pool": {
+			"http://www.wikidata.org/entity/Q1501": "swimming pool"
+		},
+		"table": {
+			"http://www.wikidata.org/entity/Q14748": "table"
+		},
+		"taxi": {
+			"http://www.wikidata.org/entity/Q1395196": "taxicab stand"
+		},
+		"theatre": {
+			"http://www.wikidata.org/entity/Q11635": "theater"
+		},
+		"ticket_validator": {
+			"http://www.wikidata.org/entity/Q1345575": "ticket validator"
+		},
+		"exhibition_centre": {
+			"http://www.wikidata.org/entity/Q57305": "trade fair"
+		},
+		"kneipp_water_cure": {
+			"http://www.wikidata.org/entity/Q2551632": "treading water"
+		},
+		"hunting_stand": {
+			"http://www.wikidata.org/entity/Q1279822": "tree stand"
+		},
+		"university": {
+			"http://www.wikidata.org/entity/Q3918": "university"
+		},
+		"vending_machine": {
+			"http://www.wikidata.org/entity/Q211584": "vending machine"
+		},
+		"veterinary": {
+			"http://www.wikidata.org/entity/Q202883": "veterinarian"
+		},
+		"waste_transfer_station": {
+			"http://www.wikidata.org/entity/Q47520407": "waste transfer station"
+		},
+		"water_point": {
+			"http://www.wikidata.org/entity/Q47520398": "water point"
+		}
+	},
+	"emergency": {
+		"access_point": {
+			"http://www.wikidata.org/entity/Q1333922": "Emergency Access Point"
+		},
+		"fire_flapper": {
+			"http://www.wikidata.org/entity/Q352466": "Fire flapper"
+		},
+		"fire_hose": {
+			"http://www.wikidata.org/entity/Q1410061": "Fire hose"
+		},
+		"assembly_point": {
+			"http://www.wikidata.org/entity/Q2217279": "Meeting point"
+		},
+		"ambulance_station": {
+			"http://www.wikidata.org/entity/Q927519": "ambulance station"
+		},
+		"defibrillator": {
+			"http://www.wikidata.org/entity/Q787407": "automated external defibrillator"
+		},
+		"phone": {
+			"http://www.wikidata.org/entity/Q1613929": "emergency telephone"
+		},
+		"fire_extinguisher": {
+			"http://www.wikidata.org/entity/Q190672": "fire extinguisher"
+		},
+		"fire_hydrant": {
+			"http://www.wikidata.org/entity/Q634299": "fire hydrant"
+		},
+		"life_ring": {
+			"http://www.wikidata.org/entity/Q587334": "lifebuoy"
+		},
+		"siren": {
+			"http://www.wikidata.org/entity/Q205234": "siren"
+		}
+	},
+	"highway": {
+		"emergency_access_point": {
+			"http://www.wikidata.org/entity/Q1333922": "Emergency Access Point"
+		},
+		"secondary": {
+			"http://www.wikidata.org/entity/Q896009": "Landesstraße"
+		},
+		"escape": {
+			"http://www.wikidata.org/entity/Q268756": "Runaway truck ramp"
+		},
+		"motorway_link": {
+			"http://www.wikidata.org/entity/Q786061": "Spur route"
+		},
+		"raceway": {
+			"http://www.wikidata.org/entity/Q1777138": "race track"
+		},
+		"cycleway": {
+			"http://www.wikidata.org/entity/Q221722": "bike path"
+		},
+		"bridleway": {
+			"http://www.wikidata.org/entity/Q1639395": "bridle path"
+		},
+		"bus_stop": {
+			"http://www.wikidata.org/entity/Q953806": "bus stop"
+		},
+		"motorway": {
+			"http://www.wikidata.org/entity/Q46622": "controlled-access highway"
+		},
+		"crossing": {
+			"http://www.wikidata.org/entity/Q8010": "crosswalk"
+		},
+		"turning_circle": {
+			"http://www.wikidata.org/entity/Q12731": "cul-de-sac"
+		},
+		"track": {
+			"http://www.wikidata.org/entity/Q700143": "dirt road"
+		},
+		"elevator": {
+			"http://www.wikidata.org/entity/Q132911": "elevator"
+		},
+		"footway": {
+			"http://www.wikidata.org/entity/Q13634881": "walkway"
+		},
+		"bus_guideway": {
+			"http://www.wikidata.org/entity/Q42775781": "guided busway"
+		},
+		"": {
+			"http://www.wikidata.org/entity/Q34442": "road"
+		},
+		"motorway_junction": {
+			"http://www.wikidata.org/entity/Q785486": "three-way interchange"
+		},
+		"living_street": {
+			"http://www.wikidata.org/entity/Q1628979": "living street"
+		},
+		"passing_place": {
+			"http://www.wikidata.org/entity/Q2091725": "passing place"
+		},
+		"path": {
+			"http://www.wikidata.org/entity/Q5004679": "path"
+		},
+		"pedestrian": {
+			"http://www.wikidata.org/entity/Q369730": "pedestrian zone"
+		},
+		"rest_area": {
+			"http://www.wikidata.org/entity/Q786014": "rest area"
+		},
+		"services": {
+			"http://www.wikidata.org/entity/Q786014": "rest area"
+		},
+		"mini_roundabout": {
+			"http://www.wikidata.org/entity/Q1525": "roundabout"
+		},
+		"steps": {
+			"http://www.wikidata.org/entity/Q12511": "stairs"
+		},
+		"stop": {
+			"http://www.wikidata.org/entity/Q250429": "stop sign"
+		},
+		"street_lamp": {
+			"http://www.wikidata.org/entity/Q503958": "streetlight"
+		},
+		"speed_camera": {
+			"http://www.wikidata.org/entity/Q33709": "traffic enforcement camera"
+		},
+		"traffic_signals": {
+			"http://www.wikidata.org/entity/Q8004": "traffic light"
+		},
+		"trunk": {
+			"http://www.wikidata.org/entity/Q2145163": "trunk road"
+		}
+	},
+	"esperanto": {
+		"": {
+			"http://www.wikidata.org/entity/Q143": "Esperanto"
+		}
+	},
+	"ref:FR:FINESS": {
+		"": {
+			"http://www.wikidata.org/entity/P4058": "FINESS medical facility ID"
+		}
+	},
+	"nist:fips_code": {
+		"": {
+			"http://www.wikidata.org/entity/P882": "FIPS 6-4 (US counties)"
+		}
+	},
+	"ref:OnroerendErfgoed": {
+		"": {
+			"http://www.wikidata.org/entity/P1764": "FOIH relict ID"
+		}
+	},
+	"ref:FR:SIRET": {
+		"": {
+			"http://www.wikidata.org/entity/P3215": "FR SIRET number"
+		}
+	},
+	"contact:facebook": {
+		"": {
+			"http://www.wikidata.org/entity/P2013": "Facebook ID"
+		}
+	},
+	"facebook": {
+		"": {
+			"http://www.wikidata.org/entity/P2013": "Facebook ID"
+		}
+	},
+	"leisure": {
+		"firepit": {
+			"http://www.wikidata.org/entity/Q7111942": "outdoor fireplace"
+		},
+		"nature_reserve": {
+			"http://www.wikidata.org/entity/Q179049": "nature reserve"
+		},
+		"turkish_bath": {
+			"http://www.wikidata.org/entity/Q28077": "Turkish bath"
+		},
+		"adult_gaming_centre": {
+			"http://www.wikidata.org/entity/Q47521258": "adult gaming centre"
+		},
+		"amusement_arcade": {
+			"http://www.wikidata.org/entity/Q260676": "amusement arcade"
+		},
+		"track": {
+			"http://www.wikidata.org/entity/Q1004435": "athletics track"
+		},
+		"bandstand": {
+			"http://www.wikidata.org/entity/Q3126170": "bandstand"
+		},
+		"bird_hide": {
+			"http://www.wikidata.org/entity/Q2244608": "bird hide"
+		},
+		"bowling_alley": {
+			"http://www.wikidata.org/entity/Q27106471": "bowling alley"
+		},
+		"common": {
+			"http://www.wikidata.org/entity/Q2259176": "common land"
+		},
+		"dance": {
+			"http://www.wikidata.org/entity/Q23005232": "dance school"
+		},
+		"disc_golf_course": {
+			"http://www.wikidata.org/entity/Q47521078": "disc golf course"
+		},
+		"dog_park": {
+			"http://www.wikidata.org/entity/Q38516": "dog park"
+		},
+		"horse_riding": {
+			"http://www.wikidata.org/entity/Q1621657": "equestrian facility"
+		},
+		"escape_game": {
+			"http://www.wikidata.org/entity/Q17015069": "escape room"
+		},
+		"fishing": {
+			"http://www.wikidata.org/entity/Q47521850": "fishing spot"
+		},
+		"garden": {
+			"http://www.wikidata.org/entity/Q1107656": "garden"
+		},
+		"golf_course": {
+			"http://www.wikidata.org/entity/Q1048525": "golf course"
+		},
+		"hackerspace": {
+			"http://www.wikidata.org/entity/Q1032372": "hackerspace"
+		},
+		"fitness_centre": {
+			"http://www.wikidata.org/entity/Q1065656": "health club"
+		},
+		"ice_rink": {
+			"http://www.wikidata.org/entity/Q1282870": "ice rink"
+		},
+		"recreation_ground": {
+			"http://www.wikidata.org/entity/Q2063507": "leisure area"
+		},
+		"": {
+			"http://www.wikidata.org/entity/Q47520921": "leisure facility"
+		},
+		"yes": {
+			"http://www.wikidata.org/entity/Q47520921": "leisure facility"
+		},
+		"miniature_golf": {
+			"http://www.wikidata.org/entity/Q47524429": "miniature golf course"
+		},
+		"fitness_station": {
+			"http://www.wikidata.org/entity/Q692630": "outdoor gym"
+		},
+		"park": {
+			"http://www.wikidata.org/entity/Q22698": "park"
+		},
+		"picnic_table": {
+			"http://www.wikidata.org/entity/Q2466395": "picnic table"
+		},
+		"pitch": {
+			"http://www.wikidata.org/entity/Q741118": "tennis court"
+		},
+		"playground": {
+			"http://www.wikidata.org/entity/Q13607440": "playground"
+		},
+		"red_light_district": {
+			"http://www.wikidata.org/entity/Q272888": "red-light district"
+		},
+		"resort": {
+			"http://www.wikidata.org/entity/Q875157": "resort"
+		},
+		"sauna": {
+			"http://www.wikidata.org/entity/Q57036": "sauna"
+		},
+		"beach_resort": {
+			"http://www.wikidata.org/entity/Q1021711": "seaside resort"
+		},
+		"shooting_ground": {
+			"http://www.wikidata.org/entity/Q521839": "shooting range"
+		},
+		"slipway": {
+			"http://www.wikidata.org/entity/Q361945": "slipway"
+		},
+		"sports_centre": {
+			"http://www.wikidata.org/entity/Q47524426": "sports centre"
+		},
+		"stadium": {
+			"http://www.wikidata.org/entity/Q483110": "stadium"
+		},
+		"summer_camp": {
+			"http://www.wikidata.org/entity/Q876852": "summer camp"
+		},
+		"swimming_area": {
+			"http://www.wikidata.org/entity/Q47524436": "swimming area"
+		},
+		"swimming_pool": {
+			"http://www.wikidata.org/entity/Q1501": "swimming pool"
+		},
+		"water_park": {
+			"http://www.wikidata.org/entity/Q740326": "water park"
+		},
+		"wildlife_hide": {
+			"http://www.wikidata.org/entity/Q47524435": "wildlife hide"
+		}
+	},
+	"craft": {
+		"floorer": {
+			"http://www.wikidata.org/entity/Q889574": "Floorer"
+		},
+		"confectionery": {
+			"http://www.wikidata.org/entity/Q1781258": "Konditorei"
+		},
+		"bakery": {
+			"http://www.wikidata.org/entity/Q160131": "baker"
+		},
+		"basket_maker": {
+			"http://www.wikidata.org/entity/Q976015": "basket weaver"
+		},
+		"beekeeper": {
+			"http://www.wikidata.org/entity/Q852389": "beekeeper"
+		},
+		"blacksmith": {
+			"http://www.wikidata.org/entity/Q1639825": "blacksmith"
+		},
+		"boatbuilder": {
+			"http://www.wikidata.org/entity/Q548031": "boat builder"
+		},
+		"bookbinder": {
+			"http://www.wikidata.org/entity/Q1413170": "bookbinder"
+		},
+		"brewery": {
+			"http://www.wikidata.org/entity/Q131734": "brewery"
+		},
+		"builder": {
+			"http://www.wikidata.org/entity/Q811930": "building contractor"
+		},
+		"carpenter": {
+			"http://www.wikidata.org/entity/Q154549": "carpenter"
+		},
+		"caterer": {
+			"http://www.wikidata.org/entity/Q28869945": "caterer"
+		},
+		"chimney_sweeper": {
+			"http://www.wikidata.org/entity/Q506126": "chimney sweep"
+		},
+		"shoemaker": {
+			"http://www.wikidata.org/entity/Q152355": "cobbler"
+		},
+		"distillery": {
+			"http://www.wikidata.org/entity/Q1251750": "distillery"
+		},
+		"dressmaker": {
+			"http://www.wikidata.org/entity/Q2034021": "dressmaker"
+		},
+		"electrician": {
+			"http://www.wikidata.org/entity/Q165029": "electrician"
+		},
+		"stand_builder": {
+			"http://www.wikidata.org/entity/Q1924077": "exhibition stand builder"
+		},
+		"": {
+			"http://www.wikidata.org/entity/P101": "field of work"
+		},
+		"gardener": {
+			"http://www.wikidata.org/entity/Q758780": "gardener"
+		},
+		"glaziery": {
+			"http://www.wikidata.org/entity/Q1529413": "glaziery"
+		},
+		"handicraft": {
+			"http://www.wikidata.org/entity/Q19101121": "handicrafter"
+		},
+		"painter": {
+			"http://www.wikidata.org/entity/Q288728": "house painter"
+		},
+		"jeweller": {
+			"http://www.wikidata.org/entity/Q336221": "jeweller"
+		},
+		"locksmith": {
+			"http://www.wikidata.org/entity/Q3479990": "locksmith"
+		},
+		"metal_construction": {
+			"http://www.wikidata.org/entity/Q838566": "metalsmith"
+		},
+		"optician": {
+			"http://www.wikidata.org/entity/Q1996635": "optician"
+		},
+		"photographer": {
+			"http://www.wikidata.org/entity/Q33231": "photographer"
+		},
+		"photographic_laboratory": {
+			"http://www.wikidata.org/entity/Q656208": "photographic laboratory"
+		},
+		"piano_tuner": {
+			"http://www.wikidata.org/entity/Q1191329": "piano tuner"
+		},
+		"plasterer": {
+			"http://www.wikidata.org/entity/Q15284879": "plasterer"
+		},
+		"plumber": {
+			"http://www.wikidata.org/entity/Q252924": "plumber"
+		},
+		"pottery": {
+			"http://www.wikidata.org/entity/Q3400050": "potter"
+		},
+		"rigger": {
+			"http://www.wikidata.org/entity/Q2152783": "rigger"
+		},
+		"roofer": {
+			"http://www.wikidata.org/entity/Q552378": "roofer"
+		},
+		"saddler": {
+			"http://www.wikidata.org/entity/Q1760988": "saddler"
+		},
+		"sailmaker": {
+			"http://www.wikidata.org/entity/Q549237": "sailmaker"
+		},
+		"sawmill": {
+			"http://www.wikidata.org/entity/Q505213": "sawmill"
+		},
+		"scaffolder": {
+			"http://www.wikidata.org/entity/Q1516054": "scaffolder"
+		},
+		"sculptor": {
+			"http://www.wikidata.org/entity/Q1281618": "sculptor"
+		},
+		"stonemason": {
+			"http://www.wikidata.org/entity/Q328325": "stonemason"
+		},
+		"tailor": {
+			"http://www.wikidata.org/entity/Q242468": "tailor"
+		},
+		"upholsterer": {
+			"http://www.wikidata.org/entity/Q21820569": "tapestry weaver"
+		},
+		"tiler": {
+			"http://www.wikidata.org/entity/Q878295": "tiler"
+		},
+		"tinsmith": {
+			"http://www.wikidata.org/entity/Q852718": "tinsmith"
+		},
+		"turner": {
+			"http://www.wikidata.org/entity/Q1716419": "turner"
+		},
+		"clockmaker": {
+			"http://www.wikidata.org/entity/Q157798": "watchmaker"
+		},
+		"watchmaker": {
+			"http://www.wikidata.org/entity/Q157798": "watchmaker"
+		},
+		"winery": {
+			"http://www.wikidata.org/entity/Q156362": "winery"
+		}
+	},
+	"contact:foursquare": {
+		"": {
+			"http://www.wikidata.org/entity/P1968": "Foursquare venue ID"
+		}
+	},
+	"ref:gnis": {
+		"": {
+			"http://www.wikidata.org/entity/P590": "GNIS ID"
+		}
+	},
+	"de:amtlicher_gemeindeschluessel": {
+		"": {
+			"http://www.wikidata.org/entity/P439": "German municipality key"
+		}
+	},
+	"de:regionalschluessel": {
+		"": {
+			"http://www.wikidata.org/entity/Q46042059": "German regional key"
+		}
+	},
+	"contact:google_plus": {
+		"": {
+			"http://www.wikidata.org/entity/P2847": "Google+ ID"
+		}
+	},
+	"listed_status": {
+		"Grade_I": {
+			"http://www.wikidata.org/entity/Q15700818": "Grade I listed building"
+		},
+		"Grade_II": {
+			"http://www.wikidata.org/entity/Q15700834": "Grade II listed building"
+		},
+		"Grade_II*": {
+			"http://www.wikidata.org/entity/Q15700831": "Grade II* listed building"
+		},
+		"Category_A": {
+			"http://www.wikidata.org/entity/Q10729054": "category A listed building"
+		},
+		"Category_B": {
+			"http://www.wikidata.org/entity/Q10729125": "category B listed building"
+		},
+		"Category_C": {
+			"http://www.wikidata.org/entity/Q10729142": "category C listed building"
+		}
+	},
+	"power": {
+		"converter": {
+			"http://www.wikidata.org/entity/Q5636221": "HVDC converter"
+		},
+		"cable_distribution_cabinet": {
+			"http://www.wikidata.org/entity/Q7236480": "Power box"
+		},
+		"substation": {
+			"http://www.wikidata.org/entity/Q478986": "distribution substation"
+		},
+		"generator": {
+			"http://www.wikidata.org/entity/Q131502": "electric generator"
+		},
+		"heliostat": {
+			"http://www.wikidata.org/entity/Q1347279": "heliostat"
+		},
+		"line": {
+			"http://www.wikidata.org/entity/Q2144320": "overhead power line"
+		},
+		"plant": {
+			"http://www.wikidata.org/entity/Q159719": "power station"
+		},
+		"switch": {
+			"http://www.wikidata.org/entity/Q5320": "switch"
+		},
+		"transformer": {
+			"http://www.wikidata.org/entity/Q11658": "transformer"
+		},
+		"tower": {
+			"http://www.wikidata.org/entity/Q914711": "transmission tower"
+		},
+		"cable": {
+			"http://www.wikidata.org/entity/Q42804670": "underground or at-grade power line"
+		},
+		"pole": {
+			"http://www.wikidata.org/entity/Q1144084": "utility pole"
+		}
+	},
+	"diplomatic": {
+		"high_commission": {
+			"http://www.wikidata.org/entity/Q18414273": "High Commission"
+		},
+		"ambassadors_residence": {
+			"http://www.wikidata.org/entity/Q47163308": "ambassador's residence"
+		},
+		"consulate": {
+			"http://www.wikidata.org/entity/Q7843791": "consulate"
+		},
+		"consulate_general": {
+			"http://www.wikidata.org/entity/Q372690": "consulate general"
+		},
+		"honorary_consulate": {
+			"http://www.wikidata.org/entity/Q23891529": "honorary consulate"
+		},
+		"permanent_mission": {
+			"http://www.wikidata.org/entity/Q2360219": "permanent mission"
+		}
+	},
+	"building": {
+		"temple": {
+			"http://www.wikidata.org/entity/Q44539": "temple"
+		},
+		"riding_hall": {
+			"http://www.wikidata.org/entity/Q3503155": "Riding hall"
+		},
+		"farm_auxiliary": {
+			"http://www.wikidata.org/entity/Q10480682": "agricultural building"
+		},
+		"allotment_house": {
+			"http://www.wikidata.org/entity/Q47525299": "allotment house"
+		},
+		"digester": {
+			"http://www.wikidata.org/entity/Q555853": "anaerobic digestion"
+		},
+		"apartments": {
+			"http://www.wikidata.org/entity/Q13402009": "apartment building"
+		},
+		"bakehouse": {
+			"http://www.wikidata.org/entity/Q798436": "bakehouse"
+		},
+		"font": {
+			"http://www.wikidata.org/entity/Q208820": "baptismal font"
+		},
+		"barn": {
+			"http://www.wikidata.org/entity/Q1303167": "barn"
+		},
+		"bell_tower": {
+			"http://www.wikidata.org/entity/Q200334": "bell tower"
+		},
+		"boathouse": {
+			"http://www.wikidata.org/entity/Q1777951": "boathouse"
+		},
+		"brewery": {
+			"http://www.wikidata.org/entity/Q57778855": "brewery building"
+		},
+		"": {
+			"http://www.wikidata.org/entity/Q41176": "building"
+		},
+		"yes": {
+			"http://www.wikidata.org/entity/Q41176": "building"
+		},
+		"construction": {
+			"http://www.wikidata.org/entity/Q12377751": "building under construction"
+		},
+		"bungalow": {
+			"http://www.wikidata.org/entity/Q850107": "bungalow"
+		},
+		"bunker": {
+			"http://www.wikidata.org/entity/Q91122": "bunker"
+		},
+		"carport": {
+			"http://www.wikidata.org/entity/Q1044817": "carport"
+		},
+		"cathedral": {
+			"http://www.wikidata.org/entity/Q2977": "cathedral"
+		},
+		"chapel": {
+			"http://www.wikidata.org/entity/Q108325": "chapel"
+		},
+		"church": {
+			"http://www.wikidata.org/entity/Q16970": "church building"
+		},
+		"civic": {
+			"http://www.wikidata.org/entity/Q52177058": "civic building"
+		},
+		"college": {
+			"http://www.wikidata.org/entity/Q189004": "college"
+		},
+		"commercial": {
+			"http://www.wikidata.org/entity/Q655686": "commercial building"
+		},
+		"condominium": {
+			"http://www.wikidata.org/entity/Q161851": "condominium"
+		},
+		"conservatory": {
+			"http://www.wikidata.org/entity/Q1791429": "conservatory"
+		},
+		"container": {
+			"http://www.wikidata.org/entity/Q1128503": "container building"
+		},
+		"cowshed": {
+			"http://www.wikidata.org/entity/Q681337": "cowshed"
+		},
+		"data_center": {
+			"http://www.wikidata.org/entity/Q671224": "data center"
+		},
+		"dormitory": {
+			"http://www.wikidata.org/entity/Q847950": "dormitory"
+		},
+		"entrance": {
+			"http://www.wikidata.org/entity/Q1137365": "entrance"
+		},
+		"farm": {
+			"http://www.wikidata.org/entity/Q489357": "farmhouse"
+		},
+		"garage": {
+			"http://www.wikidata.org/entity/Q22733": "garage"
+		},
+		"garages": {
+			"http://www.wikidata.org/entity/Q22733": "garage"
+		},
+		"garbage_shed": {
+			"http://www.wikidata.org/entity/Q47525060": "garbage shed"
+		},
+		"grandstand": {
+			"http://www.wikidata.org/entity/Q1796966": "grandstand"
+		},
+		"greenhouse": {
+			"http://www.wikidata.org/entity/Q165044": "greenhouse"
+		},
+		"ground_station": {
+			"http://www.wikidata.org/entity/Q1349167": "ground station"
+		},
+		"hangar": {
+			"http://www.wikidata.org/entity/Q192375": "hangar"
+		},
+		"hospital": {
+			"http://www.wikidata.org/entity/Q16917": "hospital"
+		},
+		"hotel": {
+			"http://www.wikidata.org/entity/Q27686": "hotel"
+		},
+		"house": {
+			"http://www.wikidata.org/entity/Q3947": "house"
+		},
+		"houseboat": {
+			"http://www.wikidata.org/entity/Q1321309": "houseboat"
+		},
+		"hut": {
+			"http://www.wikidata.org/entity/Q5784097": "hut"
+		},
+		"industrial": {
+			"http://www.wikidata.org/entity/Q12144897": "industrial building"
+		},
+		"kindergarten": {
+			"http://www.wikidata.org/entity/Q126807": "kindergarten"
+		},
+		"kiosk": {
+			"http://www.wikidata.org/entity/Q693369": "kiosk"
+		},
+		"cabin": {
+			"http://www.wikidata.org/entity/Q695207": "log cabin"
+		},
+		"manufacture": {
+			"http://www.wikidata.org/entity/Q380342": "manufactory"
+		},
+		"static_caravan": {
+			"http://www.wikidata.org/entity/Q1434998": "mobile home"
+		},
+		"mosque": {
+			"http://www.wikidata.org/entity/Q32815": "mosque"
+		},
+		"parking": {
+			"http://www.wikidata.org/entity/Q13218805": "multistorey car park"
+		},
+		"office": {
+			"http://www.wikidata.org/entity/Q1021645": "office building"
+		},
+		"pagoda": {
+			"http://www.wikidata.org/entity/Q199451": "pagoda"
+		},
+		"palace": {
+			"http://www.wikidata.org/entity/Q16560": "palace"
+		},
+		"parliament": {
+			"http://www.wikidata.org/entity/Q7138926": "parliament building"
+		},
+		"sty": {
+			"http://www.wikidata.org/entity/Q1651566": "pigsty"
+		},
+		"marquee": {
+			"http://www.wikidata.org/entity/Q1409050": "pole marquee"
+		},
+		"public": {
+			"http://www.wikidata.org/entity/Q294422": "public building"
+		},
+		"transportation": {
+			"http://www.wikidata.org/entity/Q47524577": "public transportation building"
+		},
+		"residential": {
+			"http://www.wikidata.org/entity/Q11755880": "residential building"
+		},
+		"retail": {
+			"http://www.wikidata.org/entity/Q18760388": "retail building"
+		},
+		"roof": {
+			"http://www.wikidata.org/entity/Q47525110": "roof"
+		},
+		"ruins": {
+			"http://www.wikidata.org/entity/Q109607": "ruins"
+		},
+		"school": {
+			"http://www.wikidata.org/entity/Q1244442": "school building"
+		},
+		"semi": {
+			"http://www.wikidata.org/entity/Q7419624": "semi-detached house"
+		},
+		"semidetached_house": {
+			"http://www.wikidata.org/entity/Q7419624": "semi-detached house"
+		},
+		"service": {
+			"http://www.wikidata.org/entity/Q30310841": "service building"
+		},
+		"shed": {
+			"http://www.wikidata.org/entity/Q721931": "shed"
+		},
+		"shrine": {
+			"http://www.wikidata.org/entity/Q697295": "shrine"
+		},
+		"detached": {
+			"http://www.wikidata.org/entity/Q1307276": "single-family detached home"
+		},
+		"slurry_tank": {
+			"http://www.wikidata.org/entity/Q1560125": "slurry pit"
+		},
+		"pavilion": {
+			"http://www.wikidata.org/entity/Q47525089": "sports pavilion"
+		},
+		"stable": {
+			"http://www.wikidata.org/entity/Q214252": "stable"
+		},
+		"stadium": {
+			"http://www.wikidata.org/entity/Q483110": "stadium"
+		},
+		"train_station": {
+			"http://www.wikidata.org/entity/Q1339195": "station building"
+		},
+		"stilt_house": {
+			"http://www.wikidata.org/entity/Q33565": "stilt house"
+		},
+		"supermarket": {
+			"http://www.wikidata.org/entity/Q180846": "supermarket"
+		},
+		"synagogue": {
+			"http://www.wikidata.org/entity/Q34627": "synagogue"
+		},
+		"terrace": {
+			"http://www.wikidata.org/entity/Q875016": "terraced house"
+		},
+		"theatre": {
+			"http://www.wikidata.org/entity/Q24354": "theater"
+		},
+		"tower": {
+			"http://www.wikidata.org/entity/Q12518": "tower"
+		},
+		"transformer_tower": {
+			"http://www.wikidata.org/entity/Q2461128": "transformer tower"
+		},
+		"university": {
+			"http://www.wikidata.org/entity/Q19844914": "university building"
+		},
+		"warehouse": {
+			"http://www.wikidata.org/entity/Q1362225": "warehouse"
+		},
+		"water_tower": {
+			"http://www.wikidata.org/entity/Q274153": "water tower"
+		}
+	},
+	"bridge:structure": {
+		"humpback": {
+			"http://www.wikidata.org/entity/Q5941243": "Humpback bridge"
+		},
+		"arch": {
+			"http://www.wikidata.org/entity/Q158438": "arch bridge"
+		},
+		"beam": {
+			"http://www.wikidata.org/entity/Q158626": "beam bridge"
+		},
+		"": {
+			"http://www.wikidata.org/entity/Q17644823": "bridge by structural type"
+		},
+		"cable-stayed": {
+			"http://www.wikidata.org/entity/Q158555": "cable-stayed bridge"
+		},
+		"floating": {
+			"http://www.wikidata.org/entity/Q2104072": "pontoon bridge"
+		},
+		"simple-suspension": {
+			"http://www.wikidata.org/entity/Q3916505": "simple suspension bridge"
+		},
+		"suspension": {
+			"http://www.wikidata.org/entity/Q12570": "suspension bridge"
+		},
+		"truss": {
+			"http://www.wikidata.org/entity/Q158218": "truss bridge"
+		}
+	},
+	"iata": {
+		"": {
+			"http://www.wikidata.org/entity/P238": "IATA airport code"
+		}
+	},
+	"uic_ref": {
+		"": {
+			"http://www.wikidata.org/entity/P954": "IBNR ID"
+		}
+	},
+	"icao": {
+		"": {
+			"http://www.wikidata.org/entity/P239": "ICAO airport code"
+		}
+	},
+	"ref:INSEE": {
+		"": {
+			"http://www.wikidata.org/entity/P374": "INSEE municipality code"
+		}
+	},
+	"service": {
+		"spur": {
+			"http://www.wikidata.org/entity/Q1891817": "Industrial spur"
+		},
+		"yard": {
+			"http://www.wikidata.org/entity/Q19563580": "rail yard"
+		},
+		"siding": {
+			"http://www.wikidata.org/entity/Q8253692": "siding"
+		}
+	},
+	"basin": {
+		"infiltration": {
+			"http://www.wikidata.org/entity/Q6029662": "Infiltration basin"
+		},
+		"retention": {
+			"http://www.wikidata.org/entity/Q1413117": "Retention basin"
+		},
+		"detention": {
+			"http://www.wikidata.org/entity/Q3500933": "detention basin"
+		}
+	},
+	"contact:instagram": {
+		"": {
+			"http://www.wikidata.org/entity/P2003": "Instagram username"
+		}
+	},
+	"name:pronunciation": {
+		"": {
+			"http://www.wikidata.org/entity/Q21204": "International Phonetic Alphabet"
+		}
+	},
+	"ref:isil": {
+		"": {
+			"http://www.wikidata.org/entity/P791": "International Standard Identifier for Libraries"
+		}
+	},
+	"aerialway": {
+		"j-bar": {
+			"http://www.wikidata.org/entity/Q6103826": "J-bar lift"
+		},
+		"rope_tow": {
+			"http://www.wikidata.org/entity/Q1975677": "Ski tow"
+		},
+		"t-bar": {
+			"http://www.wikidata.org/entity/Q17144502": "T-bar lift"
+		},
+		"cable_car": {
+			"http://www.wikidata.org/entity/Q498002": "aerial tramway"
+		},
+		"": {
+			"http://www.wikidata.org/entity/Q1054650": "cable transport"
+		},
+		"chair_lift": {
+			"http://www.wikidata.org/entity/Q850767": "chairlift"
+		},
+		"gondola": {
+			"http://www.wikidata.org/entity/Q1576693": "gondola lift"
+		},
+		"mixed_lift": {
+			"http://www.wikidata.org/entity/Q3546684": "hybrid lift"
+		},
+		"magic_carpet": {
+			"http://www.wikidata.org/entity/Q6730907": "magic carpet"
+		},
+		"goods": {
+			"http://www.wikidata.org/entity/Q2367733": "ropeway conveyor"
+		},
+		"platter": {
+			"http://www.wikidata.org/entity/Q17136481": "surface lift"
+		},
+		"zip_line": {
+			"http://www.wikidata.org/entity/Q1154882": "zip-line"
+		}
+	},
+	"historic": {
+		"castle": {
+			"http://www.wikidata.org/entity/Q263274": "kremlin"
+		},
+		"archaeological_site": {
+			"http://www.wikidata.org/entity/Q839954": "archaeological site"
+		},
+		"cannon": {
+			"http://www.wikidata.org/entity/Q81103": "cannon"
+		},
+		"city_gate": {
+			"http://www.wikidata.org/entity/Q82117": "city gate"
+		},
+		"fort": {
+			"http://www.wikidata.org/entity/Q1785071": "fort"
+		},
+		"": {
+			"http://www.wikidata.org/entity/Q1081138": "historic site"
+		},
+		"manor": {
+			"http://www.wikidata.org/entity/Q879050": "manor house"
+		},
+		"memorial": {
+			"http://www.wikidata.org/entity/Q5003624": "memorial"
+		},
+		"milestone": {
+			"http://www.wikidata.org/entity/Q10145": "milestone"
+		},
+		"monument": {
+			"http://www.wikidata.org/entity/Q4989906": "monument"
+		},
+		"ship": {
+			"http://www.wikidata.org/entity/Q575727": "museum ship"
+		},
+		"palace": {
+			"http://www.wikidata.org/entity/Q16560": "palace"
+		},
+		"ruins": {
+			"http://www.wikidata.org/entity/Q109607": "ruins"
+		},
+		"rune_stone": {
+			"http://www.wikidata.org/entity/Q815241": "runestone"
+		},
+		"wreck": {
+			"http://www.wikidata.org/entity/Q852190": "shipwreck"
+		},
+		"battlefield": {
+			"http://www.wikidata.org/entity/Q718893": "theater"
+		},
+		"tomb": {
+			"http://www.wikidata.org/entity/Q381885": "tomb"
+		},
+		"citywalls": {
+			"http://www.wikidata.org/entity/Q16748868": "urban defence"
+		},
+		"bailey": {
+			"http://www.wikidata.org/entity/Q18394483": "ward"
+		},
+		"wayside_cross": {
+			"http://www.wikidata.org/entity/Q2309609": "wayside cross"
+		},
+		"wayside_shrine": {
+			"http://www.wikidata.org/entity/Q3395121": "wayside shrine"
+		}
+	},
+	"currency:JPY": {
+		"": {
+			"http://www.wikidata.org/entity/Q8146": "Japanese yen"
+		}
+	},
+	"koatuu": {
+		"": {
+			"http://www.wikidata.org/entity/P1077": "KOATUU identifier"
+		}
+	},
+	"currency:LTC": {
+		"": {
+			"http://www.wikidata.org/entity/Q4043030": "Litecoin"
+		}
+	},
+	"payment:litecoin": {
+		"": {
+			"http://www.wikidata.org/entity/Q4043030": "Litecoin"
+		}
+	},
+	"mapillary": {
+		"": {
+			"http://www.wikidata.org/entity/P1947": "Mapillary ID"
+		}
+	},
+	"contact:mastodon": {
+		"": {
+			"http://www.wikidata.org/entity/P4033": "Mastodon address"
+		}
+	},
+	"ref:mhs": {
+		"": {
+			"http://www.wikidata.org/entity/P380": "Mérimée ID"
+		}
+	},
+	"ref:nrhp": {
+		"": {
+			"http://www.wikidata.org/entity/P649": "NRHP reference number"
+		}
+	},
+	"ownership": {
+		"national": {
+			"http://www.wikidata.org/entity/Q1410668": "National Wildlife Refuge"
+		}
+	},
+	"openbenches:id": {
+		"": {
+			"http://www.wikidata.org/entity/Q47526250": "OpenBenches"
+		}
+	},
+	"tourism": {
+		"caravan_site": {
+			"http://www.wikidata.org/entity/Q1424620": "RV park"
+		},
+		"theme_park": {
+			"http://www.wikidata.org/entity/Q194195": "amusement park"
+		},
+		"gallery": {
+			"http://www.wikidata.org/entity/Q207694": "art museum"
+		},
+		"wilderness_hut": {
+			"http://www.wikidata.org/entity/Q39425": "bothy"
+		},
+		"camp_site": {
+			"http://www.wikidata.org/entity/Q832778": "campsite"
+		},
+		"guest_house": {
+			"http://www.wikidata.org/entity/Q2460422": "guest house"
+		},
+		"chalet": {
+			"http://www.wikidata.org/entity/Q1371789": "holiday home"
+		},
+		"hostel": {
+			"http://www.wikidata.org/entity/Q654772": "hostel"
+		},
+		"hotel": {
+			"http://www.wikidata.org/entity/Q27686": "hotel"
+		},
+		"motel": {
+			"http://www.wikidata.org/entity/Q216212": "motel"
+		},
+		"alpine_hut": {
+			"http://www.wikidata.org/entity/Q182676": "mountain hut"
+		},
+		"museum": {
+			"http://www.wikidata.org/entity/Q33506": "museum"
+		},
+		"picnic_site": {
+			"http://www.wikidata.org/entity/Q47520603": "picnic site"
+		},
+		"aquarium": {
+			"http://www.wikidata.org/entity/Q2281788": "public aquarium"
+		},
+		"viewpoint": {
+			"http://www.wikidata.org/entity/Q6017969": "scenic viewpoint"
+		},
+		"": {
+			"http://www.wikidata.org/entity/Q49389": "tourism"
+		},
+		"yes": {
+			"http://www.wikidata.org/entity/Q49389": "tourism"
+		},
+		"attraction": {
+			"http://www.wikidata.org/entity/Q570116": "tourist attraction"
+		},
+		"apartment": {
+			"http://www.wikidata.org/entity/Q47520713": "vacation apartment"
+		},
+		"information": {
+			"http://www.wikidata.org/entity/Q1587716": "visitor center"
+		},
+		"wine_cellar": {
+			"http://www.wikidata.org/entity/Q22995": "wine cellar"
+		},
+		"artwork": {
+			"http://www.wikidata.org/entity/Q838948": "work of art"
+		},
+		"zoo": {
+			"http://www.wikidata.org/entity/Q43501": "zoo"
+		}
+	},
+	"school:de": {
+		"Realschule": {
+			"http://www.wikidata.org/entity/Q667471": "Realschule"
+		},
+		"Gesamtschule": {
+			"http://www.wikidata.org/entity/Q682697": "comprehensive school"
+		},
+		"Gymnasium": {
+			"http://www.wikidata.org/entity/Q55043": "gymnasium"
+		},
+		"Förderschule": {
+			"http://www.wikidata.org/entity/Q1110689": "special education school"
+		}
+	},
+	"recycling_type": {
+		"container": {
+			"http://www.wikidata.org/entity/Q4743886": "Recycling bin"
+		},
+		"centre": {
+			"http://www.wikidata.org/entity/Q27106436": "recycling center"
+		}
+	},
+	"ref:rce": {
+		"": {
+			"http://www.wikidata.org/entity/P359": "Rijksmonument ID"
+		}
+	},
+	"natural": {
+		"tree_row": {
+			"http://www.wikidata.org/entity/Q491700": "Roadside tree"
+		},
+		"arete": {
+			"http://www.wikidata.org/entity/Q1334383": "arête"
+		},
+		"bay": {
+			"http://www.wikidata.org/entity/Q39594": "bay"
+		},
+		"beach": {
+			"http://www.wikidata.org/entity/Q40080": "beach"
+		},
+		"water": {
+			"http://www.wikidata.org/entity/Q15324": "body of water"
+		},
+		"cave_entrance": {
+			"http://www.wikidata.org/entity/Q35509": "cave"
+		},
+		"cliff": {
+			"http://www.wikidata.org/entity/Q107679": "cliff"
+		},
+		"coastline": {
+			"http://www.wikidata.org/entity/Q1701967": "coastal line"
+		},
+		"fell": {
+			"http://www.wikidata.org/entity/Q5421955": "fell"
+		},
+		"wood": {
+			"http://www.wikidata.org/entity/Q811600": "sacred grove"
+		},
+		"glacier": {
+			"http://www.wikidata.org/entity/Q35666": "glacier"
+		},
+		"grassland": {
+			"http://www.wikidata.org/entity/Q1006733": "grassland"
+		},
+		"heath": {
+			"http://www.wikidata.org/entity/Q27590": "heath"
+		},
+		"moor": {
+			"http://www.wikidata.org/entity/Q1092661": "moorland"
+		},
+		"reef": {
+			"http://www.wikidata.org/entity/Q184358": "reef"
+		},
+		"ridge": {
+			"http://www.wikidata.org/entity/Q740445": "ridge"
+		},
+		"rock": {
+			"http://www.wikidata.org/entity/Q8063": "rock"
+		},
+		"saddle": {
+			"http://www.wikidata.org/entity/Q10862618": "saddle"
+		},
+		"scree": {
+			"http://www.wikidata.org/entity/Q1133195": "scree"
+		},
+		"scrub": {
+			"http://www.wikidata.org/entity/Q879641": "shrubland"
+		},
+		"sinkhole": {
+			"http://www.wikidata.org/entity/Q188734": "sinkhole"
+		},
+		"spring": {
+			"http://www.wikidata.org/entity/Q124714": "spring"
+		},
+		"peak": {
+			"http://www.wikidata.org/entity/Q207326": "summit"
+		},
+		"tree": {
+			"http://www.wikidata.org/entity/Q10884": "tree"
+		},
+		"valley": {
+			"http://www.wikidata.org/entity/Q39816": "valley"
+		},
+		"volcano": {
+			"http://www.wikidata.org/entity/Q8072": "volcano"
+		},
+		"wetland": {
+			"http://www.wikidata.org/entity/Q170321": "wetland"
+		}
+	},
+	"currency:RUB": {
+		"": {
+			"http://www.wikidata.org/entity/Q41044": "Russian ruble"
+		}
+	},
+	"ref:sandre": {
+		"": {
+			"http://www.wikidata.org/entity/P1717": "SANDRE ID"
+		}
+	},
+	"vending": {
+		"stamps": {
+			"http://www.wikidata.org/entity/Q381222": "Stamp vending machine"
+		},
+		"fishing_bait": {
+			"http://www.wikidata.org/entity/Q2595247": "bait machine"
+		},
+		"books": {
+			"http://www.wikidata.org/entity/Q997921": "book vending machine"
+		},
+		"cigarettes": {
+			"http://www.wikidata.org/entity/Q199329": "cigarette machine"
+		},
+		"condoms": {
+			"http://www.wikidata.org/entity/Q1047284": "condom machine"
+		},
+		"drinks": {
+			"http://www.wikidata.org/entity/Q16831578": "drink vending machine"
+		},
+		"milk": {
+			"http://www.wikidata.org/entity/Q1524788": "milk vending machine"
+		},
+		"newspapers": {
+			"http://www.wikidata.org/entity/Q187022": "newspaper vending machine"
+		},
+		"sweets": {
+			"http://www.wikidata.org/entity/Q2295670": "snack machine"
+		}
+	},
+	"communication:television": {
+		"yes": {
+			"http://www.wikidata.org/entity/Q11166728": "TV tower"
+		}
+	},
+	"contact:tripadvisor": {
+		"": {
+			"http://www.wikidata.org/entity/P3134": "TripAdvisor ID"
+		}
+	},
+	"payment:troika": {
+		"": {
+			"http://www.wikidata.org/entity/Q15145883": "Troika card"
+		}
+	},
+	"contact:twitter": {
+		"": {
+			"http://www.wikidata.org/entity/P2002": "Twitter username"
+		}
+	},
+	"twitter": {
+		"": {
+			"http://www.wikidata.org/entity/P2002": "Twitter username"
+		}
+	},
+	"ref:crs": {
+		"": {
+			"http://www.wikidata.org/entity/P4755": "UK railway station code"
+		}
+	},
+	"url": {
+		"": {
+			"http://www.wikidata.org/entity/P2699": "URL"
+		}
+	},
+	"currency:USD": {
+		"": {
+			"http://www.wikidata.org/entity/Q4917": "United States dollar"
+		}
+	},
+	"ref:whc": {
+		"": {
+			"http://www.wikidata.org/entity/P757": "World Heritage Site ID"
+		}
+	},
+	"whc:criteria": {
+		"": {
+			"http://www.wikidata.org/entity/P2614": "World Heritage criteria"
+		}
+	},
+	"contact:yelp": {
+		"": {
+			"http://www.wikidata.org/entity/P3108": "Yelp ID"
+		}
+	},
+	"currency:ZEC": {
+		"": {
+			"http://www.wikidata.org/entity/Q27148141": "Zcash"
+		}
+	},
+	"railway:switch": {
+		"abt": {
+			"http://www.wikidata.org/entity/Q334561": "abt's switch"
+		}
+	},
+	"admin_level": {
+		"6": {
+			"http://www.wikidata.org/entity/Q769603": "non-metropolitan county"
+		},
+		"": {
+			"http://www.wikidata.org/entity/Q56061": "administrative territorial entity"
+		}
+	},
+	"boundary": {
+		"administrative": {
+			"http://www.wikidata.org/entity/Q56061": "administrative territorial entity"
+		},
+		"marker": {
+			"http://www.wikidata.org/entity/Q921099": "boundary marker"
+		},
+		"ceremonial": {
+			"http://www.wikidata.org/entity/Q180673": "ceremonial county of England"
+		},
+		"civil_parish": {
+			"http://www.wikidata.org/entity/Q4976993": "civil parish"
+		},
+		"political": {
+			"http://www.wikidata.org/entity/Q192611": "constituency"
+		},
+		"maritime": {
+			"http://www.wikidata.org/entity/Q3089219": "maritime boundary"
+		},
+		"national_park": {
+			"http://www.wikidata.org/entity/Q46169": "national park"
+		},
+		"protected_area": {
+			"http://www.wikidata.org/entity/Q473972": "protected area"
+		},
+		"vice_county": {
+			"http://www.wikidata.org/entity/Q7925010": "vice-county"
+		}
+	},
+	"advertising": {
+		"column": {
+			"http://www.wikidata.org/entity/Q13964": "advertising column"
+		},
+		"billboard": {
+			"http://www.wikidata.org/entity/Q623149": "billboard"
+		}
+	},
+	"aeroway": {
+		"aerodrome": {
+			"http://www.wikidata.org/entity/Q62447": "aerodrome"
+		},
+		"": {
+			"http://www.wikidata.org/entity/Q20977775": "air transport infrastructure"
+		},
+		"terminal": {
+			"http://www.wikidata.org/entity/Q849706": "airport terminal"
+		},
+		"navigationaid": {
+			"http://www.wikidata.org/entity/Q475111": "approach lighting system"
+		},
+		"apron": {
+			"http://www.wikidata.org/entity/Q573970": "apron"
+		},
+		"gate": {
+			"http://www.wikidata.org/entity/Q247739": "gate"
+		},
+		"hangar": {
+			"http://www.wikidata.org/entity/Q192375": "hangar"
+		},
+		"helipad": {
+			"http://www.wikidata.org/entity/Q534159": "helipad"
+		},
+		"heliport": {
+			"http://www.wikidata.org/entity/Q502074": "heliport"
+		},
+		"runway": {
+			"http://www.wikidata.org/entity/Q184590": "runway"
+		},
+		"taxiway": {
+			"http://www.wikidata.org/entity/Q910386": "taxiway"
+		},
+		"windsock": {
+			"http://www.wikidata.org/entity/Q216346": "windsock"
+		}
+	},
+	"shop": {
+		"agrarian": {
+			"http://www.wikidata.org/entity/Q47508913": "agrarian shop"
+		},
+		"anime": {
+			"http://www.wikidata.org/entity/Q11284331": "anime shop"
+		},
+		"antiques": {
+			"http://www.wikidata.org/entity/Q3267025": "antique shop"
+		},
+		"appliance": {
+			"http://www.wikidata.org/entity/Q43156919": "appliance store"
+		},
+		"craft": {
+			"http://www.wikidata.org/entity/Q47517111": "art and crafts shop"
+		},
+		"hearing_aids": {
+			"http://www.wikidata.org/entity/Q1644347": "audiologist"
+		},
+		"car_repair": {
+			"http://www.wikidata.org/entity/Q1310967": "automobile repair shop"
+		},
+		"baby_goods": {
+			"http://www.wikidata.org/entity/Q47507911": "baby goods shop"
+		},
+		"bag": {
+			"http://www.wikidata.org/entity/Q47507924": "bag shop"
+		},
+		"bakery": {
+			"http://www.wikidata.org/entity/Q274393": "bakery"
+		},
+		"bathroom_furnishing": {
+			"http://www.wikidata.org/entity/Q47508983": "bathroom furnishing store"
+		},
+		"beauty": {
+			"http://www.wikidata.org/entity/Q1195245": "beauty salon"
+		},
+		"bed": {
+			"http://www.wikidata.org/entity/Q47516331": "bed shop"
+		},
+		"beverages": {
+			"http://www.wikidata.org/entity/Q47504516": "beverage shop"
+		},
+		"bicycle": {
+			"http://www.wikidata.org/entity/Q26721034": "bike shop"
+		},
+		"games": {
+			"http://www.wikidata.org/entity/Q47517120": "board games shop"
+		},
+		"boat": {
+			"http://www.wikidata.org/entity/Q47516516": "boat shop"
+		},
+		"bookmaker": {
+			"http://www.wikidata.org/entity/Q664702": "bookmaker"
+		},
+		"books": {
+			"http://www.wikidata.org/entity/Q200764": "bookstore"
+		},
+		"gas": {
+			"http://www.wikidata.org/entity/Q47516067": "bottled gas shop"
+		},
+		"boutique": {
+			"http://www.wikidata.org/entity/Q1068824": "boutique"
+		},
+		"brewing_supplies": {
+			"http://www.wikidata.org/entity/Q47504642": "brewing supply"
+		},
+		"trade": {
+			"http://www.wikidata.org/entity/Q811891": "building materials trade"
+		},
+		"butcher": {
+			"http://www.wikidata.org/entity/Q13164546": "butcher shop"
+		},
+		"camera": {
+			"http://www.wikidata.org/entity/Q47517150": "camera shop"
+		},
+		"candles": {
+			"http://www.wikidata.org/entity/Q47516343": "candle shop"
+		},
+		"car": {
+			"http://www.wikidata.org/entity/Q786803": "car dealership"
+		},
+		"car_parts": {
+			"http://www.wikidata.org/entity/Q47516524": "car parts shop"
+		},
+		"carpet": {
+			"http://www.wikidata.org/entity/Q47516346": "carpet shop"
+		},
+		"wholesale": {
+			"http://www.wikidata.org/entity/Q320677": "cash and carry"
+		},
+		"charity": {
+			"http://www.wikidata.org/entity/Q153551": "charity shop"
+		},
+		"cheese": {
+			"http://www.wikidata.org/entity/Q3088348": "cheesery"
+		},
+		"chocolate": {
+			"http://www.wikidata.org/entity/Q47504660": "chocolate shop"
+		},
+		"clothes": {
+			"http://www.wikidata.org/entity/Q2090555": "clothing store"
+		},
+		"collector": {
+			"http://www.wikidata.org/entity/Q47517090": "collector's items store"
+		},
+		"art": {
+			"http://www.wikidata.org/entity/Q1007870": "commercial art gallery"
+		},
+		"computer": {
+			"http://www.wikidata.org/entity/Q43182520": "computer shop"
+		},
+		"confectionery": {
+			"http://www.wikidata.org/entity/Q3574069": "confectionery store"
+		},
+		"convenience": {
+			"http://www.wikidata.org/entity/Q7361709": "convenience store"
+		},
+		"copyshop": {
+			"http://www.wikidata.org/entity/Q1131628": "copy shop"
+		},
+		"cosmetics": {
+			"http://www.wikidata.org/entity/Q47508166": "cosmetic shop"
+		},
+		"curtain": {
+			"http://www.wikidata.org/entity/Q47516347": "curtain shop"
+		},
+		"dairy": {
+			"http://www.wikidata.org/entity/Q17009758": "dairy store"
+		},
+		"deli": {
+			"http://www.wikidata.org/entity/Q3231410": "delicatessen"
+		},
+		"department_store": {
+			"http://www.wikidata.org/entity/Q216107": "department store"
+		},
+		"doors": {
+			"http://www.wikidata.org/entity/Q47516351": "door shop"
+		},
+		"chemist": {
+			"http://www.wikidata.org/entity/Q1260046": "drugstore"
+		},
+		"dry_cleaning": {
+			"http://www.wikidata.org/entity/Q42817497": "dry cleaner"
+		},
+		"electrical": {
+			"http://www.wikidata.org/entity/Q47515948": "electrical supply store"
+		},
+		"electronics": {
+			"http://www.wikidata.org/entity/Q43156817": "electronics store"
+		},
+		"energy": {
+			"http://www.wikidata.org/entity/Q47515998": "energy provider"
+		},
+		"fabric": {
+			"http://www.wikidata.org/entity/Q47508051": "fabric shop"
+		},
+		"farm": {
+			"http://www.wikidata.org/entity/Q1371823": "farm shop"
+		},
+		"fashion": {
+			"http://www.wikidata.org/entity/Q47508054": "fashion shop"
+		},
+		"fireplace": {
+			"http://www.wikidata.org/entity/Q47516018": "fireplace shop"
+		},
+		"pyrotechnics": {
+			"http://www.wikidata.org/entity/Q47519677": "firework supply store"
+		},
+		"seafood": {
+			"http://www.wikidata.org/entity/Q47507842": "fish and seafood store"
+		},
+		"fishing": {
+			"http://www.wikidata.org/entity/Q47516535": "fishing equipment store"
+		},
+		"fishmonger": {
+			"http://www.wikidata.org/entity/Q550594": "fishmonger"
+		},
+		"flooring": {
+			"http://www.wikidata.org/entity/Q47516353": "flooring shop"
+		},
+		"florist": {
+			"http://www.wikidata.org/entity/Q2626411": "florist"
+		},
+		"frame": {
+			"http://www.wikidata.org/entity/Q47517115": "frame shop"
+		},
+		"free_flying": {
+			"http://www.wikidata.org/entity/Q47516538": "free flying equipment store"
+		},
+		"frozen_food": {
+			"http://www.wikidata.org/entity/Q47504702": "frozen food shop"
+		},
+		"fuel": {
+			"http://www.wikidata.org/entity/Q47516533": "fuel shop"
+		},
+		"funerals_directors": {
+			"http://www.wikidata.org/entity/Q316490": "funeral director"
+		},
+		"furniture": {
+			"http://www.wikidata.org/entity/Q47516358": "furniture shop"
+		},
+		"garden_centre": {
+			"http://www.wikidata.org/entity/Q260569": "garden centre"
+		},
+		"garden_furniture": {
+			"http://www.wikidata.org/entity/Q47516049": "garden furniture shop"
+		},
+		"general": {
+			"http://www.wikidata.org/entity/Q1244860": "general store"
+		},
+		"gift": {
+			"http://www.wikidata.org/entity/Q865693": "gift shop"
+		},
+		"glaziery": {
+			"http://www.wikidata.org/entity/Q1529413": "glaziery"
+		},
+		"golf": {
+			"http://www.wikidata.org/entity/Q47528737": "golf store"
+		},
+		"greengrocer": {
+			"http://www.wikidata.org/entity/Q145658": "greengrocer"
+		},
+		"grocery": {
+			"http://www.wikidata.org/entity/Q13584407": "grocery store"
+		},
+		"weapons": {
+			"http://www.wikidata.org/entity/Q25112996": "gun shop"
+		},
+		"hairdresser": {
+			"http://www.wikidata.org/entity/Q55187": "hairdresser"
+		},
+		"hairdresser_supply": {
+			"http://www.wikidata.org/entity/Q47508170": "hairdresser supply shop"
+		},
+		"doityourself": {
+			"http://www.wikidata.org/entity/Q811530": "hardware store"
+		},
+		"hardware": {
+			"http://www.wikidata.org/entity/Q811530": "hardware store"
+		},
+		"herbalist": {
+			"http://www.wikidata.org/entity/Q3133901": "herbalist"
+		},
+		"hifi": {
+			"http://www.wikidata.org/entity/Q47516431": "hifi store"
+		},
+		"houseware": {
+			"http://www.wikidata.org/entity/Q47516128": "houseware shop"
+		},
+		"hunting": {
+			"http://www.wikidata.org/entity/Q47516539": "hunting shop"
+		},
+		"ice_cream": {
+			"http://www.wikidata.org/entity/Q1311064": "ice cream parlor"
+		},
+		"laundry": {
+			"http://www.wikidata.org/entity/Q1143034": "self-service laundry"
+		},
+		"interior_decoration": {
+			"http://www.wikidata.org/entity/Q47516362": "interior decorations shop"
+		},
+		"jetski": {
+			"http://www.wikidata.org/entity/Q47516541": "jetski store"
+		},
+		"jewelry": {
+			"http://www.wikidata.org/entity/Q20708021": "jewellery shop"
+		},
+		"kiosk": {
+			"http://www.wikidata.org/entity/Q693369": "kiosk"
+		},
+		"kitchen": {
+			"http://www.wikidata.org/entity/Q47516368": "kitchen shop"
+		},
+		"lamps": {
+			"http://www.wikidata.org/entity/Q47516372": "lamp store"
+		},
+		"lighting": {
+			"http://www.wikidata.org/entity/Q47516372": "lamp store"
+		},
+		"leather": {
+			"http://www.wikidata.org/entity/Q47508066": "leather shop"
+		},
+		"alcohol": {
+			"http://www.wikidata.org/entity/Q22995": "wine cellar"
+		},
+		"locksmith": {
+			"http://www.wikidata.org/entity/Q3479990": "locksmith"
+		},
+		"lottery": {
+			"http://www.wikidata.org/entity/Q47519608": "lottery store"
+		},
+		"massage": {
+			"http://www.wikidata.org/entity/Q901922": "massage parlor"
+		},
+		"medical_supply": {
+			"http://www.wikidata.org/entity/Q47508191": "medical equipment shop"
+		},
+		"haberdashery": {
+			"http://www.wikidata.org/entity/Q350039": "mercery"
+		},
+		"military_surplus": {
+			"http://www.wikidata.org/entity/Q3505412": "military surplus"
+		},
+		"mobile_phone": {
+			"http://www.wikidata.org/entity/Q47516435": "mobile phone shop"
+		},
+		"money_lender": {
+			"http://www.wikidata.org/entity/Q2893189": "moneylender"
+		},
+		"motorcycle": {
+			"http://www.wikidata.org/entity/Q47516542": "motorcycle shop"
+		},
+		"musical_instrument": {
+			"http://www.wikidata.org/entity/Q24284215": "musical instrument store"
+		},
+		"newsagent": {
+			"http://www.wikidata.org/entity/Q1528905": "newsagent"
+		},
+		"nutrition_supplements": {
+			"http://www.wikidata.org/entity/Q47508200": "nutrition supplements store"
+		},
+		"optician": {
+			"http://www.wikidata.org/entity/Q1996635": "optician"
+		},
+		"outdoor": {
+			"http://www.wikidata.org/entity/Q47516546": "outdoor equipment store"
+		},
+		"paint": {
+			"http://www.wikidata.org/entity/Q47516196": "paint store"
+		},
+		"party": {
+			"http://www.wikidata.org/entity/Q47519648": "party shop"
+		},
+		"pasta": {
+			"http://www.wikidata.org/entity/Q47505049": "pasta store"
+		},
+		"pastry": {
+			"http://www.wikidata.org/entity/Q47505416": "pastry shop"
+		},
+		"pawnbroker": {
+			"http://www.wikidata.org/entity/Q176637": "pawnbroker"
+		},
+		"perfumery": {
+			"http://www.wikidata.org/entity/Q1509937": "perfumery"
+		},
+		"pet": {
+			"http://www.wikidata.org/entity/Q220142": "pet store"
+		},
+		"photo": {
+			"http://www.wikidata.org/entity/Q47517141": "photo shop"
+		},
+		"pottery": {
+			"http://www.wikidata.org/entity/Q11642": "pottery"
+		},
+		"atv": {
+			"http://www.wikidata.org/entity/Q47516482": "quad shop"
+		},
+		"radiotechnics": {
+			"http://www.wikidata.org/entity/Q47516439": "radiotechnic store"
+		},
+		"estate_agent": {
+			"http://www.wikidata.org/entity/Q519076": "real estate broker"
+		},
+		"music": {
+			"http://www.wikidata.org/entity/Q2243978": "record shop"
+		},
+		"religion": {
+			"http://www.wikidata.org/entity/Q47519786": "religous merchandising store"
+		},
+		"robot": {
+			"http://www.wikidata.org/entity/Q47516423": "robot shop"
+		},
+		"scuba_diving": {
+			"http://www.wikidata.org/entity/Q47516552": "scuba diving equipment store"
+		},
+		"second_hand": {
+			"http://www.wikidata.org/entity/Q2925872": "second-hand shop"
+		},
+		"security": {
+			"http://www.wikidata.org/entity/Q47516232": "security shop"
+		},
+		"storage_rental": {
+			"http://www.wikidata.org/entity/Q401404": "self storage"
+		},
+		"sewing": {
+			"http://www.wikidata.org/entity/Q47508075": "sewing shop"
+		},
+		"erotic": {
+			"http://www.wikidata.org/entity/Q221618": "sex shop"
+		},
+		"chandler": {
+			"http://www.wikidata.org/entity/Q2235104": "ship chandler"
+		},
+		"ship_chandler": {
+			"http://www.wikidata.org/entity/Q2235104": "ship chandler"
+		},
+		"shoes": {
+			"http://www.wikidata.org/entity/Q7500021": "shoe store"
+		},
+		"": {
+			"http://www.wikidata.org/entity/Q213441": "shop"
+		},
+		"yes": {
+			"http://www.wikidata.org/entity/Q213441": "shop"
+		},
+		"mall": {
+			"http://www.wikidata.org/entity/Q11315": "shopping mall"
+		},
+		"shopping_centre": {
+			"http://www.wikidata.org/entity/Q11315": "shopping mall"
+		},
+		"ski": {
+			"http://www.wikidata.org/entity/Q47516563": "ski store"
+		},
+		"tobacco": {
+			"http://www.wikidata.org/entity/Q16406": "smoke shop"
+		},
+		"snowmobile": {
+			"http://www.wikidata.org/entity/Q47516564": "snowmobile store"
+		},
+		"spices": {
+			"http://www.wikidata.org/entity/Q47507844": "spice store"
+		},
+		"sports": {
+			"http://www.wikidata.org/entity/Q47516567": "sport shop"
+		},
+		"stationery": {
+			"http://www.wikidata.org/entity/Q24309558": "stationer"
+		},
+		"supermarket": {
+			"http://www.wikidata.org/entity/Q180846": "supermarket"
+		},
+		"swimming_pool": {
+			"http://www.wikidata.org/entity/Q47517083": "swimming pool equipment shop"
+		},
+		"tailor": {
+			"http://www.wikidata.org/entity/Q47508085": "tailor shop"
+		},
+		"tattoo": {
+			"http://www.wikidata.org/entity/Q27038997": "tattoo parlor"
+		},
+		"tea": {
+			"http://www.wikidata.org/entity/Q47507849": "tea shop"
+		},
+		"ticket": {
+			"http://www.wikidata.org/entity/Q47519615": "ticket shop"
+		},
+		"tiles": {
+			"http://www.wikidata.org/entity/Q47516376": "tile store"
+		},
+		"tyres": {
+			"http://www.wikidata.org/entity/Q47516839": "tire shop"
+		},
+		"toys": {
+			"http://www.wikidata.org/entity/Q1318959": "toy store"
+		},
+		"travel_agency": {
+			"http://www.wikidata.org/entity/Q217107": "travel agency"
+		},
+		"trophy": {
+			"http://www.wikidata.org/entity/Q47517159": "trophy store"
+		},
+		"vacant": {
+			"http://www.wikidata.org/entity/Q47519700": "vacant shop"
+		},
+		"vacuum_cleaner": {
+			"http://www.wikidata.org/entity/Q47516441": "vacuum cleaner store"
+		},
+		"e-cigarette": {
+			"http://www.wikidata.org/entity/Q21017121": "vape shop"
+		},
+		"variety_store": {
+			"http://www.wikidata.org/entity/Q2301114": "variety store"
+		},
+		"video_games": {
+			"http://www.wikidata.org/entity/Q7927919": "video game store"
+		},
+		"video": {
+			"http://www.wikidata.org/entity/Q1756711": "video rental shop"
+		},
+		"watches": {
+			"http://www.wikidata.org/entity/Q47508094": "watch shop"
+		},
+		"window_blind": {
+			"http://www.wikidata.org/entity/Q47516378": "window blind shop"
+		},
+		"wine": {
+			"http://www.wikidata.org/entity/Q21117149": "wine shop"
+		}
+	},
+	"landuse": {
+		"allotments": {
+			"http://www.wikidata.org/entity/Q8054653": "allotment"
+		},
+		"brownfield": {
+			"http://www.wikidata.org/entity/Q896586": "brownfield land"
+		},
+		"commercial": {
+			"http://www.wikidata.org/entity/Q1133961": "commercial district"
+		},
+		"cemetery": {
+			"http://www.wikidata.org/entity/Q39614": "cemetery"
+		},
+		"forest": {
+			"http://www.wikidata.org/entity/Q2586008": "commercial forest"
+		},
+		"construction": {
+			"http://www.wikidata.org/entity/Q360418": "construction site"
+		},
+		"farmyard": {
+			"http://www.wikidata.org/entity/Q42811590": "farmyard"
+		},
+		"farmland": {
+			"http://www.wikidata.org/entity/Q188869": "field"
+		},
+		"railway": {
+			"http://www.wikidata.org/entity/Q800279": "railway facility"
+		},
+		"greenfield": {
+			"http://www.wikidata.org/entity/Q12018455": "greenfield land"
+		},
+		"residential": {
+			"http://www.wikidata.org/entity/Q674950": "residential area"
+		},
+		"industrial": {
+			"http://www.wikidata.org/entity/Q329683": "industrial park"
+		},
+		"landfill": {
+			"http://www.wikidata.org/entity/Q152810": "landfill"
+		},
+		"grass": {
+			"http://www.wikidata.org/entity/Q207766": "lawn"
+		},
+		"recreation_ground": {
+			"http://www.wikidata.org/entity/Q2063507": "leisure area"
+		},
+		"meadow": {
+			"http://www.wikidata.org/entity/Q7777019": "meadow"
+		},
+		"orchard": {
+			"http://www.wikidata.org/entity/Q236371": "orchard"
+		},
+		"plant_nursery": {
+			"http://www.wikidata.org/entity/Q155511": "plant nursery"
+		},
+		"quarry": {
+			"http://www.wikidata.org/entity/Q188040": "quarry"
+		},
+		"reservoir": {
+			"http://www.wikidata.org/entity/Q131681": "reservoir"
+		},
+		"retail": {
+			"http://www.wikidata.org/entity/Q27095213": "shopping district"
+		},
+		"religious": {
+			"http://www.wikidata.org/entity/Q811600": "sacred grove"
+		},
+		"salt_pond": {
+			"http://www.wikidata.org/entity/Q244326": "salt evaporation pond"
+		},
+		"village_green": {
+			"http://www.wikidata.org/entity/Q57743": "village green"
+		},
+		"vineyard": {
+			"http://www.wikidata.org/entity/Q22715": "vineyard"
+		}
+	},
+	"healthcare": {
+		"alternative": {
+			"http://www.wikidata.org/entity/Q188504": "alternative medicine"
+		},
+		"audiologist": {
+			"http://www.wikidata.org/entity/Q1644347": "audiologist"
+		},
+		"birthing_center": {
+			"http://www.wikidata.org/entity/Q1752787": "birthing center"
+		},
+		"blood_donation": {
+			"http://www.wikidata.org/entity/Q29982375": "blood collection centre"
+		},
+		"clinic": {
+			"http://www.wikidata.org/entity/Q1774898": "clinic"
+		},
+		"dentist": {
+			"http://www.wikidata.org/entity/Q27349": "dentist"
+		},
+		"hospital": {
+			"http://www.wikidata.org/entity/Q16917": "hospital"
+		},
+		"midwife": {
+			"http://www.wikidata.org/entity/Q185196": "midwife"
+		},
+		"occupational_therapist": {
+			"http://www.wikidata.org/entity/Q631193": "occupational therapist"
+		},
+		"optometrist": {
+			"http://www.wikidata.org/entity/Q9052719": "optometrist"
+		},
+		"doctor": {
+			"http://www.wikidata.org/entity/Q39631": "physician"
+		},
+		"physiotherapist": {
+			"http://www.wikidata.org/entity/Q694748": "physiotherapist"
+		},
+		"podiatrist": {
+			"http://www.wikidata.org/entity/Q3393065": "podiatrist"
+		},
+		"psychotherapist": {
+			"http://www.wikidata.org/entity/Q1900167": "psychotherapist"
+		},
+		"speech_therapist": {
+			"http://www.wikidata.org/entity/Q11762416": "speech and language therapist"
+		}
+	},
+	"bridge": {
+		"aqueduct": {
+			"http://www.wikidata.org/entity/Q474": "aqueduct"
+		},
+		"yes": {
+			"http://www.wikidata.org/entity/Q2502622": "bicycle bridge"
+		},
+		"": {
+			"http://www.wikidata.org/entity/Q7814330": "toll bridge"
+		},
+		"cantilever": {
+			"http://www.wikidata.org/entity/Q1429218": "cantilever bridge"
+		},
+		"covered": {
+			"http://www.wikidata.org/entity/Q1825472": "covered bridge"
+		},
+		"movable": {
+			"http://www.wikidata.org/entity/Q787417": "moveable bridge"
+		},
+		"trestle": {
+			"http://www.wikidata.org/entity/Q653401": "trestle bridge"
+		},
+		"viaduct": {
+			"http://www.wikidata.org/entity/Q181348": "viaduct"
+		}
+	},
+	"place": {
+		"archipelago": {
+			"http://www.wikidata.org/entity/Q33837": "archipelago"
+		},
+		"borough": {
+			"http://www.wikidata.org/entity/Q5195043": "borough"
+		},
+		"city": {
+			"http://www.wikidata.org/entity/Q515": "city"
+		},
+		"city_block": {
+			"http://www.wikidata.org/entity/Q1348006": "city block"
+		},
+		"continent": {
+			"http://www.wikidata.org/entity/Q5107": "continent"
+		},
+		"country": {
+			"http://www.wikidata.org/entity/Q6256": "country"
+		},
+		"county": {
+			"http://www.wikidata.org/entity/Q28575": "county"
+		},
+		"district": {
+			"http://www.wikidata.org/entity/Q149621": "district"
+		},
+		"farm": {
+			"http://www.wikidata.org/entity/Q131596": "farm"
+		},
+		"state": {
+			"http://www.wikidata.org/entity/Q107390": "federated state"
+		},
+		"hamlet": {
+			"http://www.wikidata.org/entity/Q5084": "hamlet"
+		},
+		"island": {
+			"http://www.wikidata.org/entity/Q23442": "island"
+		},
+		"islet": {
+			"http://www.wikidata.org/entity/Q207524": "islet"
+		},
+		"plot": {
+			"http://www.wikidata.org/entity/Q683595": "land lot"
+		},
+		"locality": {
+			"http://www.wikidata.org/entity/Q3257686": "locality"
+		},
+		"neighbourhood": {
+			"http://www.wikidata.org/entity/Q123705": "neighborhood"
+		},
+		"quarter": {
+			"http://www.wikidata.org/entity/Q2983893": "quarter"
+		},
+		"square": {
+			"http://www.wikidata.org/entity/Q174782": "square"
+		},
+		"suburb": {
+			"http://www.wikidata.org/entity/Q188509": "suburb"
+		},
+		"town": {
+			"http://www.wikidata.org/entity/Q3957": "town"
+		},
+		"township": {
+			"http://www.wikidata.org/entity/Q19610511": "township"
+		},
+		"village": {
+			"http://www.wikidata.org/entity/Q532": "village"
+		}
+	},
+	"architect": {
+		"": {
+			"http://www.wikidata.org/entity/P84": "architect"
+		}
+	},
+	"waterway": {
+		"riverbank": {
+			"http://www.wikidata.org/entity/Q2897058": "bank"
+		},
+		"canal": {
+			"http://www.wikidata.org/entity/Q12284": "canal"
+		},
+		"dam": {
+			"http://www.wikidata.org/entity/Q12323": "dam"
+		},
+		"ditch": {
+			"http://www.wikidata.org/entity/Q2048319": "ditch"
+		},
+		"dock": {
+			"http://www.wikidata.org/entity/Q124282": "dock"
+		},
+		"fish_pass": {
+			"http://www.wikidata.org/entity/Q606619": "fish ladder"
+		},
+		"lock_gate": {
+			"http://www.wikidata.org/entity/Q42792757": "lock gate"
+		},
+		"river": {
+			"http://www.wikidata.org/entity/Q4022": "river"
+		},
+		"boatyard": {
+			"http://www.wikidata.org/entity/Q190928": "shipyard"
+		},
+		"stream": {
+			"http://www.wikidata.org/entity/Q47521": "stream"
+		},
+		"wadi": {
+			"http://www.wikidata.org/entity/Q187971": "wadi"
+		},
+		"waterfall": {
+			"http://www.wikidata.org/entity/Q34038": "waterfall"
+		},
+		"": {
+			"http://www.wikidata.org/entity/Q1267889": "waterway"
+		},
+		"weir": {
+			"http://www.wikidata.org/entity/Q1066997": "weir"
+		}
+	},
+	"military": {
+		"barracks": {
+			"http://www.wikidata.org/entity/Q131263": "barracks"
+		},
+		"bunker": {
+			"http://www.wikidata.org/entity/Q91122": "bunker"
+		},
+		"airfield": {
+			"http://www.wikidata.org/entity/Q695850": "military airbase"
+		},
+		"": {
+			"http://www.wikidata.org/entity/Q18691599": "military facility"
+		},
+		"obstacle_course": {
+			"http://www.wikidata.org/entity/Q42811873": "military obstacle course"
+		},
+		"naval_base": {
+			"http://www.wikidata.org/entity/Q1324633": "naval base"
+		},
+		"range": {
+			"http://www.wikidata.org/entity/Q1778846": "proving ground"
+		}
+	},
+	"bicycle_parking": {
+		"building": {
+			"http://www.wikidata.org/entity/Q1151556": "bicycle parking station"
+		},
+		"stands": {
+			"http://www.wikidata.org/entity/Q1392526": "bicycle stand"
+		}
+	},
+	"oneway#oneway_.3D_no": {
+		"": {
+			"http://www.wikidata.org/entity/Q10883023": "bidirectional traffic"
+		}
+	},
+	"gambling": {
+		"bingo": {
+			"http://www.wikidata.org/entity/Q32350958": "bingo hall"
+		}
+	},
+	"garden:type": {
+		"botanical": {
+			"http://www.wikidata.org/entity/Q167346": "botanical garden"
+		},
+		"monastery": {
+			"http://www.wikidata.org/entity/Q1776417": "cloister garden"
+		},
+		"community": {
+			"http://www.wikidata.org/entity/Q56478984": "urban garden"
+		}
+	},
+	"climbing:boulder": {
+		"yes": {
+			"http://www.wikidata.org/entity/Q852989": "bouldering"
+		}
+	},
+	"brewery": {
+		"": {
+			"http://www.wikidata.org/entity/Q131734": "brewery"
+		}
+	},
+	"artwork:material": {
+		"bronze": {
+			"http://www.wikidata.org/entity/Q928357": "bronze sculpture"
+		}
+	},
+	"political_division": {
+		"canton": {
+			"http://www.wikidata.org/entity/Q2311958": "canton"
+		}
+	},
+	"capital": {
+		"yes": {
+			"http://www.wikidata.org/entity/Q5119": "capital"
+		}
+	},
+	"embankment": {
+		"": {
+			"http://www.wikidata.org/entity/Q892168": "causeway"
+		}
+	},
+	"traffic_calming": {
+		"chicane": {
+			"http://www.wikidata.org/entity/Q74231": "chicane"
+		}
+	},
+	"generator:type": {
+		"combined_cycle": {
+			"http://www.wikidata.org/entity/Q900729": "combined cycle power station"
+		}
+	},
+	"comedy": {
+		"yes": {
+			"http://www.wikidata.org/entity/Q2814066": "comedy club"
+		}
+	},
+	"memorial": {
+		"plaque": {
+			"http://www.wikidata.org/entity/Q721747": "commemorative plaque"
+		},
+		"ghost_bike": {
+			"http://www.wikidata.org/entity/Q937114": "ghost bike"
+		},
+		"war_memorial": {
+			"http://www.wikidata.org/entity/Q575759": "war memorial"
+		}
+	},
+	"leaf_type": {
+		"needleleaved": {
+			"http://www.wikidata.org/entity/Q16237489": "coniferous forest"
+		},
+		"broadleaved": {
+			"http://www.wikidata.org/entity/Q1211122": "deciduous forest"
+		}
+	},
+	"addr:conscriptionnumber": {
+		"": {
+			"http://www.wikidata.org/entity/Q877895": "conscription number"
+		}
+	},
+	"building:part": {
+		"conservatory": {
+			"http://www.wikidata.org/entity/Q1791429": "conservatory"
+		}
+	},
+	"border_type": {
+		"county": {
+			"http://www.wikidata.org/entity/Q28575": "county"
+		}
+	},
+	"kerb": {
+		"": {
+			"http://www.wikidata.org/entity/Q37442": "curb"
+		}
+	},
+	"cutting": {
+		"": {
+			"http://www.wikidata.org/entity/Q1308978": "cut"
+		}
+	},
+	"cyclestreet": {
+		"": {
+			"http://www.wikidata.org/entity/Q1249483": "cyclestreet"
+		}
+	},
+	"activity:dating": {
+		"yes": {
+			"http://www.wikidata.org/entity/Q654810": "dating"
+		}
+	},
+	"route": {
+		"detour": {
+			"http://www.wikidata.org/entity/Q359309": "detour"
+		},
+		"hiking": {
+			"http://www.wikidata.org/entity/Q2143825": "hiking trail"
+		},
+		"train": {
+			"http://www.wikidata.org/entity/Q3238851": "main line"
+		},
+		"railway": {
+			"http://www.wikidata.org/entity/Q22667": "railway"
+		},
+		"subway": {
+			"http://www.wikidata.org/entity/Q15079663": "rapid transit line"
+		},
+		"road": {
+			"http://www.wikidata.org/entity/Q34442": "road"
+		}
+	},
+	"end_date": {
+		"": {
+			"http://www.wikidata.org/entity/P576": "dissolved, abolished or demolished"
+		}
+	},
+	"door": {
+		"": {
+			"http://www.wikidata.org/entity/Q36794": "door"
+		}
+	},
+	"volcano:status": {
+		"dormant": {
+			"http://www.wikidata.org/entity/Q1325302": "dormant volcano"
+		}
+	},
+	"drive_in": {
+		"": {
+			"http://www.wikidata.org/entity/Q1195412": "drive-in"
+		},
+		"yes": {
+			"http://www.wikidata.org/entity/Q786922": "drive-in theater"
+		}
+	},
+	"drive_through": {
+		"": {
+			"http://www.wikidata.org/entity/Q14253958": "drive-through"
+		}
+	},
+	"email": {
+		"": {
+			"http://www.wikidata.org/entity/P968": "e-mail"
+		}
+	},
+	"contact:email": {
+		"": {
+			"http://www.wikidata.org/entity/P968": "e-mail"
+		}
+	},
+	"ele": {
+		"": {
+			"http://www.wikidata.org/entity/P2044": "elevation above sea level"
+		}
+	},
+	"office": {
+		"employment_agency": {
+			"http://www.wikidata.org/entity/Q261362": "employment agency"
+		},
+		"government": {
+			"http://www.wikidata.org/entity/Q327333": "government agency"
+		},
+		"": {
+			"http://www.wikidata.org/entity/Q1021645": "office building"
+		},
+		"therapist": {
+			"http://www.wikidata.org/entity/Q694748": "physiotherapist"
+		},
+		"estate_agent": {
+			"http://www.wikidata.org/entity/Q519076": "real estate broker"
+		},
+		"travel_agent": {
+			"http://www.wikidata.org/entity/Q217107": "travel agency"
+		}
+	},
+	"currency:EUR": {
+		"": {
+			"http://www.wikidata.org/entity/Q4916": "euro"
+		}
+	},
+	"contact:fax": {
+		"": {
+			"http://www.wikidata.org/entity/P2900": "fax number"
+		}
+	},
+	"fax": {
+		"": {
+			"http://www.wikidata.org/entity/P2900": "fax number"
+		}
+	},
+	"fee": {
+		"": {
+			"http://www.wikidata.org/entity/Q11765": "fee"
+		}
+	},
+	"fishing": {
+		"": {
+			"http://www.wikidata.org/entity/Q14373": "fishing"
+		}
+	},
+	"building:levels": {
+		"": {
+			"http://www.wikidata.org/entity/P1101": "floors above ground"
+		}
+	},
+	"castle": {
+		"folly": {
+			"http://www.wikidata.org/entity/Q180174": "folly"
+		}
+	},
+	"ford": {
+		"": {
+			"http://www.wikidata.org/entity/Q12743": "ford"
+		},
+		"yes": {
+			"http://www.wikidata.org/entity/Q12743": "ford"
+		},
+		"stepping_stones": {
+			"http://www.wikidata.org/entity/Q1415899": "step-stone bridge"
+		}
+	},
+	"disused:railway": {
+		"station": {
+			"http://www.wikidata.org/entity/Q4663385": "former railway station"
+		}
+	},
+	"disused": {
+		"station": {
+			"http://www.wikidata.org/entity/Q4663385": "former railway station"
+		}
+	},
+	"plant:source": {
+		"gas": {
+			"http://www.wikidata.org/entity/Q15621933": "gas-fired power station"
+		},
+		"nuclear": {
+			"http://www.wikidata.org/entity/Q134447": "nuclear power plant"
+		}
+	},
+	"genus": {
+		"": {
+			"http://www.wikidata.org/entity/Q34740": "genus"
+		}
+	},
+	"diet:halal": {
+		"": {
+			"http://www.wikidata.org/entity/Q177823": "halal"
+		}
+	},
+	"bunker_type": {
+		"hardened_aircraft_shelter": {
+			"http://www.wikidata.org/entity/Q91939": "hardened aircraft shelter"
+		},
+		"pillbox": {
+			"http://www.wikidata.org/entity/Q92069": "pillbox"
+		}
+	},
+	"height": {
+		"": {
+			"http://www.wikidata.org/entity/P2048": "height"
+		}
+	},
+	"fortification_type": {
+		"hill_fort": {
+			"http://www.wikidata.org/entity/Q744099": "hillfort"
+		}
+	},
+	"railway:hump_yard": {
+		"": {
+			"http://www.wikidata.org/entity/Q2141822": "hump"
+		}
+	},
+	"ice_cream": {
+		"": {
+			"http://www.wikidata.org/entity/Q13233": "ice cream"
+		}
+	},
+	"ice_road": {
+		"": {
+			"http://www.wikidata.org/entity/Q182555": "ice road"
+		}
+	},
+	"inscription": {
+		"": {
+			"http://www.wikidata.org/entity/P1684": "inscription"
+		}
+	},
+	"junction": {
+		"": {
+			"http://www.wikidata.org/entity/Q1777515": "junction"
+		},
+		"roundabout": {
+			"http://www.wikidata.org/entity/Q1525": "roundabout"
+		}
+	},
+	"playground": {
+		"climbingframe": {
+			"http://www.wikidata.org/entity/Q1207703": "jungle gym"
+		}
+	},
+	"diet:kosher": {
+		"": {
+			"http://www.wikidata.org/entity/Q1076110": "kosher foods"
+		}
+	},
+	"water": {
+		"lake": {
+			"http://www.wikidata.org/entity/Q23397": "lake"
+		},
+		"pond": {
+			"http://www.wikidata.org/entity/Q3253281": "pond"
+		}
+	},
+	"shelter_type": {
+		"lean_to": {
+			"http://www.wikidata.org/entity/Q1797440": "lean-to"
+		}
+	},
+	"kiln": {
+		"lime": {
+			"http://www.wikidata.org/entity/Q59772": "lime kiln"
+		}
+	},
+	"timezone": {
+		"": {
+			"http://www.wikidata.org/entity/P421": "located in time zone"
+		}
+	},
+	"addr:street": {
+		"": {
+			"http://www.wikidata.org/entity/Q1640962": "street or road name"
+		}
+	},
+	"lock": {
+		"": {
+			"http://www.wikidata.org/entity/Q105731": "lock"
+		}
+	},
+	"manhole": {
+		"": {
+			"http://www.wikidata.org/entity/Q532998": "manhole"
+		}
+	},
+	"wetland": {
+		"marsh": {
+			"http://www.wikidata.org/entity/Q30198": "marsh"
+		},
+		"tidalflat": {
+			"http://www.wikidata.org/entity/Q31796": "mudflat"
+		},
+		"swamp": {
+			"http://www.wikidata.org/entity/Q166735": "swamp"
+		}
+	},
+	"fortification": {
+		"martello_tower": {
+			"http://www.wikidata.org/entity/Q91285": "martello tower"
+		}
+	},
+	"max_age": {
+		"": {
+			"http://www.wikidata.org/entity/P4135": "maximum age"
+		}
+	},
+	"station": {
+		"subway": {
+			"http://www.wikidata.org/entity/Q928830": "metro station"
+		}
+	},
+	"microbrewery": {
+		"yes": {
+			"http://www.wikidata.org/entity/Q5487333": "microbrewery"
+		}
+	},
+	"min_age": {
+		"": {
+			"http://www.wikidata.org/entity/P2899": "minimum age"
+		}
+	},
+	"mooring": {
+		"": {
+			"http://www.wikidata.org/entity/Q22713653": "mooring"
+		}
+	},
+	"geological": {
+		"moraine": {
+			"http://www.wikidata.org/entity/Q2610088": "moraine"
+		},
+		"outcrop": {
+			"http://www.wikidata.org/entity/Q531953": "outcrop"
+		},
+		"palaeontological_site": {
+			"http://www.wikidata.org/entity/Q9096832": "paleontological site"
+		}
+	},
+	"parking": {
+		"multi-storey": {
+			"http://www.wikidata.org/entity/Q13218805": "multistorey car park"
+		}
+	},
+	"official_name": {
+		"": {
+			"http://www.wikidata.org/entity/P1448": "official name"
+		}
+	},
+	"website": {
+		"": {
+			"http://www.wikidata.org/entity/P856": "official website"
+		}
+	},
+	"oneway": {
+		"yes": {
+			"http://www.wikidata.org/entity/Q786886": "one-way traffic"
+		}
+	},
+	"opening_hours": {
+		"": {
+			"http://www.wikidata.org/entity/P3028": "open period to"
+		}
+	},
+	"operator": {
+		"": {
+			"http://www.wikidata.org/entity/P137": "operator"
+		}
+	},
+	"park_ride": {
+		"": {
+			"http://www.wikidata.org/entity/Q738031": "park and ride"
+		}
+	},
+	"payment": {
+		"": {
+			"http://www.wikidata.org/entity/Q1148747": "payment"
+		}
+	},
+	"phone": {
+		"": {
+			"http://www.wikidata.org/entity/P1329": "phone number"
+		}
+	},
+	"contact:phone": {
+		"": {
+			"http://www.wikidata.org/entity/Q214995": "telephone number"
+		}
+	},
+	"heritage:operator": {
+		"nrhp": {
+			"http://www.wikidata.org/entity/Q19558910": "place listed on the National Register of Historic Places"
+		}
+	},
+	"railway:switch:heated": {
+		"": {
+			"http://www.wikidata.org/entity/Q2271554": "point heating"
+		}
+	},
+	"population": {
+		"": {
+			"http://www.wikidata.org/entity/P1082": "population"
+		}
+	},
+	"addr:postcode": {
+		"": {
+			"http://www.wikidata.org/entity/P281": "postal code"
+		}
+	},
+	"postal_code": {
+		"": {
+			"http://www.wikidata.org/entity/P281": "postal code"
+		}
+	},
+	"rating": {
+		"": {
+			"http://www.wikidata.org/entity/Q1532594": "power rating"
+		}
+	},
+	"rack": {
+		"": {
+			"http://www.wikidata.org/entity/Q378445": "rack railway"
+		}
+	},
+	"substation": {
+		"traction": {
+			"http://www.wikidata.org/entity/Q803616": "rail transport electrical substation"
+		}
+	},
+	"railway:position": {
+		"": {
+			"http://www.wikidata.org/entity/Q2355237": "railway kilometre sign"
+		}
+	},
+	"studio": {
+		"audio": {
+			"http://www.wikidata.org/entity/Q746369": "recording studio"
+		},
+		"television": {
+			"http://www.wikidata.org/entity/Q511355": "television studio"
+		}
+	},
+	"government": {
+		"register_office": {
+			"http://www.wikidata.org/entity/Q745221": "register office"
+		}
+	},
+	"attraction": {
+		"roller_coaster": {
+			"http://www.wikidata.org/entity/Q204832": "roller coaster"
+		}
+	},
+	"roof:shape": {
+		"": {
+			"http://www.wikidata.org/entity/Q1156686": "roof shape"
+		}
+	},
+	"zoo": {
+		"safari_park": {
+			"http://www.wikidata.org/entity/Q642682": "safari park"
+		},
+		"wildlife_park": {
+			"http://www.wikidata.org/entity/Q1711697": "wildlife park"
+		}
+	},
+	"artwork_type": {
+		"sculpture": {
+			"http://www.wikidata.org/entity/Q860861": "sculpture"
+		},
+		"statue": {
+			"http://www.wikidata.org/entity/Q179700": "statue"
+		}
+	},
+	"artwork:type": {
+		"sculpture": {
+			"http://www.wikidata.org/entity/Q860861": "sculpture"
+		}
+	},
+	"street_cabinet": {
+		"telecom": {
+			"http://www.wikidata.org/entity/Q1719654": "serving area interface"
+		}
+	},
+	"short_name": {
+		"": {
+			"http://www.wikidata.org/entity/P1813": "short name"
+		}
+	},
+	"sidewalk": {
+		"": {
+			"http://www.wikidata.org/entity/Q177749": "sidewalk"
+		}
+	},
+	"footway": {
+		"sidewalk": {
+			"http://www.wikidata.org/entity/Q177749": "sidewalk"
+		}
+	},
+	"incline": {
+		"": {
+			"http://www.wikidata.org/entity/P4184": "slope"
+		}
+	},
+	"smoking": {
+		"": {
+			"http://www.wikidata.org/entity/Q751734": "smoking ban"
+		}
+	},
+	"club": {
+		"social": {
+			"http://www.wikidata.org/entity/Q17148672": "social club"
+		},
+		"sport": {
+			"http://www.wikidata.org/entity/Q847017": "sports club"
+		}
+	},
+	"baseball": {
+		"softball": {
+			"http://www.wikidata.org/entity/Q171038": "softball"
+		}
+	},
+	"generator:source": {
+		"solar": {
+			"http://www.wikidata.org/entity/Q2298412": "solar power station"
+		},
+		"wind": {
+			"http://www.wikidata.org/entity/Q194356": "wind farm"
+		}
+	},
+	"species": {
+		"": {
+			"http://www.wikidata.org/entity/Q7432": "species"
+		}
+	},
+	"usage": {
+		"spillway": {
+			"http://www.wikidata.org/entity/Q911379": "spillway"
+		}
+	},
+	"start_date": {
+		"": {
+			"http://www.wikidata.org/entity/P580": "start time"
+		}
+	},
+	"park:type": {
+		"state_beach": {
+			"http://www.wikidata.org/entity/Q35800652": "state beach"
+		}
+	},
+	"castle_type": {
+		"stately": {
+			"http://www.wikidata.org/entity/Q4919932": "stately home"
+		}
+	},
+	"public_transport": {
+		"station": {
+			"http://www.wikidata.org/entity/Q719456": "station"
+		},
+		"stop_position": {
+			"http://www.wikidata.org/entity/Q548662": "transportation stop"
+		}
+	},
+	"railway:ref": {
+		"": {
+			"http://www.wikidata.org/entity/P296": "station code"
+		}
+	},
+	"megalith_type": {
+		"stone_circle": {
+			"http://www.wikidata.org/entity/Q1935728": "stone circle"
+		}
+	},
+	"volcano:type": {
+		"stratovolcano": {
+			"http://www.wikidata.org/entity/Q169358": "stratovolcano"
+		}
+	},
+	"addr:housenumber": {
+		"": {
+			"http://www.wikidata.org/entity/P670": "street number"
+		}
+	},
+	"addr:streetnumber": {
+		"": {
+			"http://www.wikidata.org/entity/Q18915527": "street number"
+		}
+	},
+	"location": {
+		"underground": {
+			"http://www.wikidata.org/entity/Q863404": "subterranea"
+		}
+	},
+	"bridge:moveable": {
+		"swing": {
+			"http://www.wikidata.org/entity/Q950431": "swing bridge"
+		}
+	},
+	"information": {
+		"tactile_model": {
+			"http://www.wikidata.org/entity/Q884257": "tactile map"
+		}
+	},
+	"tactile_paving": {
+		"": {
+			"http://www.wikidata.org/entity/Q884259": "tactile paving"
+		}
+	},
+	"taxon": {
+		"": {
+			"http://www.wikidata.org/entity/Q16521": "taxon"
+		}
+	},
+	"telecom": {
+		"exchange": {
+			"http://www.wikidata.org/entity/Q256132": "telephone exchange"
+		}
+	},
+	"generator:method": {
+		"thermal": {
+			"http://www.wikidata.org/entity/Q200297": "thermal power station"
+		}
+	},
+	"building:material": {
+		"timber_framing": {
+			"http://www.wikidata.org/entity/Q12020836": "timber-framed house"
+		}
+	},
+	"locality": {
+		"townland": {
+			"http://www.wikidata.org/entity/Q2151232": "townland"
+		}
+	},
+	"tunnel": {
+		"": {
+			"http://www.wikidata.org/entity/Q44377": "tunnel"
+		}
+	},
+	"diet:vegan": {
+		"": {
+			"http://www.wikidata.org/entity/Q181138": "veganism"
+		}
+	},
+	"tree": {
+		"natural_monument": {
+			"http://www.wikidata.org/entity/Q811534": "veteran tree"
+		}
+	},
+	"room": {
+		"waiting": {
+			"http://www.wikidata.org/entity/Q674251": "waiting room"
+		}
+	},
+	"content": {
+		"water": {
+			"http://www.wikidata.org/entity/Q6501028": "water tank"
+		}
+	},
+	"wheelchair": {
+		"yes": {
+			"http://www.wikidata.org/entity/Q24192067": "wheelchair accessible"
+		}
+	},
+	"distillery": {
+		"whisky": {
+			"http://www.wikidata.org/entity/Q10373548": "whisky distillery"
+		}
+	},
+	"name": {
+		"": "http://www.w3.org/2000/01/rdf-schema#label"
+	}
+}
