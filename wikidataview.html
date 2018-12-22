@@ -19,6 +19,7 @@
 var prefixlist="@prefix owl: <http://www.w3.org/2002/07/owl#> .\n @prefix foaf: <http://xmlns.com/foaf/0.1/> .\n @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> . @prefix xml: <http://www.w3.org/XML/1998/namespace> . \n @prefix xsd: <http://www.w3.org/2001/XMLSchema#> . \n @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> . \n"
 var overlayMaps=[]
 var stats={}
+var resultLayerCollection=[]
 var ttlExport="";
 
 function saveToOWL(){
@@ -269,6 +270,7 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
              // console.log(ttlExport)
             }
           }).addTo(map);
+		  resultLayerCollection.push(resultLayer);
         });
     }
 }
@@ -380,6 +382,7 @@ var query = [ "PREFIX bd: <http://www.bigdata.com/rdf#>\n",
         }
     });  
     layercontrol.addBaseLayer(wikidatagroup, 'wikidata');
+	resultLayerCollection.push(wikidatagroup);
     return res;
 }
 
@@ -474,6 +477,16 @@ var queryUrl = "https://query.wikidata.org/sparql?query="+ encodeURIComponent(qu
     });
 }
 
+function clearMap() {
+	for(i in resultLayerCollection){
+            try {
+                map.removeLayer(resultLayerCollection[i]);
+            }
+            catch(e) {
+                console.log("problem with " + e + map._layers[i]);
+            }
+	}
+}
 
 function loadItems(){
     getOSMAttributesForCoordinate(map);
@@ -542,6 +555,7 @@ var layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(map);
 <button type="button" id="loadbutton" onClick="loadItems()">Load OSM Items with Wikidata</button>
 <button type="button" id="loadbutton2" onClick="loadWDItems()">Load Wikidata Items with Geocoordinate</button>
 <button type="button" id="saveOWLButton" onClick="saveToOWL()">Save OSM Items as OWL</button>
+<button type="button" id="clearbutton" onClick="clearMap()">Clear Map</button><br/>
 </body>
 </html>
  
