@@ -107,16 +107,16 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
                                 if(key in osmToWikidataMap)
                                     alert(JSON.stringify(Object.keys(Object.values(osmToWikidataMap[key])[0])[0]))*/
 				if(key=="wikidata"){
-					popupContent = popupContent + "<span style=\"color:#ff0000\">wikidata</span> - <a href=\"https://www.wikidata.org/entity/"+feature.properties.tags[key]+"\"  target=\"_blank\" style=\"color:#ff0000\">" + feature.properties.tags[key] + "</a></li>";
+					popupContent = popupContent + "<a href=\"https://wiki.openstreetmap.org/wiki/Key:wikidata\" target=\"_blank\" style=\"color:#ff0000\">wikidata</a> - <a href=\"https://www.wikidata.org/entity/"+feature.properties.tags[key]+"\"  target=\"_blank\" style=\"color:#ff0000\">" + feature.properties.tags[key] + "</a></li>";
 					ttlExport+=indid+" <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/"+feature.properties.tags[key]+"> . \n"  
 				}else if(key=="wikipedia"){
 					if(feature.properties.tags[key].includes(":")){
 					   spll=feature.properties.tags[key].split(":")
-					   popupContent = popupContent + "<span style=\"color:#1103D9\">wikipedia</span> - <a href=\"https://"+spll[0]+".wikipedia.org/wiki/"+spll[1]+"\"  target=\"_blank\" style=\"color:#1103D9\">" + feature.properties.tags[key] + "</a></li>";
+					   popupContent = popupContent + "<a href=\"https://wiki.openstreetmap.org/wiki/Key:wikipedia\" target=\"_blank\" style=\"color:#1103D9\">wikipedia</a> - <a href=\"https://"+spll[0]+".wikipedia.org/wiki/"+spll[1]+"\"  target=\"_blank\" style=\"color:#1103D9\">" + feature.properties.tags[key] + "</a></li>";
 					ttlExport+=indid+" <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/"+feature.properties.tags[key]+"> . \n"  
 
 					   }else{
-					   popupContent = popupContent + "<span style=\"color:#1103D9\">wikipedia</span> - <a href=\"https://en.wikipedia.org/wiki/"+feature.properties.tags[key]+"\"  target=\"_blank\" style=\"color:#1103D9\">" + feature.properties.tags[key] + "</a></li>";
+					   popupContent = popupContent + "<a href=\"https://wiki.openstreetmap.org/wiki/Key:wikipedia\" target=\"_blank\" style=\"color:#1103D9\">wikipedia</a> - <a href=\"https://en.wikipedia.org/wiki/"+feature.properties.tags[key]+"\"  target=\"_blank\" style=\"color:#1103D9\">" + feature.properties.tags[key] + "</a></li>";
 					ttlExport+=indid+" <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/"+feature.properties.tags[key]+"> . \n"  
 
 					   }
