@@ -71,9 +71,10 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
             onEachFeature: function (feature, layer) {
               var popupContent = "";
               popupContent = popupContent + "<b>" + feature.properties.type + "/" + feature.properties.id + "</b><br/>";
-			  popupContent+="Coordinates: "+feature.geometry.type+"("+feature.geometry.coordinates[1]+","+feature.geometry.coordinates[0]+")"
-              var indid="<http://www.linkedgeodata.org/"+feature.properties.type+feature.properties.id+">";
-              
+			  coord="Coordinates: "+feature.geometry.type+"("+feature.geometry.coordinates[0]+" "+feature.geometry.coordinates[1]+")"
+			  popupContent+=trimcoords(coord,90)
+			  
+              var indid="<http://www.linkedgeodata.org/"+feature.properties.type+feature.properties.id+">";         
               popupContent+="<br/>OSM Attributes:<ul>"
               wdkeyset={}
               console.log("Wikidata: "+feature.properties.tags["wikidata"])
@@ -153,7 +154,7 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
 					}
 				}else if(key in osmToWikidataMap){
 						var color="orange"
-                        popupContent+="<a style=\"color:"+color+"\" href=\""+Object.keys(osmToWikidataMap[key])[0]+"\" target=\"_blank\">"+key+"</a>"
+                        popupContent+="<a style=\"color:"+color+"\" href=\"https://wiki.openstreetmap.org/wiki/Key:"+key+"\" target=\"_blank\">"+key+"</a>"/*+Object.keys(osmToWikidataMap[key])[0]*/
                                         if(feature.properties.tags[key].includes(".jpg") || feature.properties.tags[key].includes(".JPG") || feature.properties.tags[key].includes(".svg") || feature.properties.tags[key].includes(".SVG")
 						|| feature.properties.tags[key].includes(".png") || feature.properties.tags[key].includes(".PNG") || feature.properties.tags[key].includes(".gif") || feature.properties.tags[key].includes(".GIF")){
 						popupContent+=" - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\"><img src=\""+feature.properties.tags[key].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"			
@@ -162,10 +163,10 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
 					}else if(feature.properties.tags[key].startsWith("www.")){
 						popupContent+=" - <a href=\"https://"+feature.properties.tags[key]+"\" target=\"_blank\">"+feature.properties.tags[key]+"</a></li>"
 					}else{
-						popupContent = popupContent + " - " + feature.properties.tags[key] + "</li>";
+						popupContent+= " - " + feature.properties.tags[key] + "</li>";
 					}
                 }else{
-                    popupContent+="<span style=\"color:black\">"+key+"</span>"
+                    popupContent+="<a href=\"https://wiki.openstreetmap.org/wiki/Key:"+key+"\" target=\"_blank\"style=\"color:black;text-decoration: none;\">"+key+"</a>"
 			if(feature.properties.tags[key].includes(".jpg") || feature.properties.tags[key].includes(".JPG") || feature.properties.tags[key].includes(".svg") || feature.properties.tags[key].includes(".SVG")
 				|| feature.properties.tags[key].includes(".png") || feature.properties.tags[key].includes(".PNG") || feature.properties.tags[key].includes(".gif") || feature.properties.tags[key].includes(".GIF")){
 			    	popupContent+=" - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\"><img src=\""+feature.properties.tags[key].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"			
@@ -259,7 +260,10 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
               }
               popupContent+="</ul>"
 			  if(wdcoords!=""){
-				popupContent+="Distance: "+getDistance(feature.geometry,wdcoords).toFixed(2)+"m"
+				dist=getDistance(feature.geometry,wdcoords)
+				if(dist!=""){
+					popupContent+="Distance: "+dist.toFixed(2)+"m"
+				}
 			  }  
               layer.bindPopup(popupContent,{maxWidth : 560});
              // console.log(ttlExport)
@@ -269,10 +273,12 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
     }
 }
 
+function trimcoords(coords,length){
+	return coords.length > length ? coords.replace("undefined,","").substring(0, length - 3) + "...)" : coords;	
+}
+
 function getDistance(origin, destination) {
-    // return distance in meters
-	//alert(JSON.stringify(origin))
-	//alert(JSON.stringify(destination))
+	try{
 	var fromm;
 	if(origin.type=="Polygon"){
 		var polygon=turf.polygon(origin.coordinates)
@@ -288,8 +294,10 @@ function getDistance(origin, destination) {
 	}
 	var options={units: 'kilometers'}
 	var dest=turf.distance(fromm,to,options)*1000
-	//alert(dest+"m")
 	return dest
+	}catch(e){
+		return "";
+	}
 }
 
 	
