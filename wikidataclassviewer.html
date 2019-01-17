@@ -14,7 +14,11 @@
    <script src="js/leaflet_legend.js"></script>
       <script src="js/leaflet_easyprint.js"></script>
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-  
+  <style>
+  .ui-front {
+    z-index: 9999999 !important;
+}
+</style>
 <script>
 var prefixlist="@prefix owl: <http://www.w3.org/2002/07/owl#> .\n @prefix foaf: <http://xmlns.com/foaf/0.1/> .\n @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> . @prefix xml: <http://www.w3.org/XML/1998/namespace> . \n @prefix xsd: <http://www.w3.org/2001/XMLSchema#> . \n @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> . \n"
 var overlayMaps=[]
@@ -563,13 +567,45 @@ function zoomAndReload(){
 			loadWDItems();
         }
 }
+
+function searchObjects(){
+	var availableTags = []
+$.get( "https://cors.io/?https://www.wikidata.org/w/api.php?action=wbsearchentities&language=en&search="+$('#wdclass').
+		val()+"&type=item&limit=7&format=json", function( data ) {
+	  jsonobj=JSON.parse(data);
+	  collect=""
+	  for(obj in jsonobj["search"]){
+		  availableTags.push({"label":jsonobj["search"][obj]["label"]+" ("+jsonobj["search"][obj]["description"]+") "
+			  ,"value":"http:"+jsonobj["search"][obj]["url"]})
+		  collect+=jsonobj["search"][obj]["label"]+" ("+jsonobj["search"][obj]["description"]+") "+jsonobj["search"][obj]["url"]+"\n";
+	  }
+	    $( "#wdclass" ).autocomplete({
+	        source: availableTags,
+	        select: function(event, ui) {
+	            if(ui.item){
+						console.log(ui.item.value.substring(ui.item.value.lastIndexOf('/')+1))
+                                $('#wdclass').val("");
+                                $('#wdclass').val(ui.item.value.substring(ui.item.value.lastIndexOf('/')+1));
+								event.preventDefault()
+	          		//$('#more2').attr("href",ui.item.value)	
+	          		//$('#objuri').val(ui.item.value)	  
+                               // 
+	            }
+
+	        }
+	      });
+
+	});
+}
 </script>
 
 </head>
 <body>
 <h2 align="center">Wikidata OSM Variable Class Viewer</h2>
-
+Wikidata Class:<input type="text" id="wdclass" value="Q3918" onkeyup="searchObjects()"/>
+OSM Key:<input type="text" id="osmkey" value="amenity"/>OSM Value:<input type="text" id="osmval" value="university"/><br/>
 <div id="mapid" style="height:80%;border:5px solid black;">
+
 <script>
 var wikidataToOSMMap={}
 var osmToWikidataMap={}
@@ -634,8 +670,6 @@ loaded=true;
 <button type="button" id="loadbutton" onClick="loadItems()">Load OSM items</button>
 <button type="button" id="loadbutton2" onClick="loadWDItems()">Load Wikidata Items</button>
 <button type="button" id="clearbutton" onClick="clearMap()">Clear Map</button><br/>
-Wikidata Class:<input type="text" id="wdclass" value="Q3918"/><br/>
-OSM Key:<input type="text" id="osmkey" value="amenity"/>OSM Value:<input type="text" id="osmval" value="university"/><br/>
 Autoload<input type="checkbox" id="autoload"/> 
 </body>
 </html>
