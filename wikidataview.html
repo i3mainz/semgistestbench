@@ -21,6 +21,8 @@ var overlayMaps=[]
 var stats={}
 var resultLayerCollection=[]
 var ttlExport="";
+var minMapZoom=12;
+var loaded=false;
 
 function saveToOWL(){
     saveTextAsFile();
@@ -496,7 +498,18 @@ function loadWDItems(){
         width=distance/2
 	wikidataAroundQuery(map.getCenter(),width);
 }
+function zoomAndReload(){
+		if(map.getZoom()>=minMapZoom){
+			$('#mapid').css("border","5px solid green")
+			            if(loaded && document.getElementById('autoload').checked){
+            clearMap();	
+            loadItems();
+        }
+		}else{
+			$('#mapid').css("border","5px solid black")
+		}
 
+}
 </script>
 
 </head>
@@ -507,7 +520,7 @@ function loadWDItems(){
 <script>
 var wikidataToOSMMap={}
 var osmToWikidataMap={}
-	var map = L.map('mapid',{fullscreenControl: true,fullscreenControlOptions: {position: 'topleft'}}).locate({setView: true, maxZoom: 22});//.setView([51.505, -0.09], 13);
+	var map = L.map('mapid',{fullscreenControl: true,fullscreenControlOptions: {position: 'topleft'}}).setView([49.993056, 8.241667], 16).locate({setView: true, maxZoom: 22});//.setView([51.505, -0.09], 13);
 	map.addControl( new L.Control.Search({
 		url: 'https://nominatim.openstreetmap.org/search?format=json&q={s}',
 		jsonpParam: 'json_callback',
@@ -520,14 +533,21 @@ var osmToWikidataMap={}
 	}));
         
 getMatchingWikiDataOSMAttributes();
-		
-    map.on('zoomend', function() {
+
+
+    map.on('dragend', function() {
+        zoomAndReload();
+	});
+	    map.on('zoomend', function() {
+        zoomAndReload();
+	});
+    /*map.on('zoomend', function() {
 		if(map.getZoom()>=15){
 			$('#mapid').css("border","5px solid green")
 		}else{
 			$('#mapid').css("border","5px solid black")
 		}
-	});
+	});*/
 
 var layer=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -548,13 +568,14 @@ attribution: '&copy; Bundesamt f&uuml;r Kartographie und Geod&auml;sie 2017, <a 
 	imperial: false
 }).addTo(map);
 var layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(map);
-
+loaded=true;
 </script>
 </div>
 <button type="button" id="loadbutton" onClick="loadItems()">Load OSM Items with Wikidata</button>
 <button type="button" id="loadbutton2" onClick="loadWDItems()">Load Wikidata Items with Geocoordinate</button>
 <button type="button" id="saveOWLButton" onClick="saveToOWL()">Save OSM Items as OWL</button>
 <button type="button" id="clearbutton" onClick="clearMap()">Clear Map</button><br/>
+Autoload<input type="checkbox" id="autoload"/>
 </body>
 </html>
  
