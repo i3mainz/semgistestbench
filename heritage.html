@@ -588,10 +588,12 @@ var osmToWikidataMap={}
 getMatchingWikiDataOSMAttributes();
 		
     map.on('dragend', function() {
+		if(document.getElementById('autoload').checked)
 	        clearMap();
         zoomAndReload();
 	});
 	    map.on('zoomend', function() {
+		if(document.getElementById('autoload').checked)
 		      clearMap();
         zoomAndReload();
 	});
