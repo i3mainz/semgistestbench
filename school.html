@@ -557,7 +557,7 @@ function zoomAndReload(){
 		}else{
 			$('#mapid').css("border","5px solid black")
 		}
-          if(loaded){
+          if(loaded && document.getElementById('autoload').checked){
             clearMap();	
             loadItems();
 			loadWDItems();
@@ -632,6 +632,7 @@ loaded=true;
 <button type="button" id="loadbutton" onClick="loadItems()">Load OSM School Items</button>
 <button type="button" id="loadbutton2" onClick="loadWDItems()">Load Wikidata School Items</button>
 <button type="button" id="clearbutton" onClick="clearMap()">Clear Map</button><br/>
+Autoload<input type="checkbox" id="autoload"/>
 </body>
 </html>
  
