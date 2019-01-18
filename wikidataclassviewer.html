@@ -23,7 +23,7 @@
 var prefixlist="@prefix owl: <http://www.w3.org/2002/07/owl#> .\n @prefix foaf: <http://xmlns.com/foaf/0.1/> .\n @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> . @prefix xml: <http://www.w3.org/XML/1998/namespace> . \n @prefix xsd: <http://www.w3.org/2001/XMLSchema#> . \n @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> . \n"
 var overlayMaps=[]
 var ttlExport="";
-var minMapZoom=2;
+var minMapZoom=-100;
 var resultLayerCollection=[]
 var loaded=false;
 function saveToOWL(){
@@ -404,7 +404,7 @@ var query = [ "PREFIX bd: <http://www.bigdata.com/rdf#>\n",
                                     var feature = wicket.toJson();
                                     //alert(JSON.stringify(feature.coordinates))
                                     var greenIcon = new L.Icon({
-                                        iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+                                        iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
                                         shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
                                         iconSize: [25, 41],
                                         iconAnchor: [12, 41],
@@ -682,6 +682,9 @@ loaded=true;
 <button type="button" id="loadbutton" onClick="loadItems()">Load OSM items</button>
 <button type="button" id="loadbutton2" onClick="loadWDItems()">Load Wikidata Items</button>
 <button type="button" id="clearbutton" onClick="clearMap()">Clear Map</button><br/>
-Autoload<input type="checkbox" id="autoload"/> 
+Autoload<input type="checkbox" id="autoload"/><br/>
+Legend: <table><tr><td style="background-color:red">&nbsp;&nbsp;</td><td>In OSM but not in Wikidata</td>
+<td style="background-color:green">&nbsp;&nbsp;</td><td>In OSM and Wikidata</td></tr><tr>
+<td style="color:orange">Orange Marker</td><td>In Wikidata</td><td style="color:blue">Blue Marker</td><td>In OSM and not in Wikidata</td></tr></table>
 </body>
 </html>
