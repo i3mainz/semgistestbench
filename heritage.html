@@ -19,9 +19,10 @@
 var prefixlist="@prefix owl: <http://www.w3.org/2002/07/owl#> .\n @prefix foaf: <http://xmlns.com/foaf/0.1/> .\n @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> . @prefix xml: <http://www.w3.org/XML/1998/namespace> . \n @prefix xsd: <http://www.w3.org/2001/XMLSchema#> . \n @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> . \n"
 var overlayMaps=[]
 var ttlExport="";
-var minMapZoom=2;
+var minMapZoom=-100;
 var resultLayerCollection=[]
 var loaded=false;
+var areaNamesToBoundingBox={"Deutschland":[[47.31499364465572,3.818847388029099],[54.957432862183126,18.232909888029102]]}
 function saveToOWL(){
     saveTextAsFile();
 }
@@ -41,16 +42,22 @@ function saveTextAsFile()
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);  
     }, 1000);
-    
-    
 }
 
-function buildOverpassApiUrl(map, overpassQuery,overpassQueryVal) {
+
+
+function buildOverpassApiUrl(map, overpassQuery,overpassQueryVal,areaname) {
         var bounds = map.getBounds().getSouth() + ',' + map.getBounds().getWest() + ',' + map.getBounds().getNorth() + ',' + map.getBounds().getEast();
+		console.log(bounds)
+		var areaQuery="";
+		if(areaname in areaNamesToBoundingBox){
+			bounds=areaNamesToBoundingBox[areaname]
+			//var areaQuery="area[name="+areaname+"];";
+		}
         var nodeQuery = 'node[' + (overpassQueryVal==""?overpassQuery:"'"+overpassQuery+"'='"+overpassQueryVal+"'") + '](' + bounds + ');';
         var wayQuery = 'way[' + (overpassQueryVal==""?overpassQuery:"'"+overpassQuery+"'='"+overpassQueryVal+"'") + '](' + bounds + ');';
         var relationQuery = 'relation[' + (overpassQueryVal==""?overpassQuery:"'"+overpassQuery+"'='"+overpassQueryVal+"'") + '](' + bounds + ');';
-        var query = '?data=[out:json][timeout:15];(' + nodeQuery + wayQuery + relationQuery + ');out geom;';
+        var query = '?data=[out:json][timeout:120];(' + nodeQuery + wayQuery + relationQuery + ');out geom;';
         var baseUrl = 'https://overpass-api.de/api/interpreter';
         var resultUrl = baseUrl + query;
         return resultUrl;
@@ -58,7 +65,7 @@ function buildOverpassApiUrl(map, overpassQuery,overpassQueryVal) {
 
 function getOSMAttributesForCoordinate(map){
 if(map.getZoom()>=minMapZoom){
-$.get(buildOverpassApiUrl(map,"heritage:operator","whc"), function (osmDataAsJson) {
+$.get(buildOverpassApiUrl(map,"heritage:operator","whc","Deutschland"), function (osmDataAsJson) {
           var resultAsGeojson = osmtogeojson(osmDataAsJson);
 		  var adminLayer=null
           var resultLayer = L.geoJson(resultAsGeojson, {
@@ -400,7 +407,7 @@ var query = [ "PREFIX bd: <http://www.bigdata.com/rdf#>\n",
                                     var feature = wicket.toJson();
                                     //alert(JSON.stringify(feature.coordinates))
                                     var greenIcon = new L.Icon({
-                                        iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+                                        iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
                                         shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
                                         iconSize: [25, 41],
                                         iconAnchor: [12, 41],
@@ -596,6 +603,7 @@ var osmToWikidataMap={}
 		autoType: false,
 		minLength: 2
 	}));
+map.fitBounds([[47.31499364465572,3.818847388029099],[54.957432862183126,18.232909888029102]])    
         
 getMatchingWikiDataOSMAttributes();
 		
@@ -646,6 +654,9 @@ loaded=true;
 <button type="button" id="loadbutton" onClick="loadItems()">Load OSM Heritage Items</button>
 <button type="button" id="loadbutton2" onClick="loadWDItems()">Load Wikidata Heritage Items</button>
 <button type="button" id="clearbutton" onClick="clearMap()">Clear Map</button><br/>
-Autoload<input type="checkbox" id="autoload"/>
+Autoload<input type="checkbox" id="autoload"/><br/>
+Legend: <table><tr><td style="background-color:red">&nbsp;&nbsp;</td><td>In OSM but not in Wikidata</td>
+<td style="background-color:green">&nbsp;&nbsp;</td><td>In OSM and Wikidata</td></tr><tr>
+<td style="color:orange">Orange Marker</td><td>In Wikidata</td><td style="color:blue">Blue Marker</td><td>In OSM and not in Wikidata</td></tr></table>
 </body>
 </html>
