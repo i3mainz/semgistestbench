@@ -354,6 +354,7 @@ $.get(buildOverpassApiUrl(map,$('#osmkey').val(),$('#osmval').val()), function (
 
   function createColorLegendForLayer(){
 		elements=[]
+		hasSeen["unknown"]="black"
 		Object.keys(hasSeen).sort().forEach(function(key) {
 			elements.push({"label":key,"html":"","style":{"background-color":hasSeen[key],"width":"10px","height":"10px"}})
 		});
@@ -595,6 +596,7 @@ var queryUrl = "https://query.wikidata.org/sparql?query="+ encodeURIComponent(qu
     });
 }
 function clearMap() {
+	hasSeen={}
 	for(i in resultLayerCollection){
 		//if(resultLayerCollection[i]._path != undefined) {
             try {
@@ -626,6 +628,11 @@ function clearMap() {
 	decorators=[]*/
 }
 function loadItems(){
+	hasSeen={}
+	try{
+		map.removeControl(htmlLegend1);
+	}catch{
+	}
     getOSMAttributesForCoordinate(map);
 }
 function loadWDItems(){
