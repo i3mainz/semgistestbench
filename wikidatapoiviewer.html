@@ -80,7 +80,7 @@ $.get(buildOverpassApiUrl(map,$('#osmkey').val(),$('#osmval').val()), function (
 							hasSeen[feature.properties.tags[highlightatt]]=colors[colorcounter++]
 						}
 					}
-					return {fillColor: hasSeen[feature.properties.tags[highlightatt]]};
+					return {fillColor: hasSeen[feature.properties.tags[highlightatt]],"color":("wikidata" in feature.properties.tags?"black":"white")};
 				}else{
 					return {fillColor: "black","color":("wikidata" in feature.properties.tags?"black":"white")};
 				}
