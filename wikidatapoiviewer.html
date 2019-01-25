@@ -21,8 +21,9 @@
 }
 </style>
 <script>
+var htmlLegend1;
 var colormarkers=["blue","green","grey","orange","red","violet","yellow"]
-var colors=["#e65c00","#0000ff","#8c66ff","#ff6666", "#4000ff", "#009933", "#4d004d","#4d004d","#ff0000","#4000ff","#00FF00","#CCEEFF","#0000A0","#800080","#F08080","#6A5ACD","#FFA500","#00FFFF","#C0C0C0","#808080","#000000","#FFFF00"]
+var colors=["#e65c00","#0000ff","#8c66ff","#ff6666", "#4000ff", "#009933", "#4d004d","#4d004d","#ff0000","#4000ff","#00FF00","#CCEEFF","#0000A0","#800080","#F08080","#6A5ACD","#FFA500","#00FFFF","#C0C0C0","#808080","#FFFF00","#AAAAAA","#C1C1C1","#D4C3F1"]
 var prefixlist="@prefix owl: <http://www.w3.org/2002/07/owl#> .\n @prefix foaf: <http://xmlns.com/foaf/0.1/> .\n @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> . @prefix xml: <http://www.w3.org/XML/1998/namespace> . \n @prefix xsd: <http://www.w3.org/2001/XMLSchema#> . \n @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> . \n"
 var overlayMaps=[]
 var colorcounter=0,colormarkercounter=0;
@@ -353,15 +354,15 @@ $.get(buildOverpassApiUrl(map,$('#osmkey').val(),$('#osmval').val()), function (
 
   function createColorLegendForLayer(){
 		elements=[]
-		for(number in hasSeen){
-			elements.push({"label":number,"html":"","style":{"background-color":hasSeen[number],"width":"10px","height":"10px"}})
-		}
+		Object.keys(hasSeen).sort().forEach(function(key) {
+			elements.push({"label":key,"html":"","style":{"background-color":hasSeen[key],"width":"10px","height":"10px"}})
+		});
 		console.log("elements: "+elements)
 		return elements;
   }
 
 function createLegend(layer){
-	 var htmlLegend1 =L.control.htmllegend({
+	 htmlLegend1 =L.control.htmllegend({
         position: 'bottomright',
         legends: [{
             name: 'Map Legend',
@@ -598,6 +599,7 @@ function clearMap() {
 		//if(resultLayerCollection[i]._path != undefined) {
             try {
                 map.removeLayer(resultLayerCollection[i]);
+				map.removeControl(htmlLegend1);
             }
             catch(e) {
                 console.log("problem with " + e + map._layers[i]);
