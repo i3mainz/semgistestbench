@@ -4,6 +4,7 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
 <link rel="stylesheet" href="css/leaflet-search.css" />
+<link rel="stylesheet" href="css/leaflet_legend.css" />
 <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
 <script src="https://unpkg.com/osmtogeojson@2.2.12/osmtogeojson.js"></script>
   <script src="js/leaflet.polylinedecorator.js"></script>
@@ -33,7 +34,6 @@ var loaded=false;
 function saveToOWL(){
     saveTextAsFile();
 }
-
 function saveTextAsFile()
 {
     var blob = new Blob([prefixlist+"<http://semgis.i3mainz.de> rdf:type owl:Ontology . \n"+ttlExport], {type:'text/plain'});
@@ -52,7 +52,6 @@ function saveTextAsFile()
     
     
 }
-
 function buildOverpassApiUrl(map, overpassQuery,overpassQueryVal) {
         var bounds = map.getBounds().getSouth() + ',' + map.getBounds().getWest() + ',' + map.getBounds().getNorth() + ',' + map.getBounds().getEast();
         var nodeQuery = 'node[' + (overpassQueryVal==""?overpassQuery:"'"+overpassQuery+"'='"+overpassQueryVal+"'") + '](' + bounds + ');';
@@ -63,7 +62,6 @@ function buildOverpassApiUrl(map, overpassQuery,overpassQueryVal) {
         var resultUrl = baseUrl + query;
         return resultUrl;
 }
-
 function getOSMAttributesForCoordinate(map){
 if(map.getZoom()>=minMapZoom){
 $.get(buildOverpassApiUrl(map,$('#osmkey').val(),$('#osmval').val()), function (osmDataAsJson) {
@@ -140,13 +138,10 @@ $.get(buildOverpassApiUrl(map,$('#osmkey').val(),$('#osmval').val()), function (
 					   spll=feature.properties.tags[key].split(":")
 					   popupContent = popupContent + "<a href=\"https://wiki.openstreetmap.org/wiki/Key:wikipedia\" target=\"_blank\" style=\"color:#1103D9\">wikipedia</a> - <a href=\"https://"+spll[0]+".wikipedia.org/wiki/"+spll[1]+"\"  target=\"_blank\" style=\"color:#1103D9\">" + feature.properties.tags[key] + "</a></li>";
 					ttlExport+=indid+" <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/"+feature.properties.tags[key]+"> . \n"  
-
 					   }else{
 					   popupContent = popupContent + "<a href=\"https://wiki.openstreetmap.org/wiki/Key:wikipedia\" target=\"_blank\" style=\"color:#1103D9\">wikipedia</a> - <a href=\"https://en.wikipedia.org/wiki/"+feature.properties.tags[key]+"\"  target=\"_blank\" style=\"color:#1103D9\">" + feature.properties.tags[key] + "</a></li>";
 					ttlExport+=indid+" <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/"+feature.properties.tags[key]+"> . \n"  
-
 					   }
-
 				}else if(key in osmToWikidataMap && (Object.keys(Object.values(osmToWikidataMap[key])[0])[0] in wdkeyset)){
                                                 popupContent+="<a style=\"color:green\" href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\">"+key+"</a>"
 						wdval=Object.values(wdkeyset[Object.keys(Object.values(osmToWikidataMap[key])[0])[0]])[0].split(";")[1]
@@ -288,10 +283,10 @@ $.get(buildOverpassApiUrl(map,$('#osmkey').val(),$('#osmval').val()), function (
                         }
               }
               popupContent+="</ul>"
-			  console.log(JSON.stringify(hasSeen2))
+			  console.log(JSON.stringify(hasSeen))
 			  var dicon;
 				var highlightatt=$('#osmhighlight').val();
-				if(highlightatt!== undefined && feature.properties.tags[highlightatt]!== undefined && !(feature.properties.tags[highlightatt] in hasSeen2)){
+				if(highlightatt!== undefined && feature.properties.tags[highlightatt]!== undefined && !(feature.properties.tags[highlightatt] in hasSeen)){
 					dicon = L.divIcon({
 						className: "my-custom-pin",
 						iconAnchor: [0, 24],
@@ -320,13 +315,13 @@ $.get(buildOverpassApiUrl(map,$('#osmkey').val(),$('#osmval').val()), function (
                         //mark=L.marker(centroid.geometry.coordinates,{icon: iconn})
 						//mark.addTo(map)
 			  }else{
-					console.log('https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-'+hasSeen2[feature.properties.tags[highlightatt]]+'.png')
+					console.log('https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-'+hasSeen[feature.properties.tags[highlightatt]]+'.png')
 						dicon = L.divIcon({
 						className: "my-custom-pin",
 						iconAnchor: [0, 24],
 						labelAnchor: [-6, 0],
 						popupAnchor: [0, -36],
-						html: "<span style=\""+"background-color: "+hasSeen2[feature.properties.tags[highlightatt]]+";width: 1.5rem;height: 1.5rem;display: block;left: -1rem;top: 0rem;position: relative;border-radius: 3rem 3rem 0;transform: rotate(45deg);border: 1px solid "+("wikidata" in feature.properties.tags?"black":"white")+";"
+						html: "<span style=\""+"background-color: "+hasSeen[feature.properties.tags[highlightatt]]+";width: 1.5rem;height: 1.5rem;display: block;left: -1rem;top: 0rem;position: relative;border-radius: 3rem 3rem 0;transform: rotate(45deg);border: 1px solid "+("wikidata" in feature.properties.tags?"black":"white")+";"
 +"\"/>"
 					})
 						var centroid=turf.centroid(feature);
@@ -350,19 +345,44 @@ $.get(buildOverpassApiUrl(map,$('#osmkey').val(),$('#osmval').val()), function (
             }
           }).addTo(map);
 		  resultLayerCollection.push(resultLayer);
+		  console.log(JSON.stringify(hasSeen))
+		  createLegend(resultLayer);
         });
     }
+}
+
+  function createColorLegendForLayer(){
+		elements=[]
+		for(number in hasSeen){
+			elements.push({"label":number,"html":"","style":{"background-color":hasSeen[number],"width":"10px","height":"10px"}})
+		}
+		console.log("elements: "+elements)
+		return elements;
+  }
+
+function createLegend(layer){
+	 var htmlLegend1 =L.control.htmllegend({
+        position: 'bottomright',
+        legends: [{
+            name: 'Map Legend',
+            layer: layer,
+            elements: createColorLegendForLayer()}],
+			collapseSimple:true,
+			detectStretched:true
+    });
+	console.log("legend")
+	console.log(htmlLegend1)
+		console.log(map)
+	htmlLegend1.addTo(map);
 }
 
 function trimcoords(coords,length){
 	return coords.length > length ? coords.replace("undefined,","").substring(0, length - 3) + "...)" : coords;	
 }
-
 function getDistance(origin, destination) {
 	try{
 	var fromm;
 	console.log(origin.coordinates)
-
 	fromm=turf.point(origin);
 		console.log(destination)
 	if(typeof origin.type !== 'undefined'){
@@ -397,7 +417,6 @@ function getDistance(origin, destination) {
 		return "";
 	}
 }
-
 	
 function wikidataAroundQuery(coord,width){
 console.log(width)
@@ -486,7 +505,6 @@ var query = [ "PREFIX bd: <http://www.bigdata.com/rdf#>\n",
 	}
 	return "";
 }
-
 function getAttributesForWikidataID(qid){
 var query = [ "PREFIX bd: <http://www.bigdata.com/rdf#>\n",
                 "PREFIX wikibase: <http://wikiba.se/ontology#>\n",
@@ -524,7 +542,6 @@ var query = [ "PREFIX bd: <http://www.bigdata.com/rdf#>\n",
     });  
     return res;
 }
-
 function getMatchingWikiDataOSMAttributes(){
 var query = [
 "PREFIX bd: <http://www.bigdata.com/rdf#>\n" ,
@@ -560,7 +577,6 @@ var queryUrl = "https://query.wikidata.org/sparql?query="+ encodeURIComponent(qu
                             osmToWikidataMap[osmval]={}
                         }
                         osmToWikidataMap[osmval][""]=JSON.parse("{\""+results[i]["wdclass"]["value"]+"\":\""+("wdclassLabel" in results[i]?results[i]["wdclassLabel"]["value"]:"")+"\"}")
-
                   }
                   				    if(!(wikidataToOSMMap[results[i]["wdclass"]["value"]])){
 						 wikidataToOSMMap[results[i]["wdclass"]["value"]]=[]
@@ -577,7 +593,6 @@ var queryUrl = "https://query.wikidata.org/sparql?query="+ encodeURIComponent(qu
         }
     });
 }
-
 function clearMap() {
 	for(i in resultLayerCollection){
 		//if(resultLayerCollection[i]._path != undefined) {
@@ -608,12 +623,9 @@ function clearMap() {
 	}
 	decorators=[]*/
 }
-
-
 function loadItems(){
     getOSMAttributesForCoordinate(map);
 }
-
 function loadWDItems(){
 	console.log([map.getBounds().getSouth(), map.getBounds().getWest()],[map.getBounds().getNorth(),map.getBounds().getEast()])
 	var distance = getDistance([map.getBounds().getSouth(), map.getBounds().getWest()],[map.getBounds().getNorth(),map.getBounds().getEast()])
@@ -633,7 +645,6 @@ function zoomAndReload(){
 			loadWDItems();
         }
 }
-
 function searchObjects(){
 	var availableTags = []
 $.get( "https://cors.io/?https://www.wikidata.org/w/api.php?action=wbsearchentities&language=en&search="+$('#wdclass').
@@ -657,10 +668,8 @@ $.get( "https://cors.io/?https://www.wikidata.org/w/api.php?action=wbsearchentit
 	          		//$('#objuri').val(ui.item.value)	  
                                // 
 	            }
-
 	        }
 	      });
-
 	});
 }
 </script>
@@ -711,7 +720,6 @@ getMatchingWikiDataOSMAttributes();
             loadItems();
         }
 });*/
-
 	var layer=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 });
