@@ -692,6 +692,9 @@ getMatchingWikiDataOSMAttributes();
 	var layer=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 });
+
+	var officiallayer=L.geoJSON(brbschools);
+	overlayMaps.push(officiallayer);
 		var wmsLayer = L.tileLayer.wms('https://sgx.geodatenzentrum.de/wms_topplus_web_open', {
 layers: 'web',
 format: 'image/png',
