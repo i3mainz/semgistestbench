@@ -11,7 +11,8 @@
   <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
      <script src="js/leaflet.fullscreen.js"></script>
 	 <script src="js/leaflet-search.js"></script>
-	 <script src="testdata/brbschools.js"/>
+	 <script src="testdata/brbschools.js"></script>
+	  <script src="testdata/brbschool_mapping.js"></script>
    <script src="js/leaflet_legend.js"></script>
       <script src="js/leaflet_easyprint.js"></script>
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -108,6 +109,11 @@ $.get(buildOverpassApiUrl(map,"amenity","school"), function (osmDataAsJson) {
               var popupContent = "";
               popupContent = popupContent + "<b>" + feature.properties.type + "/" + feature.properties.id + "</b><br/>";
 			  coord="Coordinates: "+feature.geometry.type+"("+feature.geometry.coordinates[0]+" "+feature.geometry.coordinates[1]+")"
+			  wdkeyset={}
+              console.log("Wikidata: "+feature.properties.tags["wikidata"])
+              if(feature.properties.tags["wikidata"]!="" && feature.properties.tags["wikidata"]!=undefined){
+                    wdkeyset=getAttributesForWikidataID(feature.properties.tags["wikidata"])
+             }
 			  popupContent+=trimcoords(coord,90)
               var indid="<http://www.linkedgeodata.org/"+feature.properties.type+feature.properties.id+">";
               if(officialdata!=null){
@@ -117,18 +123,37 @@ $.get(buildOverpassApiUrl(map,"amenity","school"), function (osmDataAsJson) {
 					for(prop in keys){
 						console.log(keys[prop])
 						console.log(officialdata.properties[keys[prop]])
-						popupContent+="<li>"+keys[prop]+" - "+officialdata.properties[keys[prop]]+"</li>"
+						if(keys[prop] in equivs){	
+							console.log(equivs[keys[prop]]["osm"])						
+							console.log(feature.properties.tags[equivs[keys[prop]]["osm"]])
+							osmkey=equivs[keys[prop]]["osm"]
+							wdkey=equivs[keys[prop]]["wikidata"]
+							valtocompare=feature.properties.tags[osmkey]
+							wdvaltocompare=wdkeyset[equivs[keys[prop]]["wikidata"]]
+							console.log(osmkey+" - "+wdkey+" - "+valtocompare+" - "+wdvaltocompare+" - "+officialdata.properties[keys[prop]])
+							console.log(osmkey+" - "+feature.properties.tags[osmkey])
+							if(osmkey in feature.properties.tags && officialdata.properties[keys[prop]]!=valtocompare){
+								popupContent+="<li><span style=\"color:orange;text-decoration:underline;\">"+keys[prop]+"</span> - <span style=\"color:orange;text-decoration:underline;\">"+officialdata.properties[keys[prop]]+" | "+feature.properties.tags[osmkey]+" (OSM)</span></li>"
+							}else if(osmkey in feature.properties.tags && officialdata.properties[keys[prop]]==valtocompare){
+								popupContent+="<li><span style=\"color:green;text-decoration:underline;\">"+keys[prop]+"</span> - <span style=\"color:green;text-decoration:underline;\">"+officialdata.properties[keys[prop]]+" (OSM)</span></li>"
+							}else if(wdkey in wdkeyset && officialdata.properties[keys[prop]]!=wdvaltocompare){
+								popupContent+="<li><span style=\"color:green;text-decoration:underline;\">"+keys[prop]+"</span> - <span style=\"color:orange;text-decoration:underline;\">"+officialdata.properties[keys[prop]]+" | "+wdkeyset[wdkey]+" (Wikidata)</span></li>"
+							}else if(wdkey in wdkeyset && officialdata.properties[keys[prop]]==wdvaltocompare){
+								popupContent+="<li><span style=\"color:green;text-decoration:underline;\">"+keys[prop]+"</span> - <span style=\"color:green;text-decoration:underline;\">"+officialdata.properties[keys[prop]]+" (Wikidata)</span></li>"
+							}else{
+								popupContent+="<li><span style=\"color:orange;text-decoration:underline;\">"+keys[prop]+"</span> - <span>"+officialdata.properties[keys[prop]]+"</span></li>"
+							}
+					}else{
+							popupContent+="<li><span>"+keys[prop]+"</span> - "+officialdata.properties[keys[prop]]+"</li>"
+						}
+						
 					}
 					popupContent+="</ul>"
 				}
 			  }
 			  console.log(popupContent)
               popupContent+="OSM Attributes:<ul>"
-              wdkeyset={}
-              console.log("Wikidata: "+feature.properties.tags["wikidata"])
-              if(feature.properties.tags["wikidata"]!="" && feature.properties.tags["wikidata"]!=undefined){
-                    wdkeyset=getAttributesForWikidataID(feature.properties.tags["wikidata"])
-             }
+
               var keys = Object.keys(feature.properties.tags);
               if(feature.properties.tags.length>0){
 					var wicket = new Wkt.Wkt();
