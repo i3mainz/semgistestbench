@@ -11,6 +11,7 @@
   <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
      <script src="js/leaflet.fullscreen.js"></script>
 	 <script src="js/leaflet-search.js"></script>
+	 <script src="testdata/brbschools.js"/>
    <script src="js/leaflet_legend.js"></script>
       <script src="js/leaflet_easyprint.js"></script>
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -56,6 +57,23 @@ function buildOverpassApiUrl(map, overpassQuery,overpassQueryVal) {
         return resultUrl;
 }
 
+function matchGeometryInGeoJSONSet(geometry,geojsonset){
+	if(geometry.type=="Polygon"){
+		var point=turf.polygon(geometry.coordinates);
+	}else if(geometry.type=="Point"){
+		var point=turf.point(geometry.coordinates);
+	}
+    console.log(point)
+	var result=null
+	for(geojson in geojsonset){
+		if(turf.booleanContains(point,geojsonset[geojson])){
+			console.log("Result: "+geojsonset[geojson])
+			return geojsonset[geojson];
+		}
+	}
+	return geojson;
+}
+
 function getOSMAttributesForCoordinate(map){
 if(map.getZoom()>=minMapZoom){
 $.get(buildOverpassApiUrl(map,"amenity","school"), function (osmDataAsJson) {
@@ -74,12 +92,26 @@ $.get(buildOverpassApiUrl(map,"amenity","school"), function (osmDataAsJson) {
               return true;
             },
             onEachFeature: function (feature, layer) {
+			  //console.log(feature)
+			  //console.log(brbschools)
+			  var officialdata=matchGeometryInGeoJSONSet(feature.geometry,brbschools)
+			  console.log(JSON.stringify(officialdata))
               var popupContent = "";
               popupContent = popupContent + "<b>" + feature.properties.type + "/" + feature.properties.id + "</b><br/>";
 			  coord="Coordinates: "+feature.geometry.type+"("+feature.geometry.coordinates[0]+" "+feature.geometry.coordinates[1]+")"
 			  popupContent+=trimcoords(coord,90)
               var indid="<http://www.linkedgeodata.org/"+feature.properties.type+feature.properties.id+">";
-              
+              if(officialdata){
+				popupContent+="<br/>Official Data Attributes:<ul>"
+				for(prop in officialdata["properties"]){
+					console.log(prop)
+					console.log(officialdata.properties[prop])
+					popupContent+="<li>"+prop+" - "+officialdata.properties[prop]+"</li>"
+					
+				}
+				popupContent+="</ul>"
+			  }
+			  console.log(popupContent)
               popupContent+="<br/>OSM Attributes:<ul>"
               wdkeyset={}
               console.log("Wikidata: "+feature.properties.tags["wikidata"])
