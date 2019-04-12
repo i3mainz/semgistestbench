@@ -112,7 +112,7 @@ $.get(buildOverpassApiUrl(map,"amenity","school"), function (osmDataAsJson) {
 				popupContent+="</ul>"
 			  }
 			  console.log(popupContent)
-              popupContent+="<br/>OSM Attributes:<ul>"
+              popupContent+="OSM Attributes:<ul>"
               wdkeyset={}
               console.log("Wikidata: "+feature.properties.tags["wikidata"])
               if(feature.properties.tags["wikidata"]!="" && feature.properties.tags["wikidata"]!=undefined){
