@@ -62,15 +62,15 @@ function matchGeometryInGeoJSONSet(geometry,geojsonset){
 	if(geometry.type=="Polygon"){
 		var point=turf.polygon(geometry.coordinates);
 	}else if(geometry.type=="MultiPolygon"){
-		var point=turf.multiPolygon(geometry.coordinates);
+		return null;
 	}else if(geometry.type=="LineString"){
 		var point=turf.lineString(geometry.coordinates);
 	}else if(geometry.type=="MultiLineString"){
-		var point=turf.multiLineString(geometry.coordinates);
+		return null;
 	}else if(geometry.type=="Point"){
 		var point=turf.point(geometry.coordinates);
 	}else if(geometry.type=="MultiPoint"){
-		var point=turf.multiPoint(geometry.coordinates);
+		return null;
 	}
     console.log(point)
 	var result=null
@@ -80,7 +80,7 @@ function matchGeometryInGeoJSONSet(geometry,geojsonset){
 			return geojsonset[geojson];
 		}
 	}
-	return geojson;
+	return null;
 }
 
 function getOSMAttributesForCoordinate(map){
