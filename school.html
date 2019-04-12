@@ -101,15 +101,17 @@ $.get(buildOverpassApiUrl(map,"amenity","school"), function (osmDataAsJson) {
 			  coord="Coordinates: "+feature.geometry.type+"("+feature.geometry.coordinates[0]+" "+feature.geometry.coordinates[1]+")"
 			  popupContent+=trimcoords(coord,90)
               var indid="<http://www.linkedgeodata.org/"+feature.properties.type+feature.properties.id+">";
-              if(officialdata){
-				popupContent+="<br/>Official Data Attributes:<ul>"
-				for(prop in officialdata["properties"]){
-					console.log(prop)
-					console.log(officialdata.properties[prop])
-					popupContent+="<li>"+prop+" - "+officialdata.properties[prop]+"</li>"
-					
+              if(officialdata!=null){
+				if(officialdata["properties"]!=null){
+					popupContent+="<br/>Official Data Attributes:<ul>"
+					var keys = Object.keys(officialdata["properties"]).sort();
+					for(prop in keys){
+						console.log(keys[prop])
+						console.log(officialdata.properties[keys[prop]])
+						popupContent+="<li>"+keys[prop]+" - "+officialdata.properties[keys[prop]]+"</li>"
+					}
+					popupContent+="</ul>"
 				}
-				popupContent+="</ul>"
 			  }
 			  console.log(popupContent)
               popupContent+="OSM Attributes:<ul>"
