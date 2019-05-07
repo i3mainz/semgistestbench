@@ -693,7 +693,15 @@ getMatchingWikiDataOSMAttributes();
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 });
 
-	var officiallayer=L.geoJSON(brbschools);
+	var officiallayer=L.geoJSON(brbschools,{
+onEachFeature: function (feature, layer) {
+	 var popup="Official Data<br/><ul>"
+	 for(prop in feature.properties){
+	 	popup+="<li>"+prop+" - "+feature.properties[prop]+"</li>"
+	 }
+	 popup+="</ul>"
+         layer.bindPopup(popup);
+     }})
 	overlayMaps.push(officiallayer);
 		var wmsLayer = L.tileLayer.wms('https://sgx.geodatenzentrum.de/wms_topplus_web_open', {
 layers: 'web',
