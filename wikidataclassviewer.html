@@ -625,12 +625,13 @@ $.get( "https://cors.io/?https://www.wikidata.org/w/api.php?action=wbsearchentit
 <body>
 <div class="page-header text-center">
    <h1>Wikidata OSM Variable Class Viewer</h1>
+   Wikidata Class:<input type="text" id="wdclass" value="Q3918" onkeyup="searchObjects()"/>
+OSM Key:<input type="text" id="osmkey" value="amenity"/>OSM Value:<input type="text" id="osmval" value="university"/><br/>
 </div>
 <div class="container">
   <div class="row">
     <div class="left col-sm-9">
-Wikidata Class:<input type="text" id="wdclass" value="Q3918" onkeyup="searchObjects()"/>
-OSM Key:<input type="text" id="osmkey" value="amenity"/>OSM Value:<input type="text" id="osmval" value="university"/><br/>
+
 <div id="mapid" style="height:500px;border:5px solid black;">
 
 <script>
