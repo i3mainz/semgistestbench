@@ -4,6 +4,10 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
 <link rel="stylesheet" href="css/leaflet-search.css" />
+ <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
 <script src="https://unpkg.com/osmtogeojson@2.2.12/osmtogeojson.js"></script>
   <script src="js/leaflet.polylinedecorator.js"></script>
@@ -294,7 +298,14 @@ $.get(buildOverpassApiUrl(map,"heritage:operator","whc","Deutschland"), function
 					popupContent+="Distance: "+dist.toFixed(2)+"m"
 				}
 			  } 
-              layer.bindPopup(popupContent,{maxWidth : 560});
+			  if(document.getElementById('popupmode').checked){
+				layer.bindPopup(popupContent,{maxWidth : 560});
+			  }else{
+				layer.on('click', function (e) {
+				$('#contentdesc').html(popupContent)
+				});
+				layer.bindPopup("<b>"+feature.properties.type + "/" + feature.properties.id+"</b>",{maxWidth : 560});
+			  }
              // console.log(ttlExport)
             }
           }).addTo(map);
@@ -586,9 +597,14 @@ function zoomAndReload(){
 
 </head>
 <body>
-<h2 align="center">Heritage Mapview</h2>
+<div class="page-header text-center">
+   <h1>Heritage Mapview</h1>
+</div>
 
-<div id="mapid" style="height:80%;border:5px solid black;">
+<div class="container">
+  <div class="row">
+    <div class="left col-sm-9">
+	<div id="mapid" style="height:500px;width:800px;border:5px solid black;">
 <script>
 var wikidataToOSMMap={}
 var osmToWikidataMap={}
@@ -651,10 +667,14 @@ var layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(map);
 loaded=true;
 </script>
 </div>
+</div>
+    <div class="left col-sm-3" id="contentdesc" style="height:500px;overflow-y: scroll;">
+	</div>
+	</div>
 <button type="button" id="loadbutton" onClick="loadItems()">Load OSM Heritage Items</button>
 <button type="button" id="loadbutton2" onClick="loadWDItems()">Load Wikidata Heritage Items</button>
 <button type="button" id="clearbutton" onClick="clearMap()">Clear Map</button><br/>
-Autoload<input type="checkbox" id="autoload"/><br/>
+Autoload<input type="checkbox" id="autoload"/>PopupMode<input type="checkbox" id="popupmode"/><br/>
 Legend: <table><tr><td style="background-color:red">&nbsp;&nbsp;</td><td>In OSM but not in Wikidata</td>
 <td style="background-color:green">&nbsp;&nbsp;</td><td>In OSM and Wikidata</td></tr><tr>
 <td style="color:orange">Orange Marker</td><td>In Wikidata</td><td style="color:blue">Blue Marker</td><td>In OSM and not in Wikidata</td></tr></table>
