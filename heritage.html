@@ -48,6 +48,47 @@ function saveTextAsFile()
     }, 1000);
 }
 
+function filterItems(filtermode,featureid){
+	var itemsToFilter = document.querySelectorAll("#osm_"+featureid+" li");
+	doFiltering(itemsToFilter,filtermode)
+	var itemsToFilter = document.querySelectorAll("#wd_"+featureid+" li");
+	doFiltering(itemsToFilter,filtermode)
+	var itemsToFilter = document.querySelectorAll("#official_"+featureid+" li");
+	doFiltering(itemsToFilter,filtermode)
+}
+
+function doFiltering(itemsToFilter,filtermode){
+	for(item in itemsToFilter){
+		switch(filtermode){
+			case "all": itemsToFilter[item].style="";
+			break;
+			case "comp": if(itemsToFilter[item].className=="nomatch"){
+				itemsToFilter[item].style=""
+			}else{
+				itemsToFilter[item].style="display:none";
+			}
+			break;
+			case "conflict": if(itemsToFilter[item].className=="osmconflict" || itemsToFilter[item].className=="wdconflict"){
+				itemsToFilter[item].style=""
+			}else{
+				itemsToFilter[item].style="display:none";
+			}
+			break;
+			case "equiv": if(itemsToFilter[item].className=="equivfound"){
+				itemsToFilter[item].style=""
+			}else{
+				itemsToFilter[item].style="display:none";
+			}break;
+			case "match":if(itemsToFilter[item].className=="osmmatch" || itemsToFilter[item].className=="wdmatch"){
+				itemsToFilter[item].style=""
+			}else{
+				itemsToFilter[item].style="display:none";
+			}
+			break;
+		}
+	}
+}
+
 
 
 function buildOverpassApiUrl(map, overpassQuery,overpassQueryVal,areaname) {
@@ -85,19 +126,19 @@ $.get(buildOverpassApiUrl(map,"heritage:operator","whc","Deutschland"), function
               return true;
             },
             onEachFeature: function (feature, layer) {
-              var popupContent = "";
+             var popupContent = "<fieldset><input type=\"radio\" id=\"matching\" name=\"filtermode\" value=\"matching\" onclick=\"filterItems('match',"+feature.properties.id+")\"><label for=\"matching\">Match</label><input type=\"radio\" id=\"conflicting\" name=\"filtermode\" value=\"conflicting\" onclick=\"filterItems('conflict',"+feature.properties.id+")\"><label for=\"conflicting\">Conf</label><input type=\"radio\" id=\"complementary\" name=\"filtermode\" value=\"complementary\" onclick=\"filterItems('comp',"+feature.properties.id+")\"><label for=\"complementary\">Comp</label>"
+			  +"<input type=\"radio\" id=\"equiv\" name=\"filtermode\" value=\"equiv\" onclick=\"filterItems('equiv',"+feature.properties.id+")\"><label for=\"equiv\">EQ</label><input type=\"radio\" id=\"all\" checked=\"checked\" name=\"filtermode\" value=\"all\" onclick=\"filterItems('all',"+feature.properties.id+")\"><label for=\"all\">All</label></fieldset>";
               popupContent = popupContent + "<b>" + feature.properties.type + "/" + feature.properties.id + "</b><br/>";
 			  coord="Coordinates: "+feature.geometry.type+"("+feature.geometry.coordinates[0]+" "+feature.geometry.coordinates[1]+")"
 			  popupContent+=trimcoords(coord,90)
               var indid="<http://www.linkedgeodata.org/"+feature.properties.type+feature.properties.id+">";
-              
-              popupContent+="<br/>OSM Attributes:<ul>"
+              var keys = Object.keys(feature.properties.tags);
+			  popupContent+="<br/><b>OSM Attributes: </b><a href=\"#\" onclick=\"toggle_visibility('osm_"+feature.properties.id+"')\">["+keys.length+"]</a><br/><ul id=\"osm_"+feature.properties.id+"\">"
               wdkeyset={}
               console.log("Wikidata: "+feature.properties.tags["wikidata"])
               if(feature.properties.tags["wikidata"]!="" && feature.properties.tags["wikidata"]!=undefined){
                     wdkeyset=getAttributesForWikidataID(feature.properties.tags["wikidata"])
              }
-              var keys = Object.keys(feature.properties.tags);
               if(feature.properties.tags.length>0){
 					var wicket = new Wkt.Wkt();
 					wicket.read(JSON.stringify(feature["geometry"]));
@@ -115,100 +156,119 @@ $.get(buildOverpassApiUrl(map,"heritage:operator","whc","Deutschland"), function
 						ttlExport+="<http://www.linkedgeodata.org/"+feature.properties.type+feature.properties.id+"> <http://www.opengis.net/ont/geosparql#hasGeometry> \""+wkt+"\"^^<http://www.opengis.net/ont/geosparql#wktLiteral> .\n";
 					}
               }
-              keys.forEach(function (key) {
+                            keys.forEach(function (key) {
               var ignorekeys=[]
-                popupContent = popupContent + "<li>"
+			  	listElem="<li>"
+				listElemContent=""
+                //popupContent = popupContent
                                 /*alert(JSON.stringify(wdkeyset))
                                 if(key in osmToWikidataMap)
                                     alert(JSON.stringify(Object.keys(Object.values(osmToWikidataMap[key])[0])[0]))*/
 				if(key=="wikidata"){
-					popupContent = popupContent + "<a href=\"https://wiki.openstreetmap.org/wiki/Key:wikidata\" target=\"_blank\" style=\"color:#ff0000\">wikidata</a> - <a href=\"https://www.wikidata.org/entity/"+feature.properties.tags[key]+"\"  target=\"_blank\" style=\"color:#ff0000\">" + feature.properties.tags[key] + "</a></li>";
+					listElem="<li class=\"wdmatch\">"
+					listElemContent = "<a href=\"https://wiki.openstreetmap.org/wiki/Key:wikidata\" target=\"_blank\" style=\"color:#ff0000\">wikidata</a> - <a href=\"https://www.wikidata.org/entity/"+feature.properties.tags[key]+"\"  target=\"_blank\" style=\"color:#ff0000\">" + feature.properties.tags[key] + "</a></li>";
 					ttlExport+=indid+" <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/"+feature.properties.tags[key]+"> . \n"  
 				}else if(key=="wikipedia"){
 					if(feature.properties.tags[key].includes(":")){
 					   spll=feature.properties.tags[key].split(":")
-					   popupContent = popupContent + "<a href=\"https://wiki.openstreetmap.org/wiki/Key:wikipedia\" target=\"_blank\" style=\"color:#1103D9\">wikipedia</a> - <a href=\"https://"+spll[0]+".wikipedia.org/wiki/"+spll[1]+"\"  target=\"_blank\" style=\"color:#1103D9\">" + feature.properties.tags[key] + "</a></li>";
+					   listElem="<li class=\"wdmatch\">"
+					   listElemContent+= "<a href=\"https://wiki.openstreetmap.org/wiki/Key:wikipedia\" target=\"_blank\" style=\"color:#1103D9\">wikipedia</a> - <a href=\"https://"+spll[0]+".wikipedia.org/wiki/"+spll[1]+"\"  target=\"_blank\" style=\"color:#1103D9\">" + feature.properties.tags[key] + "</a></li>";
 					ttlExport+=indid+" <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/"+feature.properties.tags[key]+"> . \n"  
 
 					   }else{
-					   popupContent = popupContent + "<a href=\"https://wiki.openstreetmap.org/wiki/Key:wikipedia\" target=\"_blank\" style=\"color:#1103D9\">wikipedia</a> - <a href=\"https://en.wikipedia.org/wiki/"+feature.properties.tags[key]+"\"  target=\"_blank\" style=\"color:#1103D9\">" + feature.properties.tags[key] + "</a></li>";
+					   listElem="<li class=\"wdmatch\">"
+					  listElemContent += "<a href=\"https://wiki.openstreetmap.org/wiki/Key:wikipedia\" target=\"_blank\" style=\"color:#1103D9\">wikipedia</a> - <a href=\"https://en.wikipedia.org/wiki/"+feature.properties.tags[key]+"\"  target=\"_blank\" style=\"color:#1103D9\">" + feature.properties.tags[key] + "</a></li>";
 					ttlExport+=indid+" <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/"+feature.properties.tags[key]+"> . \n"  
 
 					   }
 
 				}else if(key in osmToWikidataMap && (Object.keys(Object.values(osmToWikidataMap[key])[0])[0] in wdkeyset)){
-                                                popupContent+="<a style=\"color:green\" href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\">"+key+"</a>"
+                        listElemContent+="<a style=\"color:green\" href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\">"+key+"</a>"
 						wdval=Object.values(wdkeyset[Object.keys(Object.values(osmToWikidataMap[key])[0])[0]])[0].split(";")[1]
 						if(feature.properties.tags[key].includes("http")){
 							ttlExport+=indid+(feature.properties.tags[key].includes("http")?"<"+feature.properties.tags[key]+">":"\""+feature.properties.tags[key]+"\"")+" "+(wdval.includes("http")?"<"+wdval+">":"\""+wdval+"\"")+" . \n"  
                         }
                         if(wdval==feature.properties.tags[key]){
+								listElem="<li class=\"wdmatch\">"
 								if(feature.properties.tags[key].includes("http")){
-									popupContent = popupContent + " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\" style=\"color:green\">" + feature.properties.tags[key] + "</a></li>";
+									listElemContent += " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\" style=\"color:green\">" + feature.properties.tags[key] + "</a></li>";
 								}else{
-									popupContent = popupContent + " - <span style=\"color:green\">" + feature.properties.tags[key] + "</span></li>";
+									listElemContent += " - <span style=\"color:green\">" + feature.properties.tags[key] + "</span></li>";
 								}
                                 
                         }else{
 							if(feature.properties.tags[key].includes("http")){
-								popupContent = popupContent + " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\" style=\"color:orange\">" + feature.properties.tags[key] + "</a>" 
+								listElem="<li class=\"wdconflict\">"
+								listElemContent += " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\" style=\"color:orange\">" + feature.properties.tags[key] + "</a>" 
 							}else{
-								popupContent = popupContent + " - <span style=\"color:orange\">" + feature.properties.tags[key] + "</span>";
+								listElem="<li class=\"wdconflict\">"
+								listElemContent += " - <span style=\"color:orange\">" + feature.properties.tags[key] + "</span>";
 							}
 							if(wdval.includes("http")){
-								popupContent +=" | <a href=\""+wdval+"\" target=\"_blank\">"+wdval+"</a></li>";
+								listElem="<li class=\"equivfound\">"
+								listElemContent +=" | <a href=\""+wdval+"\" target=\"_blank\">"+wdval+"</a></li>";
 							}else{
-								popupContent +=" | <span style=\"color:orange\">"+wdval+"</span></li>";
+								listElem="<li class=\"equivfound\">"
+								listElemContent +=" | <span style=\"color:orange\">"+wdval+"</span></li>";
 							}
                    }
                 }else if(key in osmToWikidataMap && feature.properties.tags[key] in osmToWikidataMap[key] && "http://www.wikidata.org/entity/P31" in wdkeyset && Object.values(wdkeyset["http://www.wikidata.org/entity/P31"])[0].substring(0,Object.values(wdkeyset["http://www.wikidata.org/entity/P31"])[0].indexOf(";"))==Object.keys(osmToWikidataMap[key][feature.properties.tags[key]])[0]){
-					 popupContent+="<a style=\"color:green\" href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\">"+key+"</a>"
+					listElemContent+="<a style=\"color:green\" href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\">"+key+"</a>"
 					if(feature.properties.tags[key].includes("http")){
-						popupContent = popupContent + " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\" style=\"color:green\">" + feature.properties.tags[key] + "</a></li>";
+						listElem="<li class=\"wdmatch\">"
+						listElemContent += " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\" style=\"color:green\">" + feature.properties.tags[key] + "</a></li>";
 					}else{
-						popupContent = popupContent + " - <a href=\""+Object.keys(osmToWikidataMap[key][feature.properties.tags[key]])[0]+"\" target=\"_blank\" style=\"color:green\">" + feature.properties.tags[key] + "</a></li>";
+						listElem="<li class=\"wdmatch\">"	
+						listElemContent += " - <a href=\""+Object.keys(osmToWikidataMap[key][feature.properties.tags[key]])[0]+"\" target=\"_blank\" style=\"color:green\">" + feature.properties.tags[key] + "</a></li>";
 					}
 				}else if(key in osmToWikidataMap){
 						var color="orange"
-                        popupContent+="<a style=\"color:"+color+"\" href=\"https://wiki.openstreetmap.org/wiki/Key:"+key+"\" target=\"_blank\">"+key+"</a>"
-                                        if(feature.properties.tags[key].includes(".jpg") || feature.properties.tags[key].includes(".JPG") || feature.properties.tags[key].includes(".svg") || feature.properties.tags[key].includes(".SVG")
+						listElem="<li class=\"conflict\">"
+                        listElemContent+="<a style=\"color:"+color+"\" href=\"https://wiki.openstreetmap.org/wiki/Key:"+key+"\" target=\"_blank\">"+key+"</a>"
+                  if(feature.properties.tags[key].includes(".jpg") || feature.properties.tags[key].includes(".JPG") || feature.properties.tags[key].includes(".svg") || feature.properties.tags[key].includes(".SVG")
 						|| feature.properties.tags[key].includes(".png") || feature.properties.tags[key].includes(".PNG") || feature.properties.tags[key].includes(".gif") || feature.properties.tags[key].includes(".GIF")){
-						popupContent+=" - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\"><img src=\""+feature.properties.tags[key].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"			
+						listElemContent+=" - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\"><img src=\""+feature.properties.tags[key].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"			
 					}else if(feature.properties.tags[key].includes("http")){
-						popupContent = popupContent + " - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\">" + feature.properties.tags[key] + "</a></li>";
+						listElemContent += " - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\">" + feature.properties.tags[key] + "</a></li>";
 					}else if(feature.properties.tags[key].startsWith("www.")){
-						popupContent+=" - <a href=\"https://"+feature.properties.tags[key]+"\" target=\"_blank\">"+feature.properties.tags[key]+"</a></li>"
+						console.log(JSON.stringify(osmToWikidataMap))
+						console.log(Object.keys(osmToWikidataMap[key][""])[0])
+						listElemContent+=" - <a href=\"https://"+feature.properties.tags[key]+"\" target=\"_blank\" style=\"color:orange\">"+feature.properties.tags[key]+"</a> | <a href=\"https://"+wdkeyset[Object.keys(osmToWikidataMap[key][""])[0]]+"\" target=\"_blank\" style=\"color:orange\">"+wdkeyset[Object.keys(osmToWikidataMap[key][""])[0]]+"</a></li>"
 					}else{
-						popupContent = popupContent + " - " + feature.properties.tags[key] + "</li>";
+						listElemContent += " - " + feature.properties.tags[key] + "</li>";
 					}
                 }else{
-                    popupContent+="<a href=\"https://wiki.openstreetmap.org/wiki/Key:"+key+"\" target=\"_blank\"style=\"color:black;text-decoration: none;\">"+key+"</a>"
-				if(key.includes("P625"))
-					wdcoords=wdkeyset[key]
+					listElem="<li class=\"nomatch\">"
+                    listElemContent+="<a href=\"https://wiki.openstreetmap.org/wiki/Key:"+key+"\" target=\"_blank\"style=\"color:black;text-decoration: none;\">"+key+"</a>"
 			if(feature.properties.tags[key].includes(".jpg") || feature.properties.tags[key].includes(".JPG") || feature.properties.tags[key].includes(".svg") || feature.properties.tags[key].includes(".SVG")
 				|| feature.properties.tags[key].includes(".png") || feature.properties.tags[key].includes(".PNG") || feature.properties.tags[key].includes(".gif") || feature.properties.tags[key].includes(".GIF")){
-			    	popupContent+=" - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\"><img src=\""+feature.properties.tags[key].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"			
+			    	listElemContent+=" - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\"><img src=\""+feature.properties.tags[key].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"			
 		    }else if(feature.properties.tags[key].includes("http")){
-					popupContent = popupContent + " - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\">" + feature.properties.tags[key] + "</a></li>";
+					listElemContent += " - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\">" + feature.properties.tags[key] + "</a></li>";
 		    }else if(feature.properties.tags[key].startsWith("www.")){
-			    	popupContent+="<a href=\"https://"+feature.properties.tags[key]+"\" target=\"_blank\">"+feature.properties.tags[key]+"</a></li>"
+			    	listElemContent+="<a href=\"https://"+feature.properties.tags[key]+"\" target=\"_blank\">"+feature.properties.tags[key]+"</a></li>"
 			}else{
-					popupContent = popupContent + " - " + feature.properties.tags[key] + "</li>";
+					listElemContent += " - " + feature.properties.tags[key] + "</li>";
 		    }
                      
                 }
+			popupContent+=listElem+listElemContent
               });
-              popupContent = popupContent + "</ul>"
+              popupContent += "</ul>"
 			  //alert(wdkeyset)
 			  if(feature.properties.tags["wikidata"]!== undefined){
-              popupContent+="Wikidata Items: "/*<b>"+Object.values(wdkeyset["rdfs:label"])[0]+"</b>*/+"<ul>"
+				popupContent+="<b>Wikidata Items:</b> <a href=\"#\" onclick=\"toggle_visibility('wd_"+feature.properties.id+"')\">["+Object.keys(wdkeyset).length+"]</a><br/><ul id=\"wd_"+feature.properties.id+"\">"/*<b>"+Object.values(wdkeyset["rdfs:label"])[0]+"</b>*/+"<ul>"
 			  }
 			  var wdcoords;
+			  wdcoords="";
               for(key in wdkeyset){
 					//if(key=="rdfs:label")
 					//	continue;
+
 					var isgreen=false;
                     giventag=""
+				if(key.includes("P625"))
+					wdcoords=wdkeyset[key]
                   if(!(Object.values(wdkeyset[key])[0].includes("statement"))){
                             spl=Object.values(wdkeyset[key])[0].split(";")
 							wdval=spl[1]
@@ -243,8 +303,14 @@ $.get(buildOverpassApiUrl(map,"heritage:operator","whc","Deutschland"), function
                             }
 			    if(spl[0].includes(".jpg") || spl[0].includes(".JPG")|| spl[0].includes(".svg") || spl[0].includes(".SVG")
 				|| spl[0].includes(".png") || spl[0].includes(".PNG")){
-			    	popupContent+="<a href=\""+spl[0]+"\" target=\"_blank\"";
-					popupContent+="><img src=\""+spl[1].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"
+					listElem=listElem.trim();
+					listElem+=">"
+			    	listElemContent+="<a href=\""+spl[0]+"\" target=\"_blank\"";
+					if(!spl[1].includes("https")){
+						listElemContent+="><img src=\""+spl[1].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"
+					}else{
+						listElemContent+="><img src=\""+spl[1]+"\" height=\"30\" width=\"30\"></a></li>"
+					}
 					ttlExport+=indid+" <"+key+"> <"+spl[0]+"> . \n"  
 			    }else if(spl[0].includes("http")){
 					if((finished && giventag==spl[1]) || isgreen){
@@ -319,41 +385,30 @@ function trimcoords(coords,length){
 }
 
 function getDistance(origin, destination) {
+    console.log("Distance: "+JSON.stringify(origin))
+    console.log("Distance2: "+JSON.stringify(destination))
 	try{
 	var fromm;
-	console.log(origin.coordinates)
-
-	fromm=turf.point(origin);
-		console.log(destination)
-	if(typeof origin.type !== 'undefined'){
 	if(origin.type=="Polygon"){
 		var polygon=turf.polygon(origin.coordinates)
 		fromm=turf.centroid(polygon);
 	}else{
-		fromm=turf.point(origin);
+		fromm=turf.point(origin.coordinates);
 	}
-	}else{
-		fromm=turf.point(origin);
-	}
-	console.log(fromm)
-	console.log(destination)
-	to=turf.point(destination);
 	if("coordinate location" in destination && destination["coordinate location"].includes("Polygon")){
 		var polygon=turf.polygon(destination["coordinate location"])
 		to=turf.centroid(polygon);
+	}else if("coordinate location" in destination && destination["coordinate location"].includes(";")){
+		var array=JSON.parse("{\"type\":\"Point\",  \"coordinates\":["+destination["coordinate location"].split(";")[0].replace("Point(","").replace(")","").replace(" ",",")+"]}")
+		to=turf.point(array.coordinates);
 	}else{
-		to=fromm=turf.point(destination);
-		//to=turf.point(JSON.parse(("["+destination["coordinate location"].substring(destination["coordinate location"].indexOf('(')+1,destination["coordinate location"].indexOf(')'))+"]").replace(" ",", ")));
+		to=turf.point(destination["coordinates"]);
 	}
-		console.log(fromm+" - "+to)
 	var options={units: 'kilometers'}
-	console.log(turf.distance(fromm,to,options))
 	var dest=turf.distance(fromm,to,options)*1000
-	console.log(dest)
-	if(dest==0)
-		dest=10000
 	return dest
 	}catch(e){
+	    console.log(e)
 		return "";
 	}
 }
@@ -593,6 +648,18 @@ function zoomAndReload(){
 			loadWDItems();
         }
 }
+function toggle_visibility(id) 
+  {
+      var e = document.getElementById(id);
+      if (e.style.display == 'block' || e.style.display=='')
+      {
+          e.style.display = 'none';
+      }
+      else 
+      {
+          e.style.display = 'block';
+      }
+  }
 </script>
 
 </head>

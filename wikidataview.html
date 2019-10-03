@@ -118,7 +118,7 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
             },
             onEachFeature: function (feature, layer) {
 			   var popupContent = "<fieldset><input type=\"radio\" id=\"matching\" name=\"filtermode\" value=\"matching\" onclick=\"filterItems('match',"+feature.properties.id+")\"><label for=\"matching\">Match</label><input type=\"radio\" id=\"conflicting\" name=\"filtermode\" value=\"conflicting\" onclick=\"filterItems('conflict',"+feature.properties.id+")\"><label for=\"conflicting\">Conf</label><input type=\"radio\" id=\"complementary\" name=\"filtermode\" value=\"complementary\" onclick=\"filterItems('comp',"+feature.properties.id+")\"><label for=\"complementary\">Comp</label>"
-			  +"<input type=\"radio\" id=\"equiv\" name=\"filtermode\" value=\"equiv\" onclick=\"filterItems('equiv',"+feature.properties.id+")\"><label for=\"equiv\">EQ</label><input type=\"radio\" id=\"all\" name=\"filtermode\" value=\"all\" onclick=\"filterItems('all',"+feature.properties.id+")\"><label for=\"all\">All</label></fieldset>";
+			  +"<input type=\"radio\" id=\"equiv\" name=\"filtermode\" value=\"equiv\" onclick=\"filterItems('equiv',"+feature.properties.id+")\"><label for=\"equiv\">EQ</label><input type=\"radio\" id=\"all\" checked=\"checked\" name=\"filtermode\" value=\"all\" onclick=\"filterItems('all',"+feature.properties.id+")\"><label for=\"all\">All</label></fieldset>";
               popupContent = popupContent + "<b>" + feature.properties.type + "/" + feature.properties.id + "</b><br/>";
 			  coord="Coordinates: "+feature.geometry.type+"("+feature.geometry.coordinates[0]+" "+feature.geometry.coordinates[1]+")"
 			  popupContent+=trimcoords(coord,90)
@@ -252,14 +252,16 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
               if(feature.properties.tags["wikidata"]!== undefined){
 				popupContent+="<b>Wikidata Items:</b> <a href=\"#\" onclick=\"toggle_visibility('wd_"+feature.properties.id+"')\">["+Object.keys(wdkeyset).length+"]</a><br/><ul id=\"wd_"+feature.properties.id+"\">"/*<b>"+Object.values(wdkeyset["rdfs:label"])[0]+"</b>*/
 			  }
-
+			wdcoords=""
               for(key in wdkeyset){
+
 					//if(key=="rdfs:label")
 					//	continue;
 					var isgreen=false;
                     giventag=""
 				  listElem="<li "
 				  listElemContent=""
+				  console.log(key)
 				  if(key.includes("P625")){
 					wdcoords=wdkeyset[key]
 				  }
@@ -305,7 +307,11 @@ $.get(buildOverpassApiUrl(map,"wikidata"), function (osmDataAsJson) {
 					listElem=listElem.trim();
 					listElem+=">"
 			    	listElemContent+="<a href=\""+spl[0]+"\" target=\"_blank\"";
-					listElemContent+="><img src=\""+spl[1].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"
+					if(!spl[1].includes("https")){
+						listElemContent+="><img src=\""+spl[1].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"
+					}else{
+						listElemContent+="><img src=\""+spl[1]+"\" height=\"30\" width=\"30\"></a></li>"
+					}
 					ttlExport+=indid+" <"+key+"> <"+spl[0]+"> . \n"  
 			    }else if(spl[0].includes("http")){
 					if((finished && giventag==spl[1]) || isgreen){
@@ -380,6 +386,8 @@ function trimcoords(coords,length){
 }
 
 function getDistance(origin, destination) {
+    console.log("Distance: "+JSON.stringify(origin))
+    console.log("Distance2: "+JSON.stringify(destination))
 	try{
 	var fromm;
 	if(origin.type=="Polygon"){
@@ -388,16 +396,21 @@ function getDistance(origin, destination) {
 	}else{
 		fromm=turf.point(origin.coordinates);
 	}
-	if(destination["coordinate location"].includes("Polygon")){
+	if("coordinate location" in destination && destination["coordinate location"].includes("Polygon")){
 		var polygon=turf.polygon(destination["coordinate location"])
 		to=turf.centroid(polygon);
+	}else if("coordinate location" in destination && destination["coordinate location"].includes(";")){
+		var array=JSON.parse("{\"type\":\"Point\",  \"coordinates\":["+destination["coordinate location"].split(";")[0].replace("Point(","").replace(")","").replace(" ",",")+"]}")
+		to=turf.point(array.coordinates);
 	}else{
-		to=turf.point(JSON.parse(("["+destination["coordinate location"].substring(destination["coordinate location"].indexOf('(')+1,destination["coordinate location"].indexOf(')'))+"]").replace(" ",", ")));
+		to=turf.point(destination["coordinates"]);
 	}
 	var options={units: 'kilometers'}
 	var dest=turf.distance(fromm,to,options)*1000
+	console.log(dest)
 	return dest
 	}catch(e){
+	    console.log(e)
 		return "";
 	}
 }
