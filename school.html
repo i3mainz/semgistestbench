@@ -152,7 +152,9 @@ function isInBoundingBox(geometry,bboxgeom){
 	}else if(geometry.type=="MultiPoint"){
 		return null;
 	}
-	var res= turf.booleanPointInPolygon(geometry,turf.bboxPolygon([bboxgeom._southWest.lat,bboxgeom._southWest.lng,bboxgeom._northEast.lat,bboxgeom._northEast.lng]));
+	console.log(turf.bboxPolygon([bboxgeom._southWest.lat,bboxgeom._southWest.lng,bboxgeom._northEast.lat,bboxgeom._northEast.lng]))
+	var res= turf.booleanPointInPolygon(geometry,turf.bboxPolygon([bboxgeom._southWest.lat,bboxgeom._southWest.lng,bboxgeom._northEast.lat,bboxgeom._northEast.lng]).geometry);
+	console.log(res)
 	if(res){
 		console.log(geometry)
 		console.log([bboxgeom._southWest.lat,bboxgeom._southWest.lng,bboxgeom._northEast.lat,bboxgeom._northEast.lng])
@@ -540,7 +542,7 @@ $.get(buildOverpassApiUrl(map,"amenity","school"), function (osmDataAsJson) {
 		 var officiallayer2=L.geoJSON(brbschools,{
 		filter: function(feature,layer){
 			console.log(feature.geometry)
-			//if(isInBoundingBox(feature.geometry,map.getBounds())){
+			if(map.getBounds().contains(L.latLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]))){
 				var res=matchGeometryInGeoJSONSet(feature.geometry,resultAsGeojson.features)
 				console.log("RES!")
 				console.log(res)
@@ -548,7 +550,7 @@ $.get(buildOverpassApiUrl(map,"amenity","school"), function (osmDataAsJson) {
 					return true;
 				}
 				return false;
-			//}
+			}
 			//return false;
 		},
 		pointToLayer: function(feature, latlng){
