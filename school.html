@@ -5,6 +5,7 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
 <link rel="stylesheet" href="css/leaflet-search.css" />
+<link rel="stylesheet" href="css/numbermarkers.js"/>
  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
@@ -16,6 +17,7 @@
   <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
      <script src="js/leaflet.fullscreen.js"></script>
 	 <script src="js/leaflet-search.js"></script>
+	      <script src="js/numbermarkers.js"></script>
 	 <script src="testdata/brbschools.js"></script>
 	  <script src="testdata/brbschool_mapping.js"></script>
    <script src="js/leaflet_legend.js"></script>
@@ -230,6 +232,7 @@ $.get(buildOverpassApiUrl(map,"amenity","school"), function (osmDataAsJson) {
             onEachFeature: function (feature, layer) {
 			  //console.log(feature)
 			  //console.log(brbschools)
+			  			  var numberofconflicts=0;
 			  var officialdata=matchGeometryInGeoJSONSet(feature.geometry,brbschools)
 			  console.log(JSON.stringify(officialdata))
               var popupContent = "<fieldset><input type=\"radio\" id=\"matching\" name=\"filtermode\" value=\"matching\" onclick=\"filterItems('match',"+feature.properties.id+")\"><label for=\"matching\">Match</label><input type=\"radio\" id=\"conflicting\" name=\"filtermode\" value=\"conflicting\" onclick=\"filterItems('conflict',"+feature.properties.id+")\"><label for=\"conflicting\">Conf</label><input type=\"radio\" id=\"complementary\" name=\"filtermode\" value=\"complementary\" onclick=\"filterItems('comp',"+feature.properties.id+")\"><label for=\"complementary\">Comp</label>"
@@ -260,11 +263,13 @@ $.get(buildOverpassApiUrl(map,"amenity","school"), function (osmDataAsJson) {
 							console.log(osmkey+" - "+wdkey+" - "+valtocompare+" - "+wdvaltocompare+" - "+officialdata.properties[keys[prop]])
 							console.log(osmkey+" - "+feature.properties.tags[osmkey])
 							if(osmkey in feature.properties.tags && officialdata.properties[keys[prop]]!=valtocompare){
+								numberofconflicts++;
 								popupContent+="<li link=\""+osmkey+"\" class=\"osmconflict\"><span style=\"color:orange;text-decoration:underline;\">"+keys[prop]+"</span> - <span style=\"color:orange;text-decoration:underline;\">"+officialdata.properties[keys[prop]]+" | "+feature.properties.tags[osmkey]+" ["+editDistance(officialdata.properties[keys[prop]],feature.properties.tags[osmkey])+"] (OSM)</span></li>"
 							}else if(osmkey in feature.properties.tags && officialdata.properties[keys[prop]]==valtocompare){
 								popupContent+="<li link=\""+osmkey+"\" class=\"osmmatch\"><span style=\"color:green;text-decoration:underline;\">"+keys[prop]+"</span> - <span style=\"color:green;text-decoration:underline;\">"+officialdata.properties[keys[prop]]+" (OSM)</span></li>"
 							}else if(wdkey in wdkeyset && officialdata.properties[keys[prop]]!=wdvaltocompare){
 								spl=Object.values(wdkeyset[wdkey])[0].split(";")
+								numberofconflicts++;
 								popupContent+="<li link=\""+wdkey+"\" class=\"wdconflict\"><span style=\"color:green;text-decoration:underline;\">"+keys[prop]+"</span> - <span style=\"color:orange;text-decoration:underline;\">"+officialdata.properties[keys[prop]]+" | "+spl[1]+" ["+editDistance(officialdata.properties[keys[prop]],spl[1])+"] (Wikidata)</span></li>"
 							}else if(wdkey in wdkeyset && officialdata.properties[keys[prop]]==wdvaltocompare){
 								popupContent+="<li link=\""+wdkey+"\" class=\"wdmatch\"><span style=\"color:green;text-decoration:underline;\">"+keys[prop]+"</span> - <span style=\"color:green;text-decoration:underline;\">"+officialdata.properties[keys[prop]]+" (Wikidata)</span></li>"
@@ -466,6 +471,7 @@ $.get(buildOverpassApiUrl(map,"amenity","school"), function (osmDataAsJson) {
 						listElem+=" class=\"osmmatch\">"
 						listElemContent+="<a href=\""+spl[0]+"\" target=\"_blank\" style=\"color:green\">"+spl[1]+"</a></li>"
 					}else if(finished && giventag!=spl[1] && giventag!=""){
+						numberofconflicts++;
 						listElem+=" class=\"osmconflict\">"
 						listElemContent+="<a href=\""+spl[0]+"\" target=\"_blank\" style=\"color:orange\">"+spl[1]+"</a> | "+(giventag.includes("http")?"<a href=\""+giventag+"\" style=\"color:orange\">"+giventag+"</a>":"<span style=\"color:orange\">"+giventag+"</span>")+"</li>"
 					}else{
@@ -478,6 +484,7 @@ $.get(buildOverpassApiUrl(map,"amenity","school"), function (osmDataAsJson) {
 						listElem+=" class=\"osmmatch\">"
 						listElemContent+="<a href=\"https://"+spl[0]+"\" target=\"_blank\" style=\"color:green\">"+spl[1]+"</a></li>"
 					}else if(finished && giventag!=spl[1] && giventag!=""){
+						numberofconflicts++;
 						listElem+=" class=\"osmconflict\">"
 						listElemContent+="<a href=\"https://"+spl[0]+"\" target=\"_blank\" style=\"color:orange\">"+spl[1]+"</a> | "+(giventag.includes("http")?"<a href=\""+giventag+"\" style=\"color:orange\">"+giventag+"</a>":"<span style=\"color:orange\">"+giventag+"</span>")+"</li>"
 					}else{
@@ -517,22 +524,36 @@ $.get(buildOverpassApiUrl(map,"amenity","school"), function (osmDataAsJson) {
                         mark=L.marker(centroid.geometry.coordinates,{icon: greyIcon})
 						mark.addTo(map)
 			  }
+			  popupContent+="<b>Metrics:</b> <a href=\"#\" onclick=\"toggle_visibility('"+feature.properties.id+"_metrics')\">[1]</a><br/><ul id=\""+feature.properties.id+"_metrics\" style=\"display:none\">"/*<b>"+Object.values(wdkeyset["rdfs:label"])[0]+"</b>*/
 			 if(wdcoords!=""){
 				dist=getDistance(feature.geometry,wdcoords)
 				if(dist!=""){
-					popupContent+="<b>Metrics:</b> <a href=\"#\" onclick=\"toggle_visibility('"+feature.properties.id+"_metrics')\">[1]</a><br/><ul id=\""+feature.properties.id+"_metrics\" style=\"display:none\">"/*<b>"+Object.values(wdkeyset["rdfs:label"])[0]+"</b>*/
 					popupContent+="<li>Distance: "+dist.toFixed(2)+"m</li>"
-					popupContent+="</ul>"
-				}
-	
+				}	
 			  }  
+			  popupContent+="<li>Number Of Conflicts: "+numberofconflicts+"</li>"
+			  popupContent+="</ul>"
 			  if(document.getElementById('popupmode').checked){
 				layer.bindPopup(popupContent,{maxWidth : 560});
 			  }else{
 				layer.on('click', function (e) {
 				$('#contentdesc').html(popupContent)
 				});
-				layer.bindPopup("<b>"+feature.properties.type + "/" + feature.properties.id+"</b>",{maxWidth : 560});
+				var bindcontent;
+				if(wdkeyset["http://www.wikidata.org/entity/P18"]){
+					spl=Object.values(wdkeyset["http://www.wikidata.org/entity/P18"])[0].split(";")
+					var imgurl=spl[1]
+					if(imgurl.includes("http://")){
+						imgurl=imgurl.replace("http://","https://")
+					}
+					bindcontent="<table><tr><td rowspan=\"2\"><img src=\""+imgurl+"\" width=\"100\" height=\"100\"/></td><td>OSM: <a href=\"https://www.openstreetmap.org/"+feature.properties.type+"/"+feature.properties.id+"\" target=\"_blank\">"+ feature.properties.type + "/" + feature.properties.id + "</b></a></td></tr>"
+				}else{
+					bindcontent="<table><tr><td rowspan=\"2\"></td><td>OSM: <a href=\"https://www.openstreetmap.org/"+feature.properties.type+"/"+feature.properties.id+"\" target=\"_blank\">"+ feature.properties.type + "/" + feature.properties.id + "</b></a></td></tr>"
+				}
+				if(feature.properties.tags["wikidata"]!== undefined){					
+					bindcontent+="<tr><td>Wikidata: <a href=\"https://www.wikidata.org/entity/"+feature.properties.tags["wikidata"]+"\" target=\"_blank\">"+feature.properties.tags["wikidata"]+"</b></a></td></tr>"
+				}
+				layer.bindPopup(bindcontent+"</table>",{maxWidth : 600});
 			  }
              // console.log(ttlExport)
             }
