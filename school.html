@@ -52,6 +52,43 @@ function saveTextAsFile()
     
 }
 
+function editDistance(a, b){
+  if(a.length == 0) return b.length; 
+  if(b.length == 0) return a.length; 
+  a=a.toLowerCase()
+  b=b.toLowerCase()
+  a=a.replace("\n"," ")
+  b=b.replace("\n"," ")
+  var matrix = [];
+
+  // increment along the first column of each row
+  var i;
+  for(i = 0; i <= b.length; i++){
+    matrix[i] = [i];
+  }
+
+  // increment each column in the first row
+  var j;
+  for(j = 0; j <= a.length; j++){
+    matrix[0][j] = j;
+  }
+
+  // Fill in the rest of the matrix
+  for(i = 1; i <= b.length; i++){
+    for(j = 1; j <= a.length; j++){
+      if(b.charAt(i-1) == a.charAt(j-1)){
+        matrix[i][j] = matrix[i-1][j-1];
+      } else {
+        matrix[i][j] = Math.min(matrix[i-1][j-1] + 1, // substitution
+                                Math.min(matrix[i][j-1] + 1, // insertion
+                                         matrix[i-1][j] + 1)); // deletion
+      }
+    }
+  }
+
+  return matrix[b.length][a.length];
+}
+
 function buildOverpassApiUrl(map, overpassQuery,overpassQueryVal) {
         var bounds = map.getBounds().getSouth() + ',' + map.getBounds().getWest() + ',' + map.getBounds().getNorth() + ',' + map.getBounds().getEast();
         var nodeQuery = 'node[' + (overpassQueryVal==""?overpassQuery:"'"+overpassQuery+"'='"+overpassQueryVal+"'") + '](' + bounds + ');';
@@ -81,12 +118,47 @@ function matchGeometryInGeoJSONSet(geometry,geojsonset){
     console.log(point)
 	var result=null
 	for(geojson in geojsonset){
-		if(turf.booleanContains(point,geojsonset[geojson])){
-			console.log("Result: "+geojsonset[geojson])
-			return geojsonset[geojson];
+		console.log(geojsonset[geojson])
+		if(geojsonset[geojson].type=="Polygon" || geojsonset[geojson].geometry.type=="Polygon"){
+			if(turf.booleanPointInPolygon(point,geojsonset[geojson])){
+				console.log("Result: "+geojsonset[geojson])
+				return geojsonset[geojson];
+			}
+		}else if(geojsonset[geojson].geometry.type=="LineString"){
+			continue;
+		}else{
+			if(turf.booleanContains(point,geojsonset[geojson])){
+				console.log("Result: "+geojsonset[geojson])
+				return geojsonset[geojson];
+			}
 		}
 	}
 	return null;
+}
+
+function isInBoundingBox(geometry,bboxgeom){
+	//console.log(geometry)
+	//console.log([bboxgeom._northEast.lng,bboxgeom._northEast.lat,bboxgeom._southWest.lng,bboxgeom._southWest.lat])
+	if(geometry.type=="Polygon"){
+		var point=turf.polygon(geometry.coordinates);
+	}else if(geometry.type=="MultiPolygon"){
+		return null;
+	}else if(geometry.type=="LineString"){
+		var point=turf.lineString(geometry.coordinates);
+	}else if(geometry.type=="MultiLineString"){
+		return null;
+	}else if(geometry.type=="Point"){
+		var point=turf.point(geometry.coordinates);
+	}else if(geometry.type=="MultiPoint"){
+		return null;
+	}
+	var res= turf.booleanPointInPolygon(geometry,turf.bboxPolygon([bboxgeom._southWest.lat,bboxgeom._southWest.lng,bboxgeom._northEast.lat,bboxgeom._northEast.lng]));
+	if(res){
+		console.log(geometry)
+		console.log([bboxgeom._southWest.lat,bboxgeom._southWest.lng,bboxgeom._northEast.lat,bboxgeom._northEast.lng])
+		console.log(res)
+	}
+	return res;
 }
 
 function filterItems(filtermode,featureid){
@@ -135,10 +207,16 @@ if(map.getZoom()>=minMapZoom){
 $.get(buildOverpassApiUrl(map,"amenity","school"), function (osmDataAsJson) {
           var resultAsGeojson = osmtogeojson(osmDataAsJson);
 		  var adminLayer=null
+		  var officialdata;
           var resultLayer = L.geoJson(resultAsGeojson, {
             style: function (feature) {
-              if(feature.properties.tags["wikidata"]!== undefined){
+			  var officialdata=matchGeometryInGeoJSONSet(feature.geometry,brbschools)
+              if(feature.properties.tags["wikidata"]!== undefined && officialdata!=null){
 				return {color: "#008000"};
+			   }else if(feature.properties.tags["wikidata"]==undefined && officialdata!=null){
+					return {color: "orange"};
+			   }else if(feature.properties.tags["wikidata"]==undefined && officialdata!=null){
+					return {color: "blue"};
 			   }else{
 				return {color: "#ff0000"};
 			   } 
@@ -180,11 +258,12 @@ $.get(buildOverpassApiUrl(map,"amenity","school"), function (osmDataAsJson) {
 							console.log(osmkey+" - "+wdkey+" - "+valtocompare+" - "+wdvaltocompare+" - "+officialdata.properties[keys[prop]])
 							console.log(osmkey+" - "+feature.properties.tags[osmkey])
 							if(osmkey in feature.properties.tags && officialdata.properties[keys[prop]]!=valtocompare){
-								popupContent+="<li link=\""+osmkey+"\" class=\"osmconflict\"><span style=\"color:orange;text-decoration:underline;\">"+keys[prop]+"</span> - <span style=\"color:orange;text-decoration:underline;\">"+officialdata.properties[keys[prop]]+" | "+feature.properties.tags[osmkey]+" (OSM)</span></li>"
+								popupContent+="<li link=\""+osmkey+"\" class=\"osmconflict\"><span style=\"color:orange;text-decoration:underline;\">"+keys[prop]+"</span> - <span style=\"color:orange;text-decoration:underline;\">"+officialdata.properties[keys[prop]]+" | "+feature.properties.tags[osmkey]+" ["+editDistance(officialdata.properties[keys[prop]],feature.properties.tags[osmkey])+"] (OSM)</span></li>"
 							}else if(osmkey in feature.properties.tags && officialdata.properties[keys[prop]]==valtocompare){
 								popupContent+="<li link=\""+osmkey+"\" class=\"osmmatch\"><span style=\"color:green;text-decoration:underline;\">"+keys[prop]+"</span> - <span style=\"color:green;text-decoration:underline;\">"+officialdata.properties[keys[prop]]+" (OSM)</span></li>"
 							}else if(wdkey in wdkeyset && officialdata.properties[keys[prop]]!=wdvaltocompare){
-								popupContent+="<li link=\""+wdkey+"\" class=\"wdconflict\"><span style=\"color:green;text-decoration:underline;\">"+keys[prop]+"</span> - <span style=\"color:orange;text-decoration:underline;\">"+officialdata.properties[keys[prop]]+" | "+wdkeyset[wdkey]+" (Wikidata)</span></li>"
+								spl=Object.values(wdkeyset[wdkey])[0].split(";")
+								popupContent+="<li link=\""+wdkey+"\" class=\"wdconflict\"><span style=\"color:green;text-decoration:underline;\">"+keys[prop]+"</span> - <span style=\"color:orange;text-decoration:underline;\">"+officialdata.properties[keys[prop]]+" | "+spl[1]+" ["+editDistance(officialdata.properties[keys[prop]],spl[1])+"] (Wikidata)</span></li>"
 							}else if(wdkey in wdkeyset && officialdata.properties[keys[prop]]==wdvaltocompare){
 								popupContent+="<li link=\""+wdkey+"\" class=\"wdmatch\"><span style=\"color:green;text-decoration:underline;\">"+keys[prop]+"</span> - <span style=\"color:green;text-decoration:underline;\">"+officialdata.properties[keys[prop]]+" (Wikidata)</span></li>"
 							}else{
@@ -457,8 +536,47 @@ $.get(buildOverpassApiUrl(map,"amenity","school"), function (osmDataAsJson) {
             }
           }).addTo(map);
 		  resultLayerCollection.push(resultLayer);
+		  console.log("NOW MATCHING SECOND LAYER")
+		 var officiallayer2=L.geoJSON(brbschools,{
+		filter: function(feature,layer){
+			console.log(feature.geometry)
+			//if(isInBoundingBox(feature.geometry,map.getBounds())){
+				var res=matchGeometryInGeoJSONSet(feature.geometry,resultAsGeojson.features)
+				console.log("RES!")
+				console.log(res)
+				if(res==null){
+					return true;
+				}
+				return false;
+			//}
+			//return false;
+		},
+		pointToLayer: function(feature, latlng){
+			 var greenIcon = new L.Icon({
+                                        iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-black.png',
+                                        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                                        iconSize: [25, 41],
+                                        iconAnchor: [12, 41],
+                                        popupAnchor: [1, -34],
+                                        shadowSize: [41, 41]
+                                    });
+            return L.marker(latlng,{icon: greenIcon})
+		},
+		onEachFeature: function (feature, layer) {
+	 var popup="Official Data<br/><ul>"
+	 for(prop in feature.properties){
+	 	popup+="<li>"+prop+" - "+feature.properties[prop]+"</li>"
+	 }
+	 popup+="</ul>"
+	 console.log(feature)
+         layer.bindPopup(popup);
+     }}).addTo(map);
+	 	resultLayerCollection.push(officiallayer2)
         });
+				  
+
     }
+
 }
 
 function trimcoords(coords,length){
@@ -795,6 +913,17 @@ getMatchingWikiDataOSMAttributes();
 });
 
 	var officiallayer=L.geoJSON(brbschools,{
+	pointToLayer: function(feature, latlng){
+			 var greenIcon = new L.Icon({
+                                        iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
+                                        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                                        iconSize: [25, 41],
+                                        iconAnchor: [12, 41],
+                                        popupAnchor: [1, -34],
+                                        shadowSize: [41, 41]
+                                    });
+            return L.marker(latlng,{icon: greenIcon})
+	},
 onEachFeature: function (feature, layer) {
 	 var popup="Official Data<br/><ul>"
 	 for(prop in feature.properties){
@@ -803,7 +932,7 @@ onEachFeature: function (feature, layer) {
 	 popup+="</ul>"
          layer.bindPopup(popup);
      }})
-	overlayMaps.push(officiallayer);
+	overlayMaps["Official Data"]=officiallayer;
 		var wmsLayer = L.tileLayer.wms('https://sgx.geodatenzentrum.de/wms_topplus_web_open', {
 layers: 'web',
 format: 'image/png',
@@ -831,8 +960,8 @@ loaded=true;
 <button type="button" id="loadbutton2" onClick="loadWDItems()">Load Wikidata School Items</button>
 <button type="button" id="clearbutton" onClick="clearMap()">Clear Map</button><br/>
 Autoload<input type="checkbox" id="autoload"/>PopupMode<input type="checkbox" id="popupmode"/><br/>
-Legend: <table><tr><td style="background-color:red">&nbsp;&nbsp;</td><td>In OSM but not in Wikidata</td>
-<td style="background-color:green">&nbsp;&nbsp;</td><td>In OSM and Wikidata</td></tr><tr>
-<td style="color:orange">Orange Marker</td><td>In Wikidata</td><td style="color:blue">Blue Marker</td><td>In OSM and not in Wikidata</td></tr></table>
+Legend: <table><tr><td style="background-color:red">&nbsp;&nbsp;</td><td>Only in OSM</td>
+<td style="background-color:green">&nbsp;&nbsp;</td><td>In OSM, Wikidata and Official</td><td style="background-color:black">&nbsp;&nbsp;</td><td>Only in Official</td></tr><tr>
+<td style="background-color:orange"></td><td>OSM and Official</td><td style="background-color:blue"></td><td>OSM and Wikidata, NOT in Official</td></tr></table>
 </body>
 </html>
