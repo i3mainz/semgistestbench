@@ -5,7 +5,8 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
 <link rel="stylesheet" href="css/leaflet-search.css" />
-<link rel="stylesheet" href="css/numbermarkers.js"/>
+<link rel="stylesheet" href="css/numbermarkers.css"/>
+<link rel="stylesheet" href="https://cdn.bootcss.com/leaflet.fullscreen/1.5.1/Control.FullScreen.css"/>
  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
@@ -33,6 +34,7 @@ var overlayMaps=[]
 var ttlExport="";
 var minMapZoom=2;
 var resultLayerCollection=[]
+var markercollection=[]
 var itemCount={}
 var loaded=false;
 function saveToOWL(){
@@ -227,6 +229,8 @@ $.get(buildOverpassApiUrl(map,"amenity","school"), function (osmDataAsJson) {
           var resultAsGeojson = osmtogeojson(osmDataAsJson);
 		  var adminLayer=null
 		  var officialdata;
+		  var tooltiptext="";
+		  var numberofattributes=0;
           var resultLayer = L.geoJson(resultAsGeojson, {
             style: function (feature) {
 			  var officialdata=matchGeometryInGeoJSONSet(feature.geometry,window[$('#schoolsetmenu').val()])
@@ -247,12 +251,13 @@ $.get(buildOverpassApiUrl(map,"amenity","school"), function (osmDataAsJson) {
             onEachFeature: function (feature, layer) {
 			  //console.log(feature)
 			  //console.log(brbschools)
+			  tooltiptext="";
 			  			  var numberofconflicts=0;
 			  var officialdata=matchGeometryInGeoJSONSet(feature.geometry,window[$('#schoolsetmenu').val()])
 			  console.log(JSON.stringify(officialdata))
               var popupContent = "<fieldset><input type=\"radio\" id=\"matching\" name=\"filtermode\" value=\"matching\" onclick=\"filterItems('match',"+feature.properties.id+")\"><label for=\"matching\">Match</label><input type=\"radio\" id=\"conflicting\" name=\"filtermode\" value=\"conflicting\" onclick=\"filterItems('conflict',"+feature.properties.id+")\"><label for=\"conflicting\">Conf</label><input type=\"radio\" id=\"complementary\" name=\"filtermode\" value=\"complementary\" onclick=\"filterItems('comp',"+feature.properties.id+")\"><label for=\"complementary\">Comp</label>"
 			  +"<input type=\"radio\" id=\"equiv\" name=\"filtermode\" value=\"equiv\" onclick=\"filterItems('equiv',"+feature.properties.id+")\"><label for=\"equiv\">EQ</label><input type=\"radio\" id=\"all\" checked=\"checked\" name=\"filtermode\" value=\"all\" onclick=\"filterItems('all',"+feature.properties.id+")\"><label for=\"all\">All</label></fieldset>";
-              popupContent = popupContent + "<b>" + feature.properties.type + "/" + feature.properties.id + "</b><br/>";
+			  popupContent = popupContent + "<a href=\"https://www.openstreetmap.org/"+feature.properties.type+"/"+feature.properties.id+"\" target=\"_blank\">"+ feature.properties.type + "/" + feature.properties.id + "</b></a><br/>";
 			  coord="Coordinates: "+feature.geometry.type+"("+feature.geometry.coordinates[0]+" "+feature.geometry.coordinates[1]+")"
 			  wdkeyset={}
               console.log("Wikidata: "+feature.properties.tags["wikidata"])
@@ -264,6 +269,7 @@ $.get(buildOverpassApiUrl(map,"amenity","school"), function (osmDataAsJson) {
               if(officialdata!=null){
 				if(officialdata["properties"]!=null){
 					var keys = Object.keys(officialdata["properties"]).sort();
+					numberofattributes+=keys.length
 					popupContent+="<b>Official Data Attributes: </b><a href=\"#\" onclick=\"toggle_visibility('official_"+feature.properties.id+"')\">["+keys.length+"]</a><br/><ul id=\"official_"+feature.properties.id+"\" style=\"display:none\">"		
 					for(prop in keys){
 						if(!(keys[prop] in itemCount["official"])){
@@ -317,6 +323,7 @@ $.get(buildOverpassApiUrl(map,"amenity","school"), function (osmDataAsJson) {
 			  }
 			  console.log(popupContent)
 			 var keys = Object.keys(feature.properties.tags);
+			 numberofattributes+=keys.length
 			  popupContent+="<b>OSM Attributes: </b><a href=\"#\" onclick=\"toggle_visibility('osm_"+feature.properties.id+"')\">["+keys.length+"]</a><br/><ul id=\"osm_"+feature.properties.id+"\">"
               if(feature.properties.tags.length>0){
 					var wicket = new Wkt.Wkt();
@@ -335,6 +342,7 @@ $.get(buildOverpassApiUrl(map,"amenity","school"), function (osmDataAsJson) {
 						ttlExport+="<http://www.linkedgeodata.org/"+feature.properties.type+feature.properties.id+"> <http://www.opengis.net/ont/geosparql#hasGeometry> \""+wkt+"\"^^<http://www.opengis.net/ont/geosparql#wktLiteral> .\n";
 					}
               }
+			  numberofattributes+=keys.length
               keys.forEach(function (key) {
 			 if(!(key in itemCount["osm"])){
 							itemCount["osm"][key]={}
@@ -455,6 +463,7 @@ $.get(buildOverpassApiUrl(map,"amenity","school"), function (osmDataAsJson) {
               });
               popupContent += "</ul>"
 			  //alert(wdkeyset)
+			  numberofattributes+=Object.keys(wdkeyset).length
 			  if(feature.properties.tags["wikidata"]!== undefined){
 				popupContent+="<b>Wikidata Items:</b> <a href=\"#\" onclick=\"toggle_visibility('wd_"+feature.properties.id+"')\">["+Object.keys(wdkeyset).length+"]</a><br/><ul id=\"wd_"+feature.properties.id+"\" style=\"display:none\">"/*<b>"+Object.values(wdkeyset["rdfs:label"])[0]+"</b>*/
 			  }
@@ -599,6 +608,14 @@ $.get(buildOverpassApiUrl(map,"amenity","school"), function (osmDataAsJson) {
 					popupContent+="<li>Distance: "+dist.toFixed(2)+"m</li>"
 				}	
 			  }  
+			  switch($('#dataqualityaspect').val()){
+				case "distance": 
+					tooltiptext=dist.toFixed(2)+"m"
+				break;
+				case "numberofconflicts":
+					tooltiptext=numberofconflicts+"("+(numberofconflicts/numberofattributes*100).toFixed(0)+"%)"
+				break;
+			  }
 			  popupContent+="<li>Number Of Conflicts: "+numberofconflicts+"</li>"
 			  popupContent+="</ul>"
 			  if(document.getElementById('popupmode').checked){
@@ -621,12 +638,36 @@ $.get(buildOverpassApiUrl(map,"amenity","school"), function (osmDataAsJson) {
 				if(feature.properties.tags["wikidata"]!== undefined){					
 					bindcontent+="<tr><td>Wikidata: <a href=\"https://www.wikidata.org/entity/"+feature.properties.tags["wikidata"]+"\" target=\"_blank\">"+feature.properties.tags["wikidata"]+"</b></a></td></tr>"
 				}
+				//label=new L.Label();
+				//label.setContent('Look revealing label!')
+				//label.setLatLng(geometry.getBounds().getCenter())
+				// map.showLabel(label)
+				if(document.getElementById('statpopup').checked){
+					if(!(layer.feature.geometry.type === "Point")){
+					var greenIcon = new L.AwesomeNumberMarkers({
+                      number: "<b>"+tooltiptext+"</b>", 
+                      markerColor: "orange"
+                  });
+					var mark=L.marker(layer.getBounds().getCenter(), {icon: greenIcon});
+					mark.addTo(map);				
+					markercollection.push(mark)
+				}
+			//markercollection.push(label)
+			//layer.setIcon(greenIcon);
+			}/*else{
+				var greenIcon = new L.AwesomeNumberMarkers({
+                      number: "<b>"+tooltiptext+"</b>", 
+                      markerColor: "orange"
+                  })
+				  layer.setIcon(greenIcon)
+			}*/
 				layer.bindPopup(bindcontent+"</table>",{maxWidth : 600});
 			  }
              // console.log(ttlExport)
             }
           }).addTo(map);
 		  resultLayerCollection.push(resultLayer);
+		  				//resultLayer.bindTooltip(tooltiptext,{"permanent":true,"opacity":1}).openTooltip();
 		  console.log("NOW MATCHING SECOND LAYER")
 		  if(document.getElementById('statmode').checked)
 		  	createStatsTable();
@@ -931,11 +972,12 @@ function clearMap() {
             }
         }
     }*/
-	/*for(marker in markercollection){
+	for(marker in markercollection){
 		map.removeLayer(markercollection[marker])
 	}
 	markercollection=[]
-        for(decorator in decorators){
+		/*
+    for(decorator in decorators){
 		map.removeLayer(decorators[decorator])
 	}
 	decorators=[]*/
@@ -985,8 +1027,8 @@ function toggle_visibility(id)
 <h2 align="center">School Mapview</h2>
 <div class="container">
   <div class="row">
-    <div class="left col-sm-9">
-	<div id="mapid" style="height:500px;width:800px;border:5px solid black;">
+    <div class="left col-sm-9" id="mapid">
+	<!--<div  style="height:500px;width:800px;border:5px solid black;">-->
 <script>
 var wikidataToOSMMap={}
 var osmToWikidataMap={}
@@ -1070,7 +1112,7 @@ var layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(map);
 loaded=true;
 </script>
 </div>
-</div>
+<!--</div>-->
 
     <div class="left col-sm-3" id="contentdesc" style="height:500px;overflow-y: scroll;">
 	</div>
@@ -1081,11 +1123,16 @@ loaded=true;
 <button type="button" id="loadbutton" onClick="loadItems()">Load OSM School Items</button>
 <button type="button" id="loadbutton2" onClick="loadWDItems()">Load Wikidata School Items</button>
 <button type="button" id="clearbutton" onClick="clearMap()">Clear Map</button><br/>
-Autoload<input type="checkbox" id="autoload"/>PopupMode<input type="checkbox" id="popupmode"/>Stats<input type="checkbox" id="statmode"/><br/>
-<select id="schoolsetmenu">
+Autoload<input type="checkbox" id="autoload"/>PopupMode<input type="checkbox" id="popupmode"/>Stats<input type="checkbox" id="statmode"/>StatPopUp<input type="checkbox" id="statpopup"/><br/>
+Dataset: <select id="schoolsetmenu">
 	<option value="brbschools">Schulen Brandenburg</option>
 	<option value="deschools" selected="selected">Schulen Deutschland</option>
-</select><br/>
+</select><br/>Highlighted Data Quality Aspect:
+<select id="dataqualityaspect">
+	<option value="distance">Distance</option>
+	<option value="numberofconflicts" selected="selected">Percentage Of Conflicts</option>
+</select>
+<br/>
 Legend: <table><tr><td style="background-color:red">&nbsp;&nbsp;</td><td>Only in OSM</td>
 <td style="background-color:green">&nbsp;&nbsp;</td><td>In OSM, Wikidata and Official</td><td style="background-color:black">&nbsp;&nbsp;</td><td>Only in Official</td></tr><tr>
 <td style="background-color:orange"></td><td>OSM and Official</td><td style="background-color:blue"></td><td>OSM and Wikidata, NOT in Official</td></tr></table>
