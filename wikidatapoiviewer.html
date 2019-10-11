@@ -24,6 +24,7 @@
   .ui-front {
     z-index: 9999999 !important;
 }
+#mapid {height:500px}
 </style>
 <script>
 var htmlLegend1;
@@ -801,9 +802,7 @@ OSM Highlight Key:<input type="text" id="osmhighlight" value="cuisine"/><br/>
 </div>
 <div class="container">
   <div class="row">
-    <div class="left col-sm-9">
-
-<div id="mapid" style="height:500px;border:5px solid black;">
+    <div class="left col-sm-9" id="mapid" style="border:5px solid black;">
 <script>
 var wikidataToOSMMap={}
 var osmToWikidataMap={}
@@ -863,7 +862,6 @@ attribution: '&copy; Bundesamt f&uuml;r Kartographie und Geod&auml;sie 2017, <a 
 var layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(map);
 loaded=true;
 </script>
-</div>
 </div>
     <div class="left col-sm-3" id="contentdesc" style="height:500px;overflow-y: scroll;">
 	</div>
