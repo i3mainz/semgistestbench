@@ -215,6 +215,7 @@ function doFiltering(itemsToFilter,filtermode){
 }
 
 function getOSMAttributesForCoordinate(map){
+itemCount={}
 if(!("osm" in itemCount)){
 	itemCount["osm"]={}
 }
@@ -228,6 +229,7 @@ if(map.getZoom()>=minMapZoom){
 $.get(buildOverpassApiUrl(map,"amenity","school"), function (osmDataAsJson) {
           var resultAsGeojson = osmtogeojson(osmDataAsJson);
 		  var adminLayer=null
+		  
 		  var officialdata;
 		  var tooltiptext="";
 		  var numberofattributes=0;
@@ -705,7 +707,41 @@ $.get(buildOverpassApiUrl(map,"amenity","school"), function (osmDataAsJson) {
 	 console.log(feature)
          layer.bindPopup(popup);
      }}).addTo(map);
-	 	resultLayerCollection.push(officiallayer2)
+	 		 var officiallayer3=L.geoJSON(window[$('#schoolsetmenu').val()],{
+		filter: function(feature,layer){
+			console.log(feature.geometry)
+			if(map.getBounds().contains(L.latLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]))){
+				var res=matchGeometryInGeoJSONSet(feature.geometry,resultAsGeojson.features)
+				console.log("RES!")
+				console.log(res)
+				if(res==null){
+					return false;
+				}
+				return true;
+			}
+			//return false;
+		},
+		pointToLayer: function(feature, latlng){
+			 var greenIcon = new L.Icon({
+                                        iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png',
+                                        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                                        iconSize: [25, 41],
+                                        iconAnchor: [12, 41],
+                                        popupAnchor: [1, -34],
+                                        shadowSize: [41, 41]
+                                    });
+            return L.marker(latlng,{icon: greenIcon})
+		},
+		onEachFeature: function (feature, layer) {
+	 var popup="Official Data<br/><ul>"
+	 for(prop in feature.properties){
+	 	popup+="<li>"+prop+" - "+feature.properties[prop]+"</li>"
+	 }
+	 popup+="</ul>"
+	 console.log(feature)
+         layer.bindPopup(popup);
+     }}).addTo(map);
+	 	resultLayerCollection.push(officiallayer3)
         });
 				  
 
