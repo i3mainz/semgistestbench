@@ -240,7 +240,7 @@ $.get(buildOverpassApiUrl(map,"amenity","school"), function (osmDataAsJson) {
 				return {color: "#008000"};
 			   }else if(feature.properties.tags["wikidata"]==undefined && officialdata!=null){
 					return {color: "orange"};
-			   }else if(feature.properties.tags["wikidata"]==undefined && officialdata!=null){
+			   }else if(feature.properties.tags["wikidata"]!==undefined && officialdata==null){
 					return {color: "blue"};
 			   }else{
 				return {color: "#ff0000"};
