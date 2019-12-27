@@ -227,7 +227,7 @@ if(!("official" in itemCount)){
 	itemCount["official"]={}
 }
 if(map.getZoom()>=minMapZoom){
-$.get(buildOverpassApiUrl(map,"internet_access",""), function (osmDataAsJson) {
+$.get(buildOverpassApiUrl(map,"internet_access","wlan"), function (osmDataAsJson) {
           var resultAsGeojson = osmtogeojson(osmDataAsJson);
 		  var adminLayer=null		  
 		  var officialdata;
