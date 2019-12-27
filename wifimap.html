@@ -645,7 +645,7 @@ $.get(buildOverpassApiUrl(map,"internet_access","wlan"), function (osmDataAsJson
 				//label.setContent('Look revealing label!')
 				//label.setLatLng(geometry.getBounds().getCenter())
 				// map.showLabel(label)
-				if(document.getElementById('statpopup').checked){
+				/*if(document.getElementById('statpopup').checked){
 					if(!(layer.feature.geometry.type === "Point")){
 					var greenIcon = new L.AwesomeNumberMarkers({
                       number: "<b>"+tooltiptext+"</b>", 
@@ -654,10 +654,11 @@ $.get(buildOverpassApiUrl(map,"internet_access","wlan"), function (osmDataAsJson
 					var mark=L.marker(layer.getBounds().getCenter(), {icon: greenIcon});
 					mark.addTo(map);				
 					markercollection.push(mark)
-				}
+				}*/
 			//markercollection.push(label)
 			//layer.setIcon(greenIcon);
-			}/*else{
+			//}
+			/*else{
 				var greenIcon = new L.AwesomeNumberMarkers({
                       number: "<b>"+tooltiptext+"</b>", 
                       markerColor: "orange"
