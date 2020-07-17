@@ -1,2 +1,2 @@
 # semgistestbench
-Visualiziations for Linked Data Applications in the SemGIS project
+Visualizations for Linked Data Applications in the SemGIS project
