@@ -18,6 +18,7 @@
   <script src="js/rdfstore_min.js"></script>
    <script src="https://unpkg.com/shpjs@latest/dist/shp.js"></script>
   <script src="js/proj4.js"></script>
+        <script src="js/prefixes.js"></script>
   <script src="https://cdn.rawgit.com/aratcliffe/Leaflet.print/master/dist/leaflet.print.js"></script>
 	    <script src="js/turf.min.js"></script>
 		<script src="js/leaflet.pattern.js"></script>
@@ -68,8 +69,8 @@ $( function() {
         }
         $("#epsgqueryexport").html(epsg);
         $("#epsgqueryimport").html(epsg);
-	  document.getElementById('file-input')
-	  .addEventListener('change', readRDFFile, false);
+	  /*document.getElementById('file-input')
+	  .addEventListener('change', readRDFFile, false);*/
 	  	  mymap.on('click', function(e) {
 	  if(curposmarker!=null){
 			mymap.removeLayer(curposmarker);
@@ -1101,10 +1102,19 @@ function displayQueryResult(persons,query,classTopers,persToClass,start){
 								wkt.read(persons[pers][rel][0][Object.keys(persons[pers][rel][0])[0]]);
 							}else{
 								console.log(persons[pers][rel][0])
-								wkt.read(persons[pers][rel][0]);
+								if(persons[pers][rel][0].trim().startsWith("<")){
+									wkt.read(persons[pers][rel][0].substring(persons[pers][rel][0].lastIndexOf('>')+1));
+								}else{
+									wkt.read(persons[pers][rel][0]);
+								}
+								
 							}							
 						}else{
-							wkt.read(persons[pers][rel]);
+						    if(persons[pers][rel].trim().startsWith("<")){
+								wkt.read(persons[pers][rel].substring(persons[pers][rel].lastIndexOf('>')+1));
+							}else{
+								wkt.read(persons[pers][rel]);						
+							}
 						}
 						
 						//console.log("HATCH: "+JSON.stringify(persons[pers]["hatch"]))
@@ -2572,27 +2582,8 @@ attribution: '&copy; Bundesamt f&uuml;r Kartographie und Geod&auml;sie 2017, <a 
 	imperial: false
 }).addTo(mymap);
 layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(mymap);
-	/*var printProvider = L.print.provider({
-   method: 'GET',
-   url: ' http://path/to/mapfish/print',
-   autoLoad: true,
-   dpi: 90
-});
-
-var printControl = L.control.print({
-   provider: printProvider
-});        
-mymap.addControl(printControl);*/
-
 
 $(document).ready( function () {
-    
-    $.ajax({
-	    url:'epsg.txt',
-	    success: function (data){
-	      $('#crs').html(data)
-	    }
-	  });
     
 	$.getJSON("https://www.i3mainz.de/projekte/bkg/semanticwfs/rest/service/getEndpoints", function(result){
 		 	options=""
