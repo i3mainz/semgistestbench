@@ -843,7 +843,7 @@ function uiQuery(start){
 	for(cls in classesToQuery){
 		console.log(cls)
 		if($('#whichactive').is(':checked')){
-						queryString+="{?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val .  OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val ?abc ?val2. ?val2 geo:asWKT ?wkt2 .}  OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{?val semgis:standard ?standard .} OPTIONAL{?val semgis:abstractClass ?abstractClass .} OPTIONAL{?val semgis:propOrder ?proporder .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:lineStyle ?linestringStyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}   OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle  ?linestringImageStyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:hatch  ?hatch .}  "
+						queryString+="{{ SELECT ?person WHERE { ?person rdf:type <"+classesToQuery[cls]+"> .} LIMIT 100 } ?person ?rel ?val .  OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val ?abc ?val2. ?val2 geo:asWKT ?wkt2 .}  OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{?val semgis:standard ?standard .} OPTIONAL{?val semgis:abstractClass ?abstractClass .} OPTIONAL{?val semgis:propOrder ?proporder .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:lineStyle ?linestringStyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}   OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle  ?linestringImageStyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:hatch  ?hatch .}  "
 						if(classesToQuery[cls] in constraints){
                                                         if("NOT" in constraints[classesToQuery[cls]]){
                                                                 queryString+="MINUS {"+constraints[classesToQuery[cls]].replace("NOT ","")+"} ."
@@ -858,14 +858,14 @@ function uiQuery(start){
 						}
 						queryString+="} UNION"
 		}else{
-			queryString+="{ ?person rdf:type <"+classesToQuery[cls]+"> . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val ?abc ?val2. ?val2 geo:asWKT ?wkt2 .}  OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}   OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{?val semgis:standard ?standard .} OPTIONAL{?val semgis:abstractClass ?abstractClass .} OPTIONAL{?val semgis:propOrder ?proporder .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringStyle ?linestyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle ?linestringImageStyle.} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:hatch  ?hatch .} } UNION "
+			queryString+="{ { SELECT ?person WHERE { ?person rdf:type <"+classesToQuery[cls]+"> .} LIMIT 100 } ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val ?abc ?val2. ?val2 geo:asWKT ?wkt2 .}  OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}   OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{?val semgis:standard ?standard .} OPTIONAL{?val semgis:abstractClass ?abstractClass .} OPTIONAL{?val semgis:propOrder ?proporder .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringStyle ?linestyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle ?linestringImageStyle.} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:hatch  ?hatch .} } UNION "
 		}
 	}
 	queryString=queryString.substring(0,queryString.length-6)
 	}else{
 		queryString=prefixList+" SELECT DISTINCT ?person ?rel ?pointstyle ?polygonstyle ?linestyle ?linestringImage ?linestringImageStyle ?hatch ?img ?val ?valLabel ?wkt ?wkt2 ?gml ?kml ?geojson ?standard ?abstractClass ?proporder  WHERE { ?percls rdf:type owl:Class .  OPTIONAL{?percls semgis:polygonStyle ?polygonstyle .} OPTIONAL{?percls semgis:linestringStyle ?linestyle .} OPTIONAL{?percls semgis:pointStyle ?pointstyle .} OPTIONAL{?percls semgis:standard ?standard .} OPTIONAL{?percls semgis:abstractClass ?abstractClass .} OPTIONAL{?percls semgis:propOrder ?proporder .}  OPTIONAL{?percls semgis:image ?img .} OPTIONAL{?percls semgis:linestringImageStyle ?linestringImageStyle .} OPTIONAL{?percls semgis:linestringImage ?linestringImage .} OPTIONAL{ ?percls semgis:hatch  ?hatch .} ?person rdf:type ?percls . ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val ?abc ?val2. ?val2 geo:asWKT ?wkt2 .}  OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL {?val rdfs:label ?valLabel . } "
 	}
-	queryString+="} ORDER BY ?person ?rel LIMIT 100 "
+	queryString+="} ORDER BY ?person ?rel "
 	console.log(queryString)
 	resultss={}
 	if($('#choosedatabase').val()=="remote"){
@@ -891,8 +891,8 @@ function handleResults(results,start){
 			if(!(results[res]["person"] in persons)){
 				persons[results[res]["person"]]={}
 			}
-			if(results[res]["rel"]=="asWKT"){
-				//console.log("Rel: "+results[res]["rel"]+" - "+results[res]["val"])
+			if(results[res]["rel"].endsWith("asWKT")){
+				console.log("Rel: "+results[res]["rel"]+" - "+results[res]["val"])
 			}
 			if(!(results[res]["rel"] in persons[results[res]["person"]])){
 				persons[results[res]["person"]][results[res]["rel"]]=[]
@@ -924,8 +924,8 @@ function handleResults(results,start){
 			//console.log(results[res]["val"])
 			if(results[res]["person"]!=undefined && results[res]["rel"]!=undefined && results[res]["val"]!=undefined){
 					curQueryResultTTL+="<"+results[res]["person"]+"> <"+results[res]["rel"]+"> ";
-					if(!results[res]["val"].includes("http") || results[res]["rel"].includes("asGML")){
-						curQueryResultTTL+="\""+results[res]["val"].replace(new RegExp("\"", 'g'),"\\\"")+"\"^^<"+(results[res]["val"]["type"]!=undefined?results[res]["val"]["type"]:"http://www.w3.org/2001/XMLSchema#string")+"> . \n";
+					if(!(results[res]["val"]+"").includes("http") || results[res]["rel"].includes("asGML")){
+						curQueryResultTTL+="\""+(results[res]["val"]+"").replace(new RegExp("\"", 'g'),"\\\"")+"\"^^<"+(results[res]["val"]["type"]!=undefined?results[res]["val"]["type"]:"http://www.w3.org/2001/XMLSchema#string")+"> . \n";
 					}else{
 						curQueryResultTTL+="<"+results[res]["val"]+"> . \n";
 					}
@@ -1061,11 +1061,22 @@ function displayQueryResult(persons,query,classTopers,persToClass,start){
 								colorcodes[ns]=colors[colorcounter++]
 							}
 							//alert(JSON.stringify(colorcodes))
-							addit="<li><a href=\""+rel+"\" target=\"_blank\" style=\"color:"+colorcodes[ns]+"\">"+rel.substring(rel.lastIndexOf("#")+1)+"</a> - "
+							if(rel.includes("#")){
+                                addit="<li><a href=\""+rel+"\" target=\"_blank\" style=\"color:"+colorcodes[ns]+"\">"+rel.substring(rel.lastIndexOf("#")+1)+"</a> - "
+							}else{
+                                addit="<li><a href=\""+rel+"\" target=\"_blank\" style=\"color:"+colorcodes[ns]+"\">"+rel.substring(rel.lastIndexOf("/")+1)+"</a> - "
+							}
 							tempval=[]
 							for(vall in persons[pers][rel][val]){
 								if(!(rel in tooltipmap) || (rel in tooltipmap && persons[pers][rel][val][vall]!=tooltipmap[rel])){
-                                    addit+="<a href=\""+persons[pers][rel][val][vall]+"\" target=\"_blank\" style=\"color:"+colorcodes[ns]+"\">"+(persons[pers][rel][val][vall].includes("#")?persons[pers][rel][val][vall].substring(persons[pers][rel][val][vall].lastIndexOf('#')+1):persons[pers][rel][val][vall])+"</a>"
+                                    if((persons[pers][rel][val][vall]+"").includes("#")){
+                                            addit+="<a href=\""+persons[pers][rel][val][vall]+"\" target=\"_blank\" style=\"color:"+colorcodes[ns]+"\">"+((persons[pers][rel][val][vall]+"").includes("#")?persons[pers][rel][val][vall].substring((persons[pers][rel][val][vall]+"").lastIndexOf('#')+1):persons[pers][rel][val][vall])+"</a>"                                    
+                                    }else if((persons[pers][rel][val][vall]+"").includes("http")){
+                                            addit+="<a href=\""+persons[pers][rel][val][vall]+"\" target=\"_blank\" style=\"color:"+colorcodes[ns]+"\">"+((persons[pers][rel][val][vall]+"").includes("/")?persons[pers][rel][val][vall].substring((persons[pers][rel][val][vall]+"").lastIndexOf('/')+1):persons[pers][rel][val][vall])+"</a>"                                   
+                                    }else{
+                                            addit+="<a href=\""+persons[pers][rel][val][vall]+"\" target=\"_blank\" style=\"color:"+colorcodes[ns]+"\">"+persons[pers][rel][val][vall]+"</a>"  
+                                    }
+
                                                                     tempval.push(persons[pers][rel][val][vall])
 									tooltipmap[rel]=persons[pers][rel][val][vall]
 									add=true;
