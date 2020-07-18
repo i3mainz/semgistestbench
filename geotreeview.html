@@ -122,7 +122,7 @@ console.log(JSON.stringify(classeswithinstances))
 query= `PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-SELECT DISTINCT ?subject ?label ?supertype
+SELECT DISTINCT ?subject ?label ?supertype 
 WHERE {
     { ?subject a owl:Class . } UNION { ?individual a ?subject . } .
     OPTIONAL { ?subject rdfs:subClassOf ?supertype } .
@@ -155,14 +155,14 @@ d3.sparql($('#endpointselect').val(), query).then((results) => {
             //if("value" in results[res]["subject"])
              //   console.log(results[res]["subject"])
             if(!(results[res]["subject"].includes("_:"))){
-                        ress[results[res]["subject"]]={"super":("supertype" in results[res] &&  results[res]["supertype"]!=null && results[res]["supertype"]!=null?results[res]["supertype"]:"http://www.w3.org/2002/07/owl#Thing"),"count":""}//results[res]["indidivualc"]}
-                        if(results[res]["supertype"]!=null && !(results[res]["supertype"] in classeswithinstances)){
+                        ress[results[res]["subject"]]={"super":("supertype" in results[res] &&  results[res]["supertype"]!=null && results[res]["supertype"]!=null?results[res]["supertype"]:"http://www.w3.org/2002/07/owl#Thing"),"count":"","label":(results[res]["label"]!=null?results[res]["label"]:"")}//results[res]["indidivualc"]}
+						if(results[res]["supertype"]!=null && !(results[res]["supertype"] in classeswithinstances)){
                                 classeswithinstances[results[res]["supertype"]]=true
                         }
            }
         }
 
-        
+        console.log(classeswithinstances)
         //clsMap={}
         //superMap={}
         for(cls in ress){
@@ -178,9 +178,38 @@ d3.sparql($('#endpointselect').val(), query).then((results) => {
 					/*	result+="<option value=\""+results[res]["cls"]+"\">"+((results[res]["clsLabel"]!=null && results[res]["clsLabel"]!=null)?
 						addpref+results[res]["clsLabel"]:addpref+results[res]["cls"].substring(results[res]["cls"].lastIndexOf('#')+1))+"</option>"
 						resultlist[results[res]["cls"]]=true*/
-                    tree["core"]["data"].push({ "id" : cls, "parent" : (ress[cls]["super"].includes("_:")?"#":ress[cls]["super"]), 
-					"icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif", 
-					"text" : addpref+cls.substring(cls.lastIndexOf('#')+1)+(ress[cls]["count"]!=""?"("+ress[cls]["count"]+")":"") })
+					console.log(cls+" - "+(ress[cls]["super"].includes("_:")?"#":ress[cls]["super"]))
+					textcut=addpref
+					if(ress[cls]["label"]!=""){
+						textcut=ress[cls]["label"]+" ("
+						if(cls.includes("#")){
+						textcut+=cls.substring(cls.lastIndexOf('#')+1)+(ress[cls]["count"]!=""?"("+ress[cls]["count"]+")":"")
+						}else if(cls.startsWith("http")){
+							textcut+=cls.substring(cls.lastIndexOf('/')+1)+(ress[cls]["count"]!=""?"("+ress[cls]["count"]+")":"")
+						}else{
+							textcut+=cls+(ress[cls]["count"]!=""?"("+ress[cls]["count"]+")":"")
+						}
+						textcut+=")"
+					}else{
+						if(cls.includes("#")){
+							textcut=cls.substring(cls.lastIndexOf('#')+1)+(ress[cls]["count"]!=""?"("+ress[cls]["count"]+")":"")
+						}else if(cls.startsWith("http")){
+							textcut=cls.substring(cls.lastIndexOf('/')+1)+(ress[cls]["count"]!=""?"("+ress[cls]["count"]+")":"")
+						}else{
+							textcut=cls+(ress[cls]["count"]!=""?"("+ress[cls]["count"]+")":"")
+						}
+					}
+					
+					if(cls!=ress[cls]["super"]){
+						tree["core"]["data"].push({ "id" : cls, "parent" : (ress[cls]["super"].includes("_:")?"#":ress[cls]["super"]), 
+						"icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif", 
+					"text" : textcut })
+					}else{
+						tree["core"]["data"].push({ "id" : cls, "parent" : "#", 
+						"icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif", 
+					"text" : textcut })
+					}
+					
             }
         }
         /*for(cls in superMap){
@@ -879,15 +908,16 @@ function uiQuery(start){
 	});
 	}
 }
-
-
+var colorcodes={}
+var invertXY=false
+var typeColumn=""
 function handleResults(results,start){
         curQueryResultTTL=""
 		persons={}
 		classTopers={}
 		persToClass={}
 		for(res in results){
-		console.log(results[res])
+			console.log(results[res])
 			if(!(results[res]["person"] in persons)){
 				persons[results[res]["person"]]={}
 			}
@@ -935,54 +965,154 @@ function handleResults(results,start){
 			//console.log(results[res]["person"])
 			persons[results[res]["person"]][results[res]["rel"]].push(app)
 			if(results[res]["pointstyle"]!=null){
-                            persons[results[res]["person"]]["pointStyle"]=results[res]["pointstyle"]
+                persons[results[res]["person"]]["pointStyle"]=results[res]["pointstyle"]
 			}
 			if(results[res]["polygonstyle"]!=null){
-                            persons[results[res]["person"]]["polygonStyle"]=results[res]["polygonstyle"]
+                persons[results[res]["person"]]["polygonStyle"]=results[res]["polygonstyle"]
 			}
 			if(results[res]["linestyle"]!=null){
-                            persons[results[res]["person"]]["linestringStyle"]=results[res]["linestyle"]
+                persons[results[res]["person"]]["linestringStyle"]=results[res]["linestyle"]
 			}
 			if(results[res]["linestringImageStyle"]!=null){
-                            persons[results[res]["person"]]["linestringImageStyle"]=results[res]["linestringImageStyle"]
+                persons[results[res]["person"]]["linestringImageStyle"]=results[res]["linestringImageStyle"]
 			}
-                        if(results[res]["linestringImage"]!=null){
-                            persons[results[res]["person"]]["linestringImage"]=results[res]["linestringImage"]
+            if(results[res]["linestringImage"]!=null){
+                persons[results[res]["person"]]["linestringImage"]=results[res]["linestringImage"]
 			}
 			if(results[res]["wkt"]!=null && !results[res]["wkt"].includes("ENVELOPE")){
-                                persons[results[res]["person"]]["asWKT"]=results[res]["wkt"]
-                                curQueryResultTTL+="<"+results[res]["person"]+"> geo:asWKT \""+results[res]["wkt"]+"\"^^geo:wktLiteral \n ";
+                persons[results[res]["person"]]["asWKT"]=results[res]["wkt"]
+                curQueryResultTTL+="<"+results[res]["person"]+"> geo:asWKT \""+results[res]["wkt"]+"\"^^geo:wktLiteral \n ";
 			}
 			else if(results[res]["wkt2"]!=null && !results[res]["wkt2"].includes("ENVELOPE")){
-                                persons[results[res]["person"]]["asWKT"]=results[res]["wkt2"]
-                                curQueryResultTTL+="<"+results[res]["person"]+"> geo:asWKT \""+results[res]["wkt2"]+"\"^^geo:wktLiteral \n ";
+                persons[results[res]["person"]]["asWKT"]=results[res]["wkt2"]
+                curQueryResultTTL+="<"+results[res]["person"]+"> geo:asWKT \""+results[res]["wkt2"]+"\"^^geo:wktLiteral \n ";
 			}
 			if(results[res]["gml"]!=null && !results[res]["gml"].includes("Envelope")){
-                                console.log(results[res]["gml"])
-                                curQueryResultTTL+="<"+results[res]["person"]+"> geo:asGML \""+results[res]["gml"]+"\"^^geo:gmlLiteral \n ";
-                                persons[results[res]["person"]]["asGML"]=results[res]["gml"]
-                                console.log("Added to curQueryResultTTL!!!")
-                                console.log(curQueryResultTTL)
-                                
+                console.log(results[res]["gml"])
+                curQueryResultTTL+="<"+results[res]["person"]+"> geo:asGML \""+results[res]["gml"]+"\"^^geo:gmlLiteral \n ";
+                persons[results[res]["person"]]["asGML"]=results[res]["gml"]
+                console.log("Added to curQueryResultTTL!!!")
+                console.log(curQueryResultTTL)                
 			}
 			if(results[res]["kml"]!=null && !results[res]["kml"].includes("Envelope")){
-                                persons[results[res]["person"]]["asKML"]=results[res]["kml"]
-                                curQueryResultTTL+="<"+results[res]["person"]+"> geo:asKML \""+results[res]["kml"]+"\"^^geo:kmlLiteral \n ";
+                persons[results[res]["person"]]["asKML"]=results[res]["kml"]
+                curQueryResultTTL+="<"+results[res]["person"]+"> geo:asKML \""+results[res]["kml"]+"\"^^geo:kmlLiteral \n ";
 			}
 			if(results[res]["geojson"]!=null && !results[res]["geojson"].includes("Envelope")){
-                                persons[results[res]["person"]]["asGeoJSON"]=results[res]["geojson"]
-                                curQueryResultTTL+="<"+results[res]["person"]+"> geo:asGeoJSON \""+results[res]["geojson"]+"\"^^geo:geoJSONLiteral \n ";
+                persons[results[res]["person"]]["asGeoJSON"]=results[res]["geojson"]
+                curQueryResultTTL+="<"+results[res]["person"]+"> geo:asGeoJSON \""+results[res]["geojson"]+"\"^^geo:geoJSONLiteral \n ";
 			}
 			if(results[res]["hatch"]!=null){
-					console.log("HATCH: "+results[res]["hatch"])
-                                persons[results[res]["person"]]["hatch"]=results[res]["hatch"]
+				console.log("HATCH: "+results[res]["hatch"])
+                persons[results[res]["person"]]["hatch"]=results[res]["hatch"]
 			}
 			if(results[res]["img"]!=null){
-                                persons[results[res]["person"]]["img"]=results[res]["img"]
+                persons[results[res]["person"]]["img"]=results[res]["img"]
 			}
 		}
-		displayQueryResult(persons,!start,classTopers,persToClass,start);
+		geojson=TTLToGeoJSON(curQueryResultTTL,"geojson","")
+		var geojsonlayer=L.geoJSON(geojson,{
+			 filter: function(feature, layer) {			    
+				return true;
+			},
+			coordsToLatLng: function (coords) {
+				console.log(coords)
+				console.log(coords[0])
+				console.log(coords[1])
+				console.log("Invert?: "+invertXY)
+				if(!invertXY && typeof coords[0] !== 'undefined' && typeof coords[1] !== 'undefined'){
+					return new L.LatLng(coords[1], coords[0]);
+				}else if(!invertXY && typeof coords[0] !== 'undefined' && typeof coords[0][1]!== 'undefined'){
+					return new L.LatLng(coords[0][1], coords[0][0]);
+				}else if(invertXY && typeof coords[0] !== 'undefined' && typeof coords[1] !== 'undefined'){
+					return new L.LatLng(coords[0], coords[1]);
+				}else if(invertXY && typeof coords[0] !== 'undefined' && typeof coords[0][1]!== 'undefined'){
+					return new L.LatLng(coords[0][0], coords[0][1]);
+				}
+				return new L.LatLng(0, 0);
+		},	pointToLayer: function(feature, latlng){
+			var color="";
+			if(typeColumn==""){
+				if(!("" in colormap)){
+					colormap[""]=getRandomColor();
+				}
+				color=colormap[""];
+			}else{
+				if(typeColumn in feature.properties){
+					if(!(feature.properties[typeColumn] in colormap)){
+						colormap[feature.properties[typeColumn]]=getRandomColor();
+					}
+					color=colormap[feature.properties[typeColumn]]
+				}else{
+					if(!("" in colormap)){
+					colormap[""]=getRandomColor();
+					}
+					color=colormap[""];
+				}
+			}
+			 var greenIcon = L.divIcon({
+				className: "my-custom-pin",
+				iconAnchor: [0, 24],
+				labelAnchor: [-6, 0],
+				popupAnchor: [0, -36],
+				html: "<span style=\"background-color: "+color+"; width: 1.5rem;height: 1.5rem;display: block;left: -1rem;top: 0rem;position: relative;border-radius: 3rem 3rem 0;transform: rotate(45deg);border: 1px solid #FFFFFF;\"/>"
+			});
+            return L.marker(latlng,{icon: greenIcon})
+			},
+			onEachFeature: function (feature, layer) {
+				 if("style" in feature && "hatch" in feature.style){
+					stripes = new L.StripePattern(feature.style.hatch); 
+					stripes.addTo(map);
+				 }
+				 var popup="Item: <a href='"+feature.id+"' target='_blank'>"
+				 if("id" in feature && feature.id.includes('#')){
+					popup+=feature.id.substring(feature.id.lastIndexOf('#')+1)
+				 }else if("id" in feature && feature.id.startsWith("http")){
+					popup+=feature.id.substring(feature.id.lastIndexOf('/')+1)
+				 }else{
+					popup+=feature.id
+				 }
+				 popup+="</a>"
+				if("http://www.w3.org/1999/02/22-rdf-syntax-ns#type" in feature.properties){
+					if(feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].includes("http") && feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].includes("#")){
+						ns=feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].substring(0,feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].indexOf('#'))
+						if(!(ns in colorcodes)){
+							colorcodes[ns]=getRandomColor();
+						}
+						popup+="(<a href='"+feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].substring(feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].lastIndexOf('#')+1)+"</a>)"
+						//popup+="(<a href='"+feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]+"' target='_blank' style='color:#BD1B1B'>"+feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].substring(feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].lastIndexOf('#')+1)+"</a>)"
+					}else if(feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].includes("http")){
+						ns=feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].substring(0,feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].indexOf('/'))
+						if(!(ns in colorcodes)){
+							colorcodes[ns]=getRandomColor();
+						}
+						popup+="(<a href='"+feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].substring(feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].lastIndexOf('/')+1)+"</a>)"
+						//popup+="(<a href='"+feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]+"' target='_blank' style='color:#BD1B1B'>"+feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].substring(feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].lastIndexOf('/')+1)+"</a>)"
+					}
+				 }
+				 if(typeof stripes !== 'undefined'){
+					poly=L.polygon(feature["geometry"]["coordinates"],{"fillPattern":stripes}).addTo(map);
+				 }else {
+					layer.bindPopup(popup,{maxWidth : 560});
+				 }
+				 
+				popup+="<br/>Properties:<ul>"
+				popup=popupHighlighter(popup,colormap,feature.properties,0) 	 
+				popup+="</ul>"
+				console.log(feature)
+				//layer.on('click', function (e) {
+				//	$('#contentdesc').html(popup)
+				//});
+				layer.bindPopup(popup, {maxWidth : 560})
+			}}).addTo(mymap);
+		try {
+			mymap.fitBounds(geojsonlayer.getBounds());
+		}catch (e) {
+		}
+		//displayQueryResult(persons,!start,classTopers,persToClass,start);
 }
+	
+var tempgeojson={}
 	
 function displayQueryResult(persons,query,classTopers,persToClass,start){
 	waitingDialog({title: "Querying...", message: "Displaying query result..."});
@@ -1233,7 +1363,7 @@ function applyFilter(functiondef,set1,set2,persons,negate){
         return ress;        
 }
 	
-function isJSON (something) {
+function isJSON(something) {
     if (typeof something != 'string')
         something = JSON.stringify(something);
 
@@ -1266,6 +1396,90 @@ function extend(obj, src) {
         if (src.hasOwnProperty(key)) obj[key] = src[key];
     }
     return obj;
+}
+
+function isArray(what) {
+    return Object.prototype.toString.call(what) === '[object Array]';
+}
+
+function getRandomColor() {
+  var letters = '0123456789ABCDEF';
+  var color = '#';
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  console.log(color)
+  return color;
+}
+
+var colormap={}
+function popupHighlighter(popup,colormap,properties,depth){
+   console.log("PopupHighlighter "+depth)
+   console.log(properties)
+   Object.keys(properties).sort().forEach(function(prop) {
+   	if(prop=="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"){
+   		return;
+   	}
+   	console.log(prop)
+ if(prop.includes("http") && prop.includes("#")){
+ 		ns=prop.substring(0,prop.indexOf('#'))
+ 		if(!(ns in colorcodes)){
+			colorcodes[ns]=getRandomColor();
+		}
+		//popup+="<li><a href='"+prop+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+prop.substring(prop.lastIndexOf('#')+1)+"</a> - "
+	 	popup+="<li><a href='"+prop+"' target='_blank' style='color:#BD1B1B'>"+prop.substring(prop.lastIndexOf('#')+1)+"</a> - "
+ }else if(prop.includes("http")){
+  		ns=prop.substring(0,prop.indexOf('/'))
+ 		if(!(ns in colorcodes)){
+			colorcodes[ns]=getRandomColor();
+		}
+		//popup+="<li><a href='"+prop+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+prop.substring(prop.lastIndexOf('/')+1)+"</a> - "
+	 	popup+="<li><a href='"+prop+"' target='_blank' style='color:#BD1B1B'>"+prop.substring(prop.lastIndexOf('/')+1)+"</a> - "
+ }else{
+	 	popup+="<li>"+prop+" - "
+	 }
+if(typeof properties[prop] === "object"){
+    popup+="<ul>"
+ 	popup=popupHighlighter(popup,colormap,properties[prop],depth+1)
+ 	popup+="</ul>"
+ }else{
+ if(!isArray(properties[prop])){
+ 	array=[properties[prop]]
+ }else{
+ 	array=feature.properties[prop]
+    popup+="<a href=\"#\" onclick=\"toggle_visibility('"+prop+"')\">[x]</a><br/><span id=\""+prop+"\">"
+ }
+ console.log(array)
+ for(elem in array){
+    if(array[elem].includes("http") && array[elem].includes("^^")){
+     ns=array[elem].substring(0,array[elem].indexOf('^^'))
+ 	 if(!(ns in colorcodes)){
+		colorcodes[ns]=getRandomColor();
+	 }
+     //popup+="<a href='"+array[elem]+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+array[elem].substring(0,array[elem].lastIndexOf('^')-1)+"</a><br/>"
+     popup+="<a href='"+array[elem]+"' target='_blank' style='color:#BD1B1B'>"+array[elem].substring(0,array[elem].lastIndexOf('^')-1)+"</a><br/>"
+    }else if(array[elem].includes("http") && array[elem].includes("#")){
+ 	ns=array[elem].substring(0,array[elem].indexOf('#'))
+ 	 if(!(ns in colorcodes)){
+		colorcodes[ns]=getRandomColor();
+	 }
+	 //popup+="<a href='"+array[elem]+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+array[elem].substring(array[elem].lastIndexOf('#')+1)+"</a><br/>"
+     popup+="<a href='"+array[elem]+"' target='_blank' style='color:#BD1B1B'>"+array[elem].substring(array[elem].lastIndexOf('#')+1)+"</a><br/>"
+    }else if(array[elem].includes("http") || array[elem].includes("file:/")){
+  	 ns=array[elem].substring(0,array[elem].indexOf('/'))
+ 	 if(!(ns in colorcodes)){
+		colorcodes[ns]=getRandomColor();
+	 }
+	 //popup+="<a href='"+array[elem]+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+array[elem].substring(array[elem].lastIndexOf('/')+1)+"</a><br/>"
+     popup+="<a href='"+array[elem]+"' target='_blank' style='color:#BD1B1B'>"+array[elem].substring(array[elem].lastIndexOf('/')+1)+"</a><br/>"
+    }else{
+      popup+=array[elem]+"<br/>"
+    }
+ }
+ popup+="</li>"
+ }
+  });
+ return popup
 }
 	
 function handleGeometry(type,coordinates,query,markerIconPath,pers,hatch,layergroups,geomclasses,start){
@@ -1563,6 +1777,95 @@ function replaceWithNSPrefix(replaceString,namespaces){
         return replaceString
 }
 
+
+function TTLToGeoJSON(tosave,exportFormat,exportnamespace){
+	var collection = {
+			"type": "FeatureCollection",
+			"features": []
+		};
+		var options={ "folder":"result",
+                        types: {
+                            point: 'result_points',
+                            polygon: 'result_polygons',
+                            line: 'result_lines'
+                    }
+                    }
+        var geojson={"type":"Feature","properties":{}}
+		var empty={"type":"Feature","properties":{}}
+		first=true;
+		if(tosave!=null){
+		lastspl1=""
+		splitt=tosave.split("\n")
+		for(spl in splitt){
+			console.log(splitt[spl])
+			if(splitt[spl].trim()=="")
+				continue
+			subsplit=splitt[spl].trim().split(" ")
+			//console.log(subsplit)
+			//if(remembersub1="" || rememberremembersub1=subsplit[1]){
+			
+			if(splitt[spl].includes("NamedIndividual") || splitt[spl].includes("label") || splitt[spl].includes("http://www.w3.org/2002/07/owl#")  || splitt[spl].includes("comment") || 
+				splitt[spl].includes("asWKT") || 
+				splitt[spl].includes("asGML") || 
+				splitt[spl].includes("asKML") /*|| splitt[spl].includes("gml:id")*/ || splitt[spl].includes("\"nil\"")){
+				continue;
+			}
+			try{
+				if(lastspl1==""){
+					lastspl1=subsplit[0].trim()
+				}
+				else if(lastspl1!=subsplit[0].trim()){
+					if(geojson!=empty){
+						collection["features"].push(geojson)
+						geojson={"type":"Feature","properties":{},"id":subsplit[0].trim()}
+						lastspl1=subsplit[0].trim()
+					}
+				}
+                if(!("properties" in geojson)){
+                       geojson["properties"]={}
+					}
+                if(splitt[spl].includes("asGeoJSON")){		
+					geostr=splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1)
+					if(geostr.startsWith("<")){
+						geostr=geostr.substring(geostr.lastIndexOf('>')+1)
+					}
+					console.log(geostr)
+                    geojson["geometry"]=JSON.parse(geostr)
+                    //geojson["geometry"]["coordinates"]=exportConvert(geojson["geometry"]["coordinates"],epsgdefs[$('#epsgqueryexport option:selected').val()],"geojson",geojson["geometry"]["type"],true)
+                    if(geojson["geometry"]["type"]=="Polygon"){
+                            geojson["geometry"]=turf.rewind(geojson["geometry"])
+                    }
+					//console.log("Add converted GeoJSON geometry: "+JSON.stringify(geojson))
+                }else if(splitt[spl].includes(":type") || splitt[spl].includes("#type")  ){
+					//console.log("IN TYPE CLAUSE")
+					//console.log(splitt[spl])
+					geojson["properties"]["id"]=subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")			
+				}else if(splitt[spl].includes("label")){
+					continue;
+				}else{
+				if(exportFormat=="shp"){
+					if(exportnamespace.length==0 || exportnamespace.includes("all") || exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1))){
+						geojson["properties"][subsplit[1].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")]=(subsplit[2].includes("^^")?
+						subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):
+						subsplit[2].replace("<","").replace(">","").replace("\"",""))
+					}
+				}else{
+					if(exportnamespace.length==0 || exportnamespace.includes("all") || exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1))){
+						geojson["properties"][subsplit[1].replace("<","").replace(">","")]=(subsplit[2].includes("^^")?
+						subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):
+						subsplit[2].replace("<","").replace(">","").replace("\"",""))
+					}	                 
+				}
+					
+					//gml+="<"+subsplit[1].replace("<","").replace(">","")+">"+(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))+"</"+subsplit[1].replace("<","").replace(">","")+">\n"
+				}
+			}catch(err){console.log(err); continue;}
+		}
+		}
+	return collection
+}
+
+
 function exportQueryResult(tosave,exportFormat){
 		exportnamespace=JSON.stringify($('#namespaceexport').val())
 		/*if(!Array.isArray(exportnamespace)){
@@ -1715,92 +2018,12 @@ function exportQueryResult(tosave,exportFormat){
 		saveTextAsFile(gml,"gml")
 	}
 	if(exportFormat=="geojson" || exportFormat=="shp" ){
-		var collection = {
-			"type": "FeatureCollection",
-			"features": []
-		};
-		var options={ "folder":"result",
-                        types: {
-                            point: 'result_points',
-                            polygon: 'result_polygons',
-                            line: 'result_lines'
-                    }
-                    }
-        var geojson={"type":"Feature","properties":{}}
-		var empty={"type":"Feature","properties":{}}
-		first=true;
-		if(tosave!=null){
-		lastspl1=""
-		splitt=tosave.split("\n")
-		for(spl in splitt){
-			console.log(splitt[spl])
-			subsplit=splitt[spl].trim().split(" ")
-			//console.log(subsplit)
-			//if(remembersub1="" || rememberremembersub1=subsplit[1]){
-			
-			if(splitt[spl].includes("NamedIndividual") || splitt[spl].includes("label") || splitt[spl].includes("http://www.w3.org/2002/07/owl#")  || splitt[spl].includes("comment") || 
-				splitt[spl].includes("asWKT") || 
-				splitt[spl].includes("asGML") || 
-				splitt[spl].includes("asKML") /*|| splitt[spl].includes("gml:id")*/ || splitt[spl].includes("\"nil\"")){
-				continue;
-			}
-			try{
-				if(lastspl1==""){
-					lastspl1=subsplit[0].trim()
-				}
-				else if(lastspl1!=subsplit[0].trim()){
-					if(geojson!=empty){
-						collection["features"].push(geojson)
-						geojson={"type":"Feature","properties":{}}
-						lastspl1=subsplit[0].trim()
-					}
-				}
-                if(!("properties" in geojson)){
-                       geojson["properties"]={}
-					}
-                if(splitt[spl].includes("asGeoJSON")){				
-                    geojson["geometry"]=JSON.parse(splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1))["geometry"]
-                    geojson["geometry"]["coordinates"]=exportConvert(geojson["geometry"]["coordinates"],epsgdefs[$('#epsgqueryexport option:selected').val()],"geojson",geojson["geometry"]["type"],true)
-                    if(geojson["geometry"]["type"]=="Polygon"){
-                            geojson["geometry"]=turf.rewind(geojson["geometry"])
-                    }
-					//console.log("Add converted GeoJSON geometry: "+JSON.stringify(geojson))
-                }else if(splitt[spl].includes(":type") || splitt[spl].includes("#type")  ){
-					//console.log("IN TYPE CLAUSE")
-					//console.log(splitt[spl])
-					geojson["properties"]["id"]=subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")			
-				}else if(splitt[spl].includes("label")){
-					continue;
-				}else{
-				if(exportFormat=="shp"){
-					if(exportnamespace.length==0 || exportnamespace.includes("all") || exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1))){
-						geojson["properties"][subsplit[1].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")]=(subsplit[2].includes("^^")?
-						subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):
-						subsplit[2].replace("<","").replace(">","").replace("\"",""))
-					}
-				}else{
-					if(exportnamespace.length==0 || exportnamespace.includes("all") || exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1))){
-						geojson["properties"][subsplit[1].replace("<","").replace(">","")]=(subsplit[2].includes("^^")?
-						subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):
-						subsplit[2].replace("<","").replace(">","").replace("\"",""))
-					}	                 
-				}
-					
-					//gml+="<"+subsplit[1].replace("<","").replace(">","")+">"+(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))+"</"+subsplit[1].replace("<","").replace(">","")+">\n"
-				}
-			}catch(err){console.log(err); continue;}
-		}
-		}
-		
-		/*if(geojson!=empty){
-			collection.features.push(geojson);
-		}*/
-        
+		var collection = TTLToGeoJSON(tosave,exportFormat,exportnamespace)    
 		console.log(collection)
 		if(exportFormat=="geojson"){
-                    saveTextAsFile(JSON.stringify(collection, null, 2),"geojson")
+            saveTextAsFile(JSON.stringify(collection, null, 2),"geojson")
 		}else if(exportFormat=="shp"){
-                    shpwrite.download(collection, options);
+            shpwrite.download(collection, options);
 		}
 		
 	}
