@@ -902,6 +902,7 @@ function uiQuery(start){
                 remoteSPARQLQuery($('#sparqlendpointurl').val(),queryString)
 	}else{
 	d3.sparql($('#endpointselect').val(),queryString).then((results) => {
+		alert(queryString)
 	//currdfstore.execute(queryString, function(success,results){ 
         //console.log(success,results)
                     handleResults(results,start)
@@ -1012,7 +1013,7 @@ function handleResults(results,start){
 		}
 		geojson=TTLToGeoJSON(curQueryResultTTL,"geojson","")
 		var geojsonlayer=L.geoJSON(geojson,{
-			 filter: function(feature, layer) {			    
+			filter: function(feature, layer) {			    
 				return true;
 			},
 			coordsToLatLng: function (coords) {
@@ -1064,13 +1065,13 @@ function handleResults(results,start){
 					stripes = new L.StripePattern(feature.style.hatch); 
 					stripes.addTo(map);
 				 }
-				 var popup="Item: <a href='"+feature.id+"' target='_blank'>"
+				 var popup="Item: "
 				 if("id" in feature && feature.id.includes('#')){
-					popup+=feature.id.substring(feature.id.lastIndexOf('#')+1)
+					popup+="<a href='"+feature.id.replace("<","").replace(">","")+"' target='_blank'>"+feature.id.substring(feature.id.lastIndexOf('#')+1).replace("<","").replace(">","")
 				 }else if("id" in feature && feature.id.startsWith("http")){
-					popup+=feature.id.substring(feature.id.lastIndexOf('/')+1)
+					popup+="<a href='"+feature.id.replace("<","").replace(">","")+"' target='_blank'>"+feature.id.substring(feature.id.lastIndexOf('/')+1).replace("<","").replace(">","")
 				 }else{
-					popup+=feature.id
+					popup+="<a href='"+feature.id+"' target='_blank'>"+feature.id
 				 }
 				 popup+="</a>"
 				if("http://www.w3.org/1999/02/22-rdf-syntax-ns#type" in feature.properties){
@@ -1748,8 +1749,7 @@ function addConstraint(firstpart,secondpart,thirdpart){
                     $('#constraints').html($('#constraints').html()+"<li>"+$(  "#"+firstpart+" option:selected" ).text()+" - "+$( "#"+secondpart+" option:selected" ).text()+" - "+$('#'+thirdpart+" option:selected").val()+"</li>")
                     constraintclasses[$( "#"+firstpart+" option:selected" ).val()]=true;
                     constraintclasses[$( "#"+thirdpart+" option:selected" ).val()]=true;
-                }
-                
+                }           
 	}else{
 			if($( "#"+firstpart+" option:selected" ).val().includes("?")){
 				if(!($( "#"+firstpart+" option:selected" ).val() in constraints)){
@@ -1816,7 +1816,7 @@ function TTLToGeoJSON(tosave,exportFormat,exportnamespace){
 			//if(remembersub1="" || rememberremembersub1=subsplit[1]){
 			
 			if(splitt[spl].includes("NamedIndividual") || splitt[spl].includes("label") || splitt[spl].includes("http://www.w3.org/2002/07/owl#")  || splitt[spl].includes("comment") || 
-				splitt[spl].includes("asWKT") || 
+				//splitt[spl].includes("asWKT") || 
 				splitt[spl].includes("asGML") || 
 				splitt[spl].includes("asKML") /*|| splitt[spl].includes("gml:id")*/ || splitt[spl].includes("\"nil\"")){
 				continue;
@@ -1834,8 +1834,56 @@ function TTLToGeoJSON(tosave,exportFormat,exportnamespace){
 				}
                 if(!("properties" in geojson)){
                        geojson["properties"]={}
-					}
-                if(splitt[spl].includes("asGeoJSON")){		
+				}
+				console.log("SUBSPLIT1: "+subsplit[1])
+				if(subsplit[1].includes("asWKT")){
+					//console.log("Geometry render loop "+rel+" - "+persons[pers][rel])
+				//if(persons[pers]["asWKT"]!=null /*&& persons[pers]["asWKT"] in rest*/){
+						//console.log(persons[pers][rel])
+						/*if(Array.isArray(persons[pers][rel])){
+							wkt.read(persons[pers][rel][0]);
+						}else{
+							wkt.read(persons[pers][rel]);
+						}*/
+						literal=subsplit[2]
+						if(subsplit.length>2){
+							for(i=3;i<subsplit.length;i++){
+								literal+=subsplit[i]+" "
+							}
+						}
+						literal=literal.trim()
+						console.log(literal)
+						if(Array.isArray(splitt[spl])){
+							if(isJSON(literal)){
+								console.log(literal[Object.keys(splitt[spl][0])[0]])
+								wkt.read(literal[Object.keys(splitt[spl][0])[0]]);
+							}else{
+								console.log(literal)
+								if(literal.trim().startsWith("<")){
+									wkt.read(literal.substring(literal.lastIndexOf('>')+1,literal.indexOf("^^")-1));
+								}else{
+									wkt.read(literal.substring(literal.indexOf('"')+1,literal.indexOf("^^")-1));
+								}
+								
+							}							
+						}else{
+						    if(splitt[spl].trim().startsWith("<")){
+								console.log(literal.substring(literal.lastIndexOf('>')+1,literal.indexOf("^^")-1))
+								wkt.read(literal.substring(literal.lastIndexOf('>')+1,literal.indexOf("^^")-1));
+							}else{
+								console.log(literal.substring(literal.indexOf('"')+1,literal.indexOf("^^")-1))
+								wkt.read(literal.substring(literal.indexOf('"')+1,literal.indexOf("^^")-1));						
+							}
+						}				
+						//console.log("HATCH: "+JSON.stringify(persons[pers]["hatch"]))
+						geom=wkt.toJson();
+						console.log(geom)
+						geojson["geometry"]=geom
+						if(geojson["geometry"]["type"]=="Polygon"){
+                            geojson["geometry"]=turf.rewind(geojson["geometry"])
+						}
+							console.log(geom)
+				}else if(splitt[spl].includes("asGeoJSON")){		
 					geostr=splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1)
 					if(geostr.startsWith("<")){
 						geostr=geostr.substring(geostr.lastIndexOf('>')+1)
@@ -1873,6 +1921,7 @@ function TTLToGeoJSON(tosave,exportFormat,exportnamespace){
 			}catch(err){console.log(err); continue;}
 		}
 		}
+	console.log(collection)
 	return collection
 }
 
