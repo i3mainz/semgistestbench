@@ -1426,15 +1426,15 @@ function popupHighlighter(popup,colormap,properties,depth){
  		if(!(ns in colorcodes)){
 			colorcodes[ns]=getRandomColor();
 		}
-		//popup+="<li><a href='"+prop+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+prop.substring(prop.lastIndexOf('#')+1)+"</a> - "
-	 	popup+="<li><a href='"+prop+"' target='_blank' style='color:#BD1B1B'>"+prop.substring(prop.lastIndexOf('#')+1)+"</a> - "
+		popup+="<li><a href='"+prop+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+prop.substring(prop.lastIndexOf('#')+1)+"</a> - "
+	 	//popup+="<li><a href='"+prop+"' target='_blank' style='color:#BD1B1B'>"+prop.substring(prop.lastIndexOf('#')+1)+"</a> - "
  }else if(prop.includes("http")){
   		ns=prop.substring(0,prop.indexOf('/'))
  		if(!(ns in colorcodes)){
 			colorcodes[ns]=getRandomColor();
 		}
-		//popup+="<li><a href='"+prop+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+prop.substring(prop.lastIndexOf('/')+1)+"</a> - "
-	 	popup+="<li><a href='"+prop+"' target='_blank' style='color:#BD1B1B'>"+prop.substring(prop.lastIndexOf('/')+1)+"</a> - "
+		popup+="<li><a href='"+prop+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+prop.substring(prop.lastIndexOf('/')+1)+"</a> - "
+	 	//popup+="<li><a href='"+prop+"' target='_blank' style='color:#BD1B1B'>"+prop.substring(prop.lastIndexOf('/')+1)+"</a> - "
  }else{
 	 	popup+="<li>"+prop+" - "
 	 }
@@ -1456,22 +1456,22 @@ if(typeof properties[prop] === "object"){
  	 if(!(ns in colorcodes)){
 		colorcodes[ns]=getRandomColor();
 	 }
-     //popup+="<a href='"+array[elem]+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+array[elem].substring(0,array[elem].lastIndexOf('^')-1)+"</a><br/>"
-     popup+="<a href='"+array[elem]+"' target='_blank' style='color:#BD1B1B'>"+array[elem].substring(0,array[elem].lastIndexOf('^')-1)+"</a><br/>"
+     popup+="<a href='"+array[elem]+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+array[elem].substring(0,array[elem].lastIndexOf('^')-1)+"</a><br/>"
+     //popup+="<a href='"+array[elem]+"' target='_blank' style='color:#BD1B1B'>"+array[elem].substring(0,array[elem].lastIndexOf('^')-1)+"</a><br/>"
     }else if(array[elem].includes("http") && array[elem].includes("#")){
  	ns=array[elem].substring(0,array[elem].indexOf('#'))
  	 if(!(ns in colorcodes)){
 		colorcodes[ns]=getRandomColor();
 	 }
-	 //popup+="<a href='"+array[elem]+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+array[elem].substring(array[elem].lastIndexOf('#')+1)+"</a><br/>"
-     popup+="<a href='"+array[elem]+"' target='_blank' style='color:#BD1B1B'>"+array[elem].substring(array[elem].lastIndexOf('#')+1)+"</a><br/>"
+	 popup+="<a href='"+array[elem]+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+array[elem].substring(array[elem].lastIndexOf('#')+1)+"</a><br/>"
+     //popup+="<a href='"+array[elem]+"' target='_blank' style='color:#BD1B1B'>"+array[elem].substring(array[elem].lastIndexOf('#')+1)+"</a><br/>"
     }else if(array[elem].includes("http") || array[elem].includes("file:/")){
   	 ns=array[elem].substring(0,array[elem].indexOf('/'))
  	 if(!(ns in colorcodes)){
 		colorcodes[ns]=getRandomColor();
 	 }
-	 //popup+="<a href='"+array[elem]+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+array[elem].substring(array[elem].lastIndexOf('/')+1)+"</a><br/>"
-     popup+="<a href='"+array[elem]+"' target='_blank' style='color:#BD1B1B'>"+array[elem].substring(array[elem].lastIndexOf('/')+1)+"</a><br/>"
+	 popup+="<a href='"+array[elem]+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+array[elem].substring(array[elem].lastIndexOf('/')+1)+"</a><br/>"
+     //popup+="<a href='"+array[elem]+"' target='_blank' style='color:#BD1B1B'>"+array[elem].substring(array[elem].lastIndexOf('/')+1)+"</a><br/>"
     }else{
       popup+=array[elem]+"<br/>"
     }
