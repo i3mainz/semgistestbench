@@ -27,8 +27,6 @@
 <script>
 var markercollection={}
 var revision="a011fd8f3a7cb506cc1ebdae34b2cb1578a380bd"
-var epsgdefs={"EPSG:4326":"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs","EPSG:3048":"proj=utm +zone=36 +ellps=GRS80 +units=m +no_defs","EPSG:3587":"+proj=lcc +lat_1=45.7 +lat_2=44.18333333333333 +lat_0=43.31666666666667 +lon_0=-84.36666666666666 +x_0=6000000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs","EPSG:3912":"proj=tmerc +lat_0=0 +lon_0=15 +k=0.9999 +x_0=500000 +y_0=-5000000 +ellps=bessel +towgs84=577.326,90.129,463.919,5.137,1.474,5.297,2.4232 +units=m +no_defs","EPSG:25832":"+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs","EPSG:25833":"+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs","EPSG:31467":"+proj=tmerc +lat_0=0 +lon_0=9 +k=1 +x_0=3500000 +y_0=0 +ellps=bessel +datum=potsdam +units=m +no_defs"}
-var prefixList="PREFIX owl: <http://www.w3.org/2002/07/owl#>  PREFIX geo: <http://www.opengis.net/ont/geosparql#> PREFIX wd: <http://www.wikidata.org/entity/> PREFIX foaf: <http://xmlns.com/foaf/0.1/>  PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  PREFIX xml: <http://www.w3.org/XML/1998/namespace>  PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX xerl: <http://www.xerleben.de/schema/2.0_1#> PREFIX xplan5: <http://www.xplanung.de/xplangml/5/0#> PREFIX semgis: <http://www.semgis.de/geodata#> "
 var ttlprefixList="@prefix wd: <http://www.wikidata.org/entity/> . \n @prefix foaf: <http://xmlns.com/foaf/0.1/> . \n @prefix owl: <http://www.w3.org/2002/07/owl#> . \n @prefix geo: <http://www.opengis.net/ont/geosparql#> . \n @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> . \n @prefix xml: <http://www.w3.org/XML/1998/namespace> . \n @prefix xsd: <http://www.w3.org/2001/XMLSchema#> . \n @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> . \n @prefix kml: <http://www.opengis.net/kml/2.2#> . \n @prefix gml: <http://www.opengis.net/gml/3.2#> . \n @prefix xplan5: <http://www.xplanung.de/xplangml/5/0#> . \n "
 var prefixMap={"http://www.w3.org/2002/07/owl#":"owl", "http://www.opengis.net/ont/geosparql#":"geo" 
 , "http://www.wikidata.org/entity/":"wd", "http://xmlns.com/foaf/0.1/":"foaf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#":"rdf", 
@@ -58,6 +56,7 @@ var geoconstraints={}
 var wgs84dest = new proj4.Proj('EPSG:4326'); 
 var curQueryResultTTL=""
 var curposmarker=null;
+var endpoints={}
 $( function() {
         epsg=""
         for(val in epsgdefs){
@@ -1012,6 +1011,12 @@ function handleResults(results,start){
 			}
 		}
 		geojson=TTLToGeoJSON(curQueryResultTTL,"geojson","")
+		if(endpoints[$('#endpointselect').val()]["epsg"]!=4326){
+            console.log(geojson)
+            console.log("EPSG:"+endpoints[$('#endpointselect').val()]["epsg"])
+            geojson=convertGeoJSON(geojson,epsgdefs["EPSG:"+endpoints[$('#endpointselect').val()]["epsg"]])
+            console.log(geojson);
+        }
 		var geojsonlayer=L.geoJSON(geojson,{
 			filter: function(feature, layer) {			    
 				return true;
@@ -1068,13 +1073,38 @@ function handleResults(results,start){
 				 var popup="Item: "
 				 if("id" in feature && feature.id.includes('#')){
 					popup+="<a href='"+feature.id.replace("<","").replace(">","")+"' target='_blank'>"+feature.id.substring(feature.id.lastIndexOf('#')+1).replace("<","").replace(">","")
-				 }else if("id" in feature && feature.id.startsWith("http")){
+				 }else if("id" in feature && (feature.id.startsWith("http") || feature.id.startsWith("<http"))){
 					popup+="<a href='"+feature.id.replace("<","").replace(">","")+"' target='_blank'>"+feature.id.substring(feature.id.lastIndexOf('/')+1).replace("<","").replace(">","")
 				 }else{
 					popup+="<a href='"+feature.id+"' target='_blank'>"+feature.id
 				 }
 				 popup+="</a> "
 				if("http://www.w3.org/1999/02/22-rdf-syntax-ns#type" in feature.properties){
+                    console.log("TYPE ARRAY?"+isArray(feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]))
+				    if(isArray(feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"])){
+                        console.log(feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"])
+                        popup+="("
+                        for(cls of feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]){
+                        console.log("CLS: "+cls)
+                            if(cls.includes("http") && cls.includes("#")){
+						ns=cls.substring(0,cls.indexOf('#'))
+						if(!(ns in colorcodes)){
+							colorcodes[ns]=getRandomColor();
+						}
+						popup+="<a href='"+cls+"' target='_blank' style='color:"+colorcodes[ns]+"'><b>"+cls.substring(cls.lastIndexOf('#')+1)+"</b></a> "
+						//popup+="(<a href='"+feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]+"' target='_blank' style='color:#BD1B1B'>"+feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].substring(feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].lastIndexOf('#')+1)+"</a>)"
+					}else if(cls.includes("http")){
+						ns=cls.substring(0,cls.indexOf('/'))
+						if(!(ns in colorcodes)){
+							colorcodes[ns]=getRandomColor();
+						}
+						popup+="<a href='"+cls+"' target='_blank' style='color:"+colorcodes[ns]+"'><b>"+cls.substring(cls.lastIndexOf('/')+1)+"</b></a> "
+						//popup+="(<a href='"+feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]+"' target='_blank' style='color:#BD1B1B'>"+feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].substring(feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].lastIndexOf('/')+1)+"</a>)"
+					}
+                        }
+                        popup=popup.trim()
+                        popup+=")"
+				    }else{
 					if(feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].includes("http") && feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].includes("#")){
 						ns=feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].substring(0,feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].indexOf('#'))
 						if(!(ns in colorcodes)){
@@ -1089,6 +1119,7 @@ function handleResults(results,start){
 						}
 						popup+="(<a href='"+feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]+"' target='_blank' style='color:"+colorcodes[ns]+"'><b>"+feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].substring(feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].lastIndexOf('/')+1)+"</b></a>)"
 						//popup+="(<a href='"+feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]+"' target='_blank' style='color:#BD1B1B'>"+feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].substring(feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].lastIndexOf('/')+1)+"</a>)"
+					}
 					}
 				 }
 				 if(typeof stripes !== 'undefined'){
@@ -1868,7 +1899,7 @@ function TTLToGeoJSON(tosave,exportFormat,exportnamespace){
 								
 							}							
 						}else{
-						    if(splitt[spl].trim().startsWith("<")){
+						    if(literal.startsWith("<")){
 								console.log(literal.substring(literal.lastIndexOf('>')+1,literal.indexOf("^^")-1))
 								wkt.read(literal.substring(literal.lastIndexOf('>')+1,literal.indexOf("^^")-1));
 							}else{
@@ -1879,7 +1910,9 @@ function TTLToGeoJSON(tosave,exportFormat,exportnamespace){
 						//console.log("HATCH: "+JSON.stringify(persons[pers]["hatch"]))
 						geom=wkt.toJson();
 						console.log(geom)
+						geojson["geometry"]={}
 						geojson["geometry"]=geom
+						
 						if(geojson["geometry"]["type"]=="Polygon"){
                             geojson["geometry"]=turf.rewind(geojson["geometry"])
 						}
@@ -1905,15 +1938,34 @@ function TTLToGeoJSON(tosave,exportFormat,exportnamespace){
 				}else{
 				if(exportFormat=="shp"){
 					if(exportnamespace.length==0 || exportnamespace.includes("all") || exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1))){
-						geojson["properties"][subsplit[1].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")]=(subsplit[2].includes("^^")?
-						subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):
-						subsplit[2].replace("<","").replace(">","").replace("\"",""))
+                        propname=subsplit[1].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")
+                        if(propname in geojson["properties"]){
+                            if(isArray(geojson["properties"][propname])){
+                                geojson["properties"][propname].push((subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"","")))
+                            }else{
+                                val=geojson["properties"][propname]
+                                geojson["properties"][propname]=[]
+                                geojson["properties"][propname].push(val)
+                                geojson["properties"][propname].push((subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"","")))
+                            }
+                        }else{
+                            geojson["properties"][propname]=(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))                        
+                        }
 					}
 				}else{
 					if(exportnamespace.length==0 || exportnamespace.includes("all") || exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1))){
-						geojson["properties"][subsplit[1].replace("<","").replace(">","")]=(subsplit[2].includes("^^")?
-						subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):
-						subsplit[2].replace("<","").replace(">","").replace("\"",""))
+					    propname=subsplit[1].replace("<","").replace(">","")
+						if(propname in geojson["properties"]){
+                            if(isArray(geojson["properties"][propname])){
+                                geojson["properties"][propname].push((subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"","")))
+                            }else{
+                                val=geojson["properties"][propname]
+                                geojson["properties"][propname]=[]
+                                geojson["properties"][propname].push(val)
+                                geojson["properties"][propname].push((subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"","")))
+                            }
+                        }else{
+                            geojson["properties"][propname]=(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))                 }
 					}	                 
 				}
 					
@@ -2449,7 +2501,7 @@ function gmlStringToKML(gmlString,coordarray){
 	//console.log("WKT Result: "+wktString)
 	return wktString;
 }
-
+/*
 function geometryToGeoJSON(geomtype,coordinates){
     res={}
 	res["geometry"]={}
@@ -2485,7 +2537,7 @@ function geometryToGeoJSON(geomtype,coordinates){
 		res["geometry"]["coordinates"]+="]"
 	}
 	return JSON.parse(res["geometry"]["coordinates"]);
-}
+}*/
 
 function geometryToKML(geomtype,coordinates){
     res={}
@@ -2574,6 +2626,7 @@ function importConvert(coordinates,source,switchlatlong){
     return convertit(coordinates,source,epsgdefs["EPSG:4326"],switchlatlong)
 }
 
+/*
 function exportConvert(coordinates,dest,type,geomtype,switchlatlong){
     console.log("ExportConvert")
     coords=convertit(coordinates,epsgdefs["EPSG:4326"],dest,switchlatlong)
@@ -2624,7 +2677,7 @@ function convertit(coordinates,source,dest,switchlatlong){
 	}
 	//console.log("Resultarray: "+resultarray)
 	return resultarray
-}
+}*/
 
 function clearGraph(){
 	currdfstore.clear(function(err){console.log(err)});
@@ -2871,20 +2924,11 @@ $(document).ready( function () {
     
 	$.getJSON("https://www.i3mainz.de/projekte/bkg/semanticwfs/rest/service/getEndpoints", function(result){
 		 	options=""
-		   var tablecontent="<thead><tr><th>Name</th><th>Endpoint</th><th>Type Relation</th><th>Geometry Relation</th><th>Options</th></tr></thead><tbody>"
 		   for(featuretype in result["endpoints"]){
 			   options+="<option value=\""+result["endpoints"][featuretype]["endpoint"]+"\">"+result["endpoints"][featuretype]["name"]+"</option>"
-			   tablecontent+="<tr><td>"
-			   +result["endpoints"][featuretype]["name"]+"</td><td><a href=\""+result["endpoints"][featuretype]["endpoint"]+"\">"
-			   +result["endpoints"][featuretype]["endpoint"]+"</a></td><td><a href=\""+result["endpoints"][featuretype]["type"]+"\">"
-			   +result["endpoints"][featuretype]["type"]+"</a></td><td><a href=\""+result["endpoints"][featuretype]["geo"][0]+"\">"
-			   +result["endpoints"][featuretype]["geo"][0]+"</a></td>"
-			   +"<td><i class=\"fa fa-pencil-square\" aria-hidden=\"true\"></i><i class=\"fa fa-minus-square\" aria-hidden=\"true\"></i> </td>"
-			   +"</tr>"
 		   }
-		   tablecontent+="</tbody>"
-		   $('#endpointtable').html(tablecontent);
-		   $('#endpointselect').html(options);
+        endpoints=result["endpoints"]
+        $('#endpointselect').html(options);
 		});
 });
 </script>
