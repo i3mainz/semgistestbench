@@ -1095,14 +1095,16 @@ function handleResults(results,start){
 					stripes.addTo(map);
 				 }
 				 var popup="Item: "
-				 if("id" in feature && feature.id.includes('#')){
+				 if("http://www.w3.org/2000/01/rdf-schema#label" in feature.properties && "id" in feature && (typeof feature.id !== undefined)){
+                    popup+="<a href='"+feature.id.replace("<","").replace(">","")+"' target='_blank'>"+feature.properties["http://www.w3.org/2000/01/rdf-schema#label"]
+				 }else if("id" in feature && feature.id.includes('#')){
 					popup+="<a href='"+feature.id.replace("<","").replace(">","")+"' target='_blank'>"+feature.id.substring(feature.id.lastIndexOf('#')+1).replace("<","").replace(">","")
 				 }else if("id" in feature && (feature.id.startsWith("http") || feature.id.startsWith("<http"))){
 					popup+="<a href='"+feature.id.replace("<","").replace(">","")+"' target='_blank'>"+feature.id.substring(feature.id.lastIndexOf('/')+1).replace("<","").replace(">","")
 				 }else{
 					popup+="<a href='"+feature.id+"' target='_blank'>"+feature.id
 				 }
-				 popup+="</a> "
+				 popup+="</a><br/>"
 				if("http://www.w3.org/1999/02/22-rdf-syntax-ns#type" in feature.properties){
                     console.log("TYPE ARRAY?"+isArray(feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]))
 				    if(isArray(feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"])){
@@ -1908,7 +1910,8 @@ function TTLToGeoJSON(tosave,exportFormat,exportnamespace){
 			//console.log(subsplit)
 			//if(remembersub1="" || rememberremembersub1=subsplit[1]){
 			
-			if(splitt[spl].includes("NamedIndividual") || splitt[spl].includes("label") || splitt[spl].includes("http://www.w3.org/2002/07/owl#")  || splitt[spl].includes("comment") || 
+			if(splitt[spl].includes("NamedIndividual")  || splitt[spl].includes("http://www.w3.org/2002/07/owl#")  || splitt[spl].includes("comment") || 
+				//|| splitt[spl].includes("label")
 				//splitt[spl].includes("asWKT") || 
 				splitt[spl].includes("asGML") || 
 				splitt[spl].includes("asKML") /*|| splitt[spl].includes("gml:id")*/ || splitt[spl].includes("\"nil\"")){
@@ -1995,9 +1998,9 @@ function TTLToGeoJSON(tosave,exportFormat,exportnamespace){
 					//console.log("IN TYPE CLAUSE")
 					//console.log(splitt[spl])
 					geojson["properties"]["id"]=subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")			
-				}*/else if(splitt[spl].includes("label")){
+				}else if(splitt[spl].includes("label")){
 					continue;
-				}else{
+				}*/else{
 				if(exportFormat=="shp"){
 					if(exportnamespace.length==0 || exportnamespace.includes("all") || exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1))){
                         propname=subsplit[1].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")
@@ -2008,7 +2011,7 @@ function TTLToGeoJSON(tosave,exportFormat,exportnamespace){
                                 val=geojson["properties"][propname]
                                 geojson["properties"][propname]=[]
                                 geojson["properties"][propname].push(val)
-                                geojson["properties"][propname].push((subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"","")))
+                                geojson["properties"][propname].push((subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace(">","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"","")))
                             }
                         }else{
                             geojson["properties"][propname]=(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))                        
@@ -2027,7 +2030,8 @@ function TTLToGeoJSON(tosave,exportFormat,exportnamespace){
                                 geojson["properties"][propname].push((subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"","")))
                             }
                         }else{
-                            geojson["properties"][propname]=(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))                 }
+                            geojson["properties"][propname]=(splitt[spl].includes("^^")?splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1).replace("<","").replace(">","").replace("\"",""):subsplit[2].replace("\"","").replace("<","").replace(">",""))
+                        }
 					}	                 
 				}
 					
