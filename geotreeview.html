@@ -868,11 +868,11 @@ function uiQuery(start){
 		alert("No classes to query!")
 		return
 	}
-	queryString=prefixList+" SELECT DISTINCT ?person ?rel ?pointstyle ?linestyle ?polygonstyle ?hatch ?img ?linestringImageStyle ?linestringImage ?val ?valLabel ?wkt ?wkt2 ?gml ?kml ?geojson ?standard ?abstractClass ?proporder WHERE { "
+	queryString=prefixList+" SELECT DISTINCT ?person ?rel ?relLabel ?pointstyle ?linestyle ?polygonstyle ?hatch ?img ?linestringImageStyle ?linestringImage ?val ?valLabel ?wkt ?wkt2 ?gml ?kml ?geojson ?standard ?abstractClass ?proporder WHERE { "
 	for(cls in classesToQuery){
 		console.log(cls)
 		if($('#whichactive').is(':checked')){
-						queryString+="{{ SELECT ?person WHERE { ?person rdf:type <"+classesToQuery[cls]+"> .} LIMIT 100 } ?person ?rel ?val .  OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val ?abc ?val2. ?val2 geo:asWKT ?wkt2 .}  OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{?val semgis:standard ?standard .} OPTIONAL{?val semgis:abstractClass ?abstractClass .} OPTIONAL{?val semgis:propOrder ?proporder .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:lineStyle ?linestringStyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}   OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle  ?linestringImageStyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:hatch  ?hatch .}  "
+						queryString+="{{ SELECT ?person WHERE { ?person rdf:type <"+classesToQuery[cls]+"> .} LIMIT "+$('#limit').val()+" } ?person ?rel ?val .  OPTIONAL{?rel rdfs:label ?relLabel .} OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val ?abc ?val2. ?val2 geo:asWKT ?wkt2 .}  OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}  OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{?val semgis:standard ?standard .} OPTIONAL{?val semgis:abstractClass ?abstractClass .} OPTIONAL{?val semgis:propOrder ?proporder .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:lineStyle ?linestringStyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}   OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle  ?linestringImageStyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:hatch  ?hatch .}  "
 						if(classesToQuery[cls] in constraints){
                                                         if("NOT" in constraints[classesToQuery[cls]]){
                                                                 queryString+="MINUS {"+constraints[classesToQuery[cls]].replace("NOT ","")+"} ."
@@ -887,7 +887,7 @@ function uiQuery(start){
 						}
 						queryString+="} UNION"
 		}else{
-			queryString+="{ { SELECT ?person WHERE { ?person rdf:type <"+classesToQuery[cls]+"> .} LIMIT 100 } ?person ?rel ?val . OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val ?abc ?val2. ?val2 geo:asWKT ?wkt2 .}  OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}   OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{?val semgis:standard ?standard .} OPTIONAL{?val semgis:abstractClass ?abstractClass .} OPTIONAL{?val semgis:propOrder ?proporder .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringStyle ?linestyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle ?linestringImageStyle.} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:hatch  ?hatch .} } UNION "
+			queryString+="{ { SELECT ?person WHERE { ?person rdf:type <"+classesToQuery[cls]+"> .} LIMIT "+$('#limit').val()+" } ?person ?rel ?val . OPTIONAL{?rel rdfs:label ?relLabel .} OPTIONAL{?val geo:asWKT ?wkt .} OPTIONAL{?val ?abc ?val2. ?val2 geo:asWKT ?wkt2 .}  OPTIONAL{?val geo:asGML ?gml .} OPTIONAL{?val geo:asKML ?kml .} OPTIONAL{?val geo:asGeoJSON ?geojson .}   OPTIONAL{?val rdfs:label ?valLabel .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:pointStyle ?pointstyle .} OPTIONAL{?val semgis:standard ?standard .} OPTIONAL{?val semgis:abstractClass ?abstractClass .} OPTIONAL{?val semgis:propOrder ?proporder .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringStyle ?linestyle .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:polygonStyle ?polygonstyle .}  OPTIONAL{<"+classesToQuery[cls]+"> semgis:image ?img .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImageStyle ?linestringImageStyle.} OPTIONAL{<"+classesToQuery[cls]+"> semgis:linestringImage  ?linestringImage .} OPTIONAL{<"+classesToQuery[cls]+"> semgis:hatch  ?hatch .} } UNION "
 		}
 	}
 	queryString=queryString.substring(0,queryString.length-6)
@@ -954,7 +954,10 @@ function handleResults(results,start){
 			}
 			//console.log(results[res]["val"])
 			if(results[res]["person"]!=undefined && results[res]["rel"]!=undefined && results[res]["val"]!=undefined){
-					curQueryResultTTL+="<"+results[res]["person"]+"> <"+results[res]["rel"]+"> ";
+					if(results[res]["relLabel"]!=undefined){
+                        curQueryResultTTL+="<"+results[res]["rel"]+"> <http://www.w3.org/2000/01/rdf-schema#label> \""+results[res]["relLabel"]+"\" . \n";
+					}
+                    curQueryResultTTL+="<"+results[res]["person"]+"> <"+results[res]["rel"]+"> ";
 					if(!(results[res]["val"]+"").includes("http") || results[res]["rel"].includes("asGML")){
 						curQueryResultTTL+="\""+(results[res]["val"]+"").replace(new RegExp("\"", 'g'),"\\\"")+"\"^^<"+(results[res]["val"]["type"]!=undefined?results[res]["val"]["type"]:"http://www.w3.org/2001/XMLSchema#string")+"> . \n";
 					}else{
@@ -2975,7 +2978,9 @@ $(document).ready( function () {
 
 </select>
 <button id="explore" onclick="getClassHierarchy([])">Explore</button><br/>
-Format: <select id="queryimportformat">
+Instances Limit: <input type="number" min="1" step="1" id="limit" value="100"/>
+<br/>
+Export as Format: <select id="queryimportformat">
 <option value="ttl" selected="selected">TTL</option>
 <option value="gml">GML</option>
 <option value="kml">KML</option>
