@@ -4,9 +4,9 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="js/wicket.js" type="text/javascript"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.1.1/jstree.min.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
 <link rel="stylesheet" href="css/leaflet_legend.css" />
-<script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3-sparql@2.0.0/build/d3-sparql.min.js"></script>
 <script src="js/shpwrite.js"></script>
   <script src="js/leaflet.polylinedecorator.js"></script>
@@ -912,9 +912,11 @@ function uiQuery(start){
 var colorcodes={}
 var invertXY=false
 var typeColumn=""
+var relLabels={}
 function handleResults(results,start){
         curQueryResultTTL=""
 		persons={}
+		relLabels={}
 		classTopers={}
 		persToClass={}
 		for(res in results){
@@ -955,7 +957,7 @@ function handleResults(results,start){
 			//console.log(results[res]["val"])
 			if(results[res]["person"]!=undefined && results[res]["rel"]!=undefined && results[res]["val"]!=undefined){
 					if(results[res]["relLabel"]!=undefined){
-                        curQueryResultTTL+="<"+results[res]["rel"]+"> <http://www.w3.org/2000/01/rdf-schema#label> \""+results[res]["relLabel"]+"\" . \n";
+                        relLabels[results[res]["rel"]]=results[res]["relLabel"]
 					}
                     curQueryResultTTL+="<"+results[res]["person"]+"> <"+results[res]["rel"]+"> ";
 					if(!(results[res]["val"]+"").includes("http") || results[res]["rel"].includes("asGML")){
@@ -1015,13 +1017,19 @@ function handleResults(results,start){
 			}
 		}
 		geojson=TTLToGeoJSON(curQueryResultTTL,"geojson","")
-		if(endpoints[$('#endpointselect').val()]["epsg"]!=4326){
+		if(endpoints[$('#endpointselect').val()]["epsg"]!=4326 && $('#endpointselect').val()!="https://ld.gdi-de.org/graphdb/repositories/xplanungtest"){
             console.log(geojson)
             console.log("EPSG:"+endpoints[$('#endpointselect').val()]["epsg"])
             geojson=convertGeoJSON(geojson,epsgdefs["EPSG:"+endpoints[$('#endpointselect').val()]["epsg"]])
             console.log(geojson);
         }
+		if($('#endpointselect').val()=="https://ld.gdi-de.org/graphdb/repositories/xplanungtest")
+			invertXY=true
+		else
+			invertXY=false
         colormap={}
+		console.log("RELLABELS!!!!")
+		console.log(relLabels)
 		var geojsonlayer=L.geoJSON(geojson,{
 			filter: function(feature, layer) {			    
 				return true;
@@ -1290,10 +1298,23 @@ function displayQueryResult(persons,query,classTopers,persToClass,start){
 								colorcodes[ns]=colors[colorcounter++]
 							}
 							//alert(JSON.stringify(colorcodes))
+							console.log("RELLABELS: "+relLabels)
+							console.log(rel)
+							console.log(rel in relLabels)
 							if(rel.includes("#")){
-                                addit="<li><a href=\""+rel+"\" target=\"_blank\" style=\"color:"+colorcodes[ns]+"\">"+rel.substring(rel.lastIndexOf("#")+1)+"</a> - "
+                                addit="<li><a href=\""+rel+"\" target=\"_blank\" style=\"color:"+colorcodes[ns]+"\">"
+								if(rel in relLabels){
+									addit+=relLabels[rel]+"</a> - "
+								}else{
+									addit+=rel.substring(rel.lastIndexOf("#")+1)+"</a> - "								
+								}
 							}else{
-                                addit="<li><a href=\""+rel+"\" target=\"_blank\" style=\"color:"+colorcodes[ns]+"\">"+rel.substring(rel.lastIndexOf("/")+1)+"</a> - "
+                                addit="<li><a href=\""+rel+"\" target=\"_blank\" style=\"color:"+colorcodes[ns]+"\">"
+								if(rel in relLabels){
+									addit+=relLabels[rel]+"</a> - "
+								}else{
+									addit+=rel.substring(rel.lastIndexOf("/")+1)+"</a> - "								
+								}
 							}
 							tempval=[]
 							for(vall in persons[pers][rel][val]){
@@ -1536,14 +1557,24 @@ function popupHighlighter(popup,colormap,properties,depth){
  		if(!(ns in colorcodes)){
 			colorcodes[ns]=getRandomColor();
 		}
-		popup+="<li><a href='"+prop+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+prop.substring(prop.lastIndexOf('#')+1)+"</a> - "
+		popup+="<li><a href='"+prop+"' target='_blank' style='color:"+colorcodes[ns]+"'>"
+		if(prop in relLabels){
+			popup+=relLabels[prop]+"</a> - "
+		}else{
+			popup+=prop.substring(prop.lastIndexOf('#')+1)+"</a> - "								
+		}
 	 	//popup+="<li><a href='"+prop+"' target='_blank' style='color:#BD1B1B'>"+prop.substring(prop.lastIndexOf('#')+1)+"</a> - "
  }else if(prop.includes("http")){
   		ns=prop.substring(0,prop.indexOf('/'))
  		if(!(ns in colorcodes)){
 			colorcodes[ns]=getRandomColor();
 		}
-		popup+="<li><a href='"+prop+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+prop.substring(prop.lastIndexOf('/')+1)+"</a> - "
+		popup+="<li><a href='"+prop+"' target='_blank' style='color:"+colorcodes[ns]+"'>"
+		if(prop in relLabels){
+			popup+=relLabels[prop]+"</a> - "
+		}else{
+			popup+=prop.substring(prop.lastIndexOf('/')+1)+"</a> - "								
+		}
 	 	//popup+="<li><a href='"+prop+"' target='_blank' style='color:#BD1B1B'>"+prop.substring(prop.lastIndexOf('/')+1)+"</a> - "
  }else{
 	 	popup+="<li>"+prop+" - "
@@ -1582,7 +1613,11 @@ if(typeof properties[prop] === "object"){
 	 }
 	 popup+="<a href='"+array[elem]+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+array[elem].substring(array[elem].lastIndexOf('/')+1)+"</a><br/>"
      //popup+="<a href='"+array[elem]+"' target='_blank' style='color:#BD1B1B'>"+array[elem].substring(array[elem].lastIndexOf('/')+1)+"</a><br/>"
-    }else{
+    }else if(array[elem].startsWith("www.")) {
+      popup+="<a href=\""+array[elem]+"\" target=\"_blank\">"+array[elem]+"</a><br/>"
+    }else if(array[elem].includes("@")) {
+      popup+="<a href=\"mailto:"+array[elem]+"\" target=\"_blank\">"+array[elem]+"</a><br/>"
+    }else {
       popup+=array[elem]+"<br/>"
     }
  }
@@ -1979,24 +2014,27 @@ function TTLToGeoJSON(tosave,exportFormat,exportnamespace){
 						geom=wkt.toJson();
 						console.log(geom)
 						geojson["geometry"]={}
-						geojson["geometry"]=geom
+						if("geometry" in geom)
+							geojson["geometry"]=geom["geometry"]
+						else
+							geojson["geometry"]=geom
 						
 						if(geojson["geometry"]["type"]=="Polygon"){
                             geojson["geometry"]=turf.rewind(geojson["geometry"])
 						}
-							console.log(geom)
+						console.log("Added WKT Geom: "+JSON.stringify(geojson))
 				}else if(splitt[spl].includes("asGeoJSON")){		
 					geostr=splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1)
 					if(geostr.startsWith("<")){
 						geostr=geostr.substring(geostr.lastIndexOf('>')+1)
 					}
 					console.log(geostr)
-                    geojson["geometry"]=JSON.parse(geostr)
+                    geojson["geometry"]=JSON.parse(geostr)["geometry"]
                     //geojson["geometry"]["coordinates"]=exportConvert(geojson["geometry"]["coordinates"],epsgdefs[$('#epsgqueryexport option:selected').val()],"geojson",geojson["geometry"]["type"],true)
                     if(geojson["geometry"]["type"]=="Polygon"){
                             geojson["geometry"]=turf.rewind(geojson["geometry"])
                     }
-					//console.log("Add converted GeoJSON geometry: "+JSON.stringify(geojson))
+					console.log("Add converted GeoJSON geometry: "+JSON.stringify(geojson))
                 }/*else if(splitt[spl].includes(":type") || splitt[spl].includes("#type")  ){
 					//console.log("IN TYPE CLAUSE")
 					//console.log(splitt[spl])
@@ -2008,13 +2046,14 @@ function TTLToGeoJSON(tosave,exportFormat,exportnamespace){
 					if(exportnamespace.length==0 || exportnamespace.includes("all") || exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1))){
                         propname=subsplit[1].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")
                         if(propname in geojson["properties"]){
-                            if(isArray(geojson["properties"][propname])){
-                                geojson["properties"][propname].push((subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"","")))
-                            }else{
+							toinsert=(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))
+                            if(isArray(geojson["properties"][propname]) && (!(geojson["properties"][propname].includes(toinsert)))){
+								geojson["properties"][propname].push(toinsert)
+                            }else if(!(isArray(geojson["properties"][propname])) && geojson["properties"][propname]!=toinsert){
                                 val=geojson["properties"][propname]
                                 geojson["properties"][propname]=[]
                                 geojson["properties"][propname].push(val)
-                                geojson["properties"][propname].push((subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace(">","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"","")))
+                                geojson["properties"][propname].push(toinsert)
                             }
                         }else{
                             geojson["properties"][propname]=(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))                        
@@ -2024,13 +2063,14 @@ function TTLToGeoJSON(tosave,exportFormat,exportnamespace){
 					if(exportnamespace.length==0 || exportnamespace.includes("all") || exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1))){
 					    propname=subsplit[1].replace("<","").replace(">","")
 						if(propname in geojson["properties"]){
-                            if(isArray(geojson["properties"][propname])){
-                                geojson["properties"][propname].push((subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"","")))
-                            }else{
+							toinsert=(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))
+                            if(isArray(geojson["properties"][propname]) && !(geojson["properties"][propname].includes(toinsert))){
+								geojson["properties"][propname].push(toinsert)
+                            }else if(!(isArray(geojson["properties"][propname])) && geojson["properties"][propname]!=toinsert){
                                 val=geojson["properties"][propname]
                                 geojson["properties"][propname]=[]
                                 geojson["properties"][propname].push(val)
-                                geojson["properties"][propname].push((subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"","")))
+                                geojson["properties"][propname].push(toinsert)
                             }
                         }else{
                             geojson["properties"][propname]=(splitt[spl].includes("^^")?splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1).replace("<","").replace(">","").replace("\"",""):subsplit[2].replace("\"","").replace("<","").replace(">",""))
@@ -2044,6 +2084,7 @@ function TTLToGeoJSON(tosave,exportFormat,exportnamespace){
 		}
 		}
 	console.log(collection)
+	console.log(JSON.stringify(collection))
 	return collection
 }
 
