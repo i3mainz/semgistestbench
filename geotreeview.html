@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="css/leaflet_legend.css" />
 <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3-sparql@2.0.0/build/d3-sparql.min.js"></script>
+<script src="js/Leaflet.geojsoncss.min.js"></script>
 <script src="js/shpwrite.js"></script>
   <script src="js/leaflet.polylinedecorator.js"></script>
      <script src="js/leaflet.fullscreen.js"></script>
@@ -150,13 +151,13 @@ d3.sparql($('#endpointselect').val(), query).then((results) => {
         var tree={ "plugins": ["search", "types","sort"],"search": {}, "core": { "data" :[]}}
         tree["core"]["data"].push({ "id" : "http://www.w3.org/2002/07/owl#Thing", "icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif","parent" : "#", "text" : "owl:Thing" })
         for(res in results){
-            console.log(results[res])
-			console.log(res)
+            //console.log(results[res])
+			//console.log(res)
             //if("value" in results[res]["subject"])
              //   console.log(results[res]["subject"])
-            if(!(results[res]["subject"].includes("_:"))){
-                        ress[results[res]["subject"]]={"super":("supertype" in results[res] &&  results[res]["supertype"]!=null && results[res]["supertype"]!=null?results[res]["supertype"]:"http://www.w3.org/2002/07/owl#Thing"),"count":"","label":(results[res]["label"]!=null?results[res]["label"]:"")}//results[res]["indidivualc"]}
-						if(results[res]["supertype"]!=null && !(results[res]["supertype"] in classeswithinstances)){
+            if(!(results[res]["subject"].includes("_:")) && results[res]["subject"].startsWith("http")){
+                        ress[results[res]["subject"]]={"super":(("supertype" in results[res] &&  results[res]["supertype"]!=null && !(results[res]["supertype"].includes("_:")) && results[res]["supertype"].startsWith("http"))?results[res]["supertype"]:"http://www.w3.org/2002/07/owl#Thing"),"count":"","label":(results[res]["label"]!=null?results[res]["label"]:"")}//results[res]["indidivualc"]}
+						if(results[res]["supertype"]!=null && !(results[res]["supertype"] in classeswithinstances) && !(results[res]["supertype"].includes("_:")) && results[res]["supertype"].startsWith("http") ){
                                 classeswithinstances[results[res]["supertype"]]=true
                         }
            }
@@ -168,6 +169,9 @@ d3.sparql($('#endpointselect').val(), query).then((results) => {
         for(cls in ress){
             //clsMap[cls]=true;
             //superMap[ress[cls]["super"]]=true;
+			if(cls.includes("_:") || !(cls.startsWith("http"))){
+				continue;
+			}
             if(Object.keys(classeswithinstances).length==0 || (Object.keys(classeswithinstances).length>0 && cls in classeswithinstances)){
 					prefix=cls.substring(0,cls.lastIndexOf('#')+1);
 					console.log("PREFIX: "+prefix)
@@ -178,7 +182,7 @@ d3.sparql($('#endpointselect').val(), query).then((results) => {
 					/*	result+="<option value=\""+results[res]["cls"]+"\">"+((results[res]["clsLabel"]!=null && results[res]["clsLabel"]!=null)?
 						addpref+results[res]["clsLabel"]:addpref+results[res]["cls"].substring(results[res]["cls"].lastIndexOf('#')+1))+"</option>"
 						resultlist[results[res]["cls"]]=true*/
-					console.log(cls+" - "+(ress[cls]["super"].includes("_:")?"#":ress[cls]["super"]))
+					console.log(cls+" - "+(ress[cls]["super"].includes("_:") || !(results[res]["subject"].startsWith("http"))?"#":ress[cls]["super"]))
 					textcut=addpref
 					if(ress[cls]["label"]!=""){
 						textcut=ress[cls]["label"]+" ("
@@ -201,7 +205,7 @@ d3.sparql($('#endpointselect').val(), query).then((results) => {
 					}
 					
 					if(cls!=ress[cls]["super"]){
-						tree["core"]["data"].push({ "id" : cls, "parent" : (ress[cls]["super"].includes("_:")?"#":ress[cls]["super"]), 
+						tree["core"]["data"].push({ "id" : cls, "parent" : ((ress[cls]["super"].includes("_:") || !(results[res]["subject"].startsWith("http")))?"#":ress[cls]["super"]), 
 						"icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif", 
 					"text" : textcut })
 					}else{
@@ -920,7 +924,7 @@ function handleResults(results,start){
 		classTopers={}
 		persToClass={}
 		for(res in results){
-			console.log(results[res])
+			//console.log(results[res])
 			if(!(results[res]["person"] in persons)){
 				persons[results[res]["person"]]={}
 			}
@@ -970,19 +974,24 @@ function handleResults(results,start){
 			app[results[res]["val"]]=(results[res]["valLabel"]!=null?results[res]["valLabel"]:results[res]["val"])
 			//console.log(results[res]["person"])
 			persons[results[res]["person"]][results[res]["rel"]].push(app)
-			if(results[res]["pointstyle"]!=null){
+			if(results[res]["pointstyle"]!=null){ 
+				curQueryResultTTL+="<"+results[res]["person"]+"> semgis:pointStyle \""+results[res]["pointstyle"]+"\"^^semgis:cssLiteral \n ";
                 persons[results[res]["person"]]["pointStyle"]=results[res]["pointstyle"]
 			}
 			if(results[res]["polygonstyle"]!=null){
+				curQueryResultTTL+="<"+results[res]["person"]+"> semgis:polygonStyle \""+results[res]["polygonstyle"]+"\"^^semgis:cssLiteral \n ";
                 persons[results[res]["person"]]["polygonStyle"]=results[res]["polygonstyle"]
 			}
 			if(results[res]["linestyle"]!=null){
+				curQueryResultTTL+="<"+results[res]["person"]+"> semgis:linestringStyle\""+results[res]["linestyle"]+"\"^^semgis:cssLiteral \n ";
                 persons[results[res]["person"]]["linestringStyle"]=results[res]["linestyle"]
 			}
 			if(results[res]["linestringImageStyle"]!=null){
+				curQueryResultTTL+="<"+results[res]["person"]+"> semgis:linestringImageStyle\""+results[res]["linestringImageStyle"]+"\"^^semgis:cssLiteral \n ";
                 persons[results[res]["person"]]["linestringImageStyle"]=results[res]["linestringImageStyle"]
 			}
             if(results[res]["linestringImage"]!=null){
+				curQueryResultTTL+="<"+results[res]["person"]+"> semgis:linestringImage\""+results[res]["linestringImage"]+"\" \n ";
                 persons[results[res]["person"]]["linestringImage"]=results[res]["linestringImage"]
 			}
 			if(results[res]["wkt"]!=null && !results[res]["wkt"].includes("ENVELOPE")){
@@ -1011,35 +1020,37 @@ function handleResults(results,start){
 			if(results[res]["hatch"]!=null){
 				console.log("HATCH: "+results[res]["hatch"])
                 persons[results[res]["person"]]["hatch"]=results[res]["hatch"]
+				curQueryResultTTL+="<"+results[res]["person"]+"> semgis:hatch\""+results[res]["hatch"]+"\"^^semgis:cssLiteral \n ";
 			}
 			if(results[res]["img"]!=null){
                 persons[results[res]["person"]]["img"]=results[res]["img"]
+				curQueryResultTTL+="<"+results[res]["person"]+"> semgis:img\""+results[res]["img"]+"\" \n ";
 			}
 		}
 		geojson=TTLToGeoJSON(curQueryResultTTL,"geojson","")
 		if(endpoints[$('#endpointselect').val()]["epsg"]!=4326 && $('#endpointselect').val()!="https://ld.gdi-de.org/graphdb/repositories/xplanungtest"){
-            console.log(geojson)
-            console.log("EPSG:"+endpoints[$('#endpointselect').val()]["epsg"])
+            //console.log(geojson)
+            //console.log("EPSG:"+endpoints[$('#endpointselect').val()]["epsg"])
             geojson=convertGeoJSON(geojson,epsgdefs["EPSG:"+endpoints[$('#endpointselect').val()]["epsg"]])
-            console.log(geojson);
+            //console.log(geojson);
         }
 		if($('#endpointselect').val()=="https://ld.gdi-de.org/graphdb/repositories/xplanungtest")
 			invertXY=true
 		else
 			invertXY=false
         colormap={}
-		console.log("RELLABELS!!!!")
-		console.log(relLabels)
-		var geojsonlayer=L.geoJSON(geojson,{
+		//console.log("RELLABELS!!!!")
+		console.log(geojson)
+		var geojsonlayer=L.geoJSON.css(geojson,{
 			filter: function(feature, layer) {			    
 				return true;
 			},
 			coordsToLatLng: function (coords) {
-				console.log(coords)
+				/*console.log(coords)
 				console.log(coords[0])
 				console.log(coords[1])
 				console.log("Invert?: "+invertXY)
-				if(!invertXY && typeof coords[0] !== 'undefined' && typeof coords[1] !== 'undefined'){
+				*/if(!invertXY && typeof coords[0] !== 'undefined' && typeof coords[1] !== 'undefined'){
 					return new L.LatLng(coords[1], coords[0]);
 				}else if(!invertXY && typeof coords[0] !== 'undefined' && typeof coords[0][1]!== 'undefined'){
 					return new L.LatLng(coords[0][1], coords[0][0]);
@@ -1050,6 +1061,36 @@ function handleResults(results,start){
 				}
 				return new L.LatLng(0, 0);
 		},	pointToLayer: function(feature, latlng){
+			console.log("StyleGeoJSON: "+JSON.stringify(feature["style"]))
+			/*
+			
+			if(markerIconPath!=null && markerIconPath!="" && $('#loadsvg').is(":checked")){
+							//console.log("CREATING MARKER AT "+JSON.stringify(coordinates)+" - "+markerIconPath)
+                            markerIcon=getIconFromPath(markerIconPath);
+			                var marker = new L.marker(coordinates,{icon:markerIcon}); //opacity may be set to zero
+                            marker.bindPopup(tooltip, {maxWidth : 560});
+                           // marker.addTo(mymap);
+                            markercollection.push(marker)
+							for(geomclass in geomclasses){
+								if(clsToQuery.includes(geomclass) || start){
+									layergroups[geomclass].push(marker)
+								}
+							}
+							//layergroups[geomclass].push(marker)
+                        } else{
+							//console.log("CREATING MARKER AT "+JSON.stringify(coordinates))
+                            var marker = new L.marker(coordinates/*,{icon:markerIcon}); //opacity may be set to zero
+                            marker.bindPopup(tooltip, {maxWidth : 560});
+                            //marker.addTo(mymap);
+                            markercollection.push(marker)
+							for(geomclass in geomclasses){
+								if(clsToQuery.includes(geomclass) || start){
+									layergroups[geomclass].push(marker)
+								}
+							}
+            }
+			
+			*/
 			var color="";
 			if(typeColumn==""){
                 if("http://www.w3.org/1999/02/22-rdf-syntax-ns#type" in feature.properties){
@@ -1101,9 +1142,19 @@ function handleResults(results,start){
             return L.marker(latlng,{icon: greenIcon})
 			},
 			onEachFeature: function (feature, layer) {
+				console.log("Style: "+JSON.stringify(feature["style"]))
 				 if("style" in feature && "hatch" in feature.style){
 					stripes = new L.StripePattern(feature.style.hatch); 
 					stripes.addTo(map);
+				 }
+				 if("style" in feature && ("img" in feature["style"] || "linestringImage" in feature["style"]) ){
+						markerIconPath=persons[pers][rel]
+						if(markerIconPath.includes("<svg")){
+                            tooltipstart+="<div style=\"height: 25px;width=25px;\">"+markerIconPath+"</div>"
+						}else{
+                            tooltipstart+="<img width=\"16\" height=\"16\" src=\""+persons[pers][rel]+"\"/>"
+						}
+						//tooltip+="<li>hasImage "+markerIconPath+"</li>"
 				 }
 				 var popup="Item: "
 				 if("http://www.w3.org/2000/01/rdf-schema#label" in feature.properties && "id" in feature && (typeof feature.id !== undefined)){
@@ -1117,12 +1168,12 @@ function handleResults(results,start){
 				 }
 				 popup+="</a><br/>"
 				if("http://www.w3.org/1999/02/22-rdf-syntax-ns#type" in feature.properties){
-                    console.log("TYPE ARRAY?"+isArray(feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]))
+                    //console.log("TYPE ARRAY?"+isArray(feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]))
 				    if(isArray(feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"])){
-                        console.log(feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"])
+                        //console.log(feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"])
                         popup+="("
                         for(cls of feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]){
-                        console.log("CLS: "+cls)
+                        //console.log("CLS: "+cls)
                             if(cls.includes("http") && cls.includes("#")){
 						ns=cls.substring(0,cls.indexOf('#'))
 						if(!(ns in colorcodes)){
@@ -1168,7 +1219,7 @@ function handleResults(results,start){
 				popup+="<br/>Properties:<ul>"
 				popup=popupHighlighter(popup,colormap,feature.properties,0) 	 
 				popup+="</ul>"
-				console.log(feature)
+				//console.log(feature)
 				//layer.on('click', function (e) {
 				//	$('#contentdesc').html(popup)
 				//});
@@ -1262,7 +1313,7 @@ function displayQueryResult(persons,query,classTopers,persToClass,start){
             }
 			markerIconPath=""
 			tooltipstart="<html>";
-			console.log(persons[pers])
+			//console.log(persons[pers])
 			typestr=""
 			var colorcodes={};
 			var colorcounter=0
@@ -1298,9 +1349,9 @@ function displayQueryResult(persons,query,classTopers,persToClass,start){
 								colorcodes[ns]=colors[colorcounter++]
 							}
 							//alert(JSON.stringify(colorcodes))
-							console.log("RELLABELS: "+relLabels)
-							console.log(rel)
-							console.log(rel in relLabels)
+							//console.log("RELLABELS: "+relLabels)
+							//console.log(rel)
+							//console.log(rel in relLabels)
 							if(rel.includes("#")){
                                 addit="<li><a href=\""+rel+"\" target=\"_blank\" style=\"color:"+colorcodes[ns]+"\">"
 								if(rel in relLabels){
@@ -1545,13 +1596,13 @@ function getRandomColor() {
 
 var colormap={}
 function popupHighlighter(popup,colormap,properties,depth){
-   console.log("PopupHighlighter "+depth)
-   console.log(properties)
+   //console.log("PopupHighlighter "+depth)
+   //console.log(properties)
    Object.keys(properties).sort().forEach(function(prop) {
    	if(prop=="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"){
    		return;
    	}
-   	console.log(prop)
+   	//console.log(prop)
  if(prop.includes("http") && prop.includes("#")){
  		ns=prop.substring(0,prop.indexOf('#'))
  		if(!(ns in colorcodes)){
@@ -1590,7 +1641,7 @@ if(typeof properties[prop] === "object"){
  	array=feature.properties[prop]
     popup+="<a href=\"#\" onclick=\"toggle_visibility('"+prop+"')\">[x]</a><br/><span id=\""+prop+"\">"
  }
- console.log(array)
+ //console.log(array)
  for(elem in array){
     if(array[elem].includes("http") && array[elem].includes("^^")){
      ns=array[elem].substring(0,array[elem].indexOf('^^'))
@@ -1934,8 +1985,8 @@ function TTLToGeoJSON(tosave,exportFormat,exportnamespace){
                             line: 'result_lines'
                     }
                     }
-        var geojson={"type":"Feature","properties":{}}
-		var empty={"type":"Feature","properties":{}}
+        var geojson={"type":"Feature","properties":{},"style":{}}
+		var empty={"type":"Feature","properties":{},"style":{}}
 		first=true;
 		if(tosave!=null){
 		lastspl1=""
@@ -1962,7 +2013,7 @@ function TTLToGeoJSON(tosave,exportFormat,exportnamespace){
 				else if(lastspl1!=subsplit[0].trim()){
 					if(geojson!=empty){
 						collection["features"].push(geojson)
-						geojson={"type":"Feature","properties":{},"id":subsplit[0].trim()}
+						geojson={"type":"Feature","properties":{},"style":{},"id":subsplit[0].trim()}
 						lastspl1=subsplit[0].trim()
 					}
 				}
@@ -1998,8 +2049,7 @@ function TTLToGeoJSON(tosave,exportFormat,exportnamespace){
 									wkt.read(literal.substring(literal.lastIndexOf('>')+1,literal.indexOf("^^")-1));
 								}else{
 									wkt.read(literal.substring(literal.indexOf('"')+1,literal.indexOf("^^")-1));
-								}
-								
+								}		
 							}							
 						}else{
 						    if(literal.startsWith("<") || literal.startsWith("\"<")){
@@ -2032,10 +2082,23 @@ function TTLToGeoJSON(tosave,exportFormat,exportnamespace){
                     geojson["geometry"]=JSON.parse(geostr)["geometry"]
                     //geojson["geometry"]["coordinates"]=exportConvert(geojson["geometry"]["coordinates"],epsgdefs[$('#epsgqueryexport option:selected').val()],"geojson",geojson["geometry"]["type"],true)
                     if(geojson["geometry"]["type"]=="Polygon"){
-                            geojson["geometry"]=turf.rewind(geojson["geometry"])
+                        geojson["geometry"]=turf.rewind(geojson["geometry"])
                     }
 					console.log("Add converted GeoJSON geometry: "+JSON.stringify(geojson))
-                }/*else if(splitt[spl].includes(":type") || splitt[spl].includes("#type")  ){
+                }else if(splitt[spl].includes("semgis:")){
+				    console.log("STYLE!!!")
+					console.log("{"+splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1)+"}")
+					if(splitt[spl].includes("semgis:img")){
+						geojson["style"]["icon"]={}
+						geojson["style"]["icon"]["iconUrl"]=splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1)
+					}else{
+						styles=JSON.parse("{"+splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1)+"}")
+						for(stl in styles){
+							geojson["style"][stl]=styles[stl]
+						}					
+					}
+	
+				}/*else if(splitt[spl].includes(":type") || splitt[spl].includes("#type")  ){
 					//console.log("IN TYPE CLAUSE")
 					//console.log(splitt[spl])
 					geojson["properties"]["id"]=subsplit[0].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")			
@@ -2044,7 +2107,7 @@ function TTLToGeoJSON(tosave,exportFormat,exportnamespace){
 				}*/else{
 				if(exportFormat=="shp"){
 					if(exportnamespace.length==0 || exportnamespace.includes("all") || exportnamespace.includes(subsplit[1].substring(1,subsplit[1].indexOf('#')+1))){
-                        propname=subsplit[1].substring(subsplit[0].indexOf('#')+1).replace("<","").replace(">","")
+                        propname=subsplit[1].substring(subsplit[1].indexOf('#')+1).replace("<","").replace(">","")
                         if(propname in geojson["properties"]){
 							toinsert=(subsplit[2].includes("^^")?subsplit[2].substring(0,subsplit[2].indexOf("^^")-1).replace("<","").replace("\"",""):subsplit[2].replace("<","").replace(">","").replace("\"",""))
                             if(isArray(geojson["properties"][propname]) && (!(geojson["properties"][propname].includes(toinsert)))){
