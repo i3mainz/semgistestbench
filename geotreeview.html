@@ -1956,7 +1956,7 @@ function TTLToGeoJSON(tosave,exportFormat,exportnamespace){
 								wkt.read(literal[Object.keys(splitt[spl][0])[0]]);
 							}else{
 								console.log(literal)
-								if(literal.trim().startsWith("<")){
+								if(literal.trim().startsWith("<") || literal.startsWith("\"<")){
 									wkt.read(literal.substring(literal.lastIndexOf('>')+1,literal.indexOf("^^")-1));
 								}else{
 									wkt.read(literal.substring(literal.indexOf('"')+1,literal.indexOf("^^")-1));
@@ -1964,7 +1964,7 @@ function TTLToGeoJSON(tosave,exportFormat,exportnamespace){
 								
 							}							
 						}else{
-						    if(literal.startsWith("<")){
+						    if(literal.startsWith("<") || literal.startsWith("\"<")){
 								console.log(literal.substring(literal.lastIndexOf('>')+1,literal.indexOf("^^")-1))
 								wkt.read(literal.substring(literal.lastIndexOf('>')+1,literal.indexOf("^^")-1));
 							}else{
