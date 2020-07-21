@@ -1,5 +1,12 @@
 var prefixList="PREFIX xplan4:<http://www.xplanung.de/xplangml/4/1#>\nPREFIX semgis: <http://www.semgis.de/geodata#>\nPREFIX pleiades: <http://pleiades.stoa.org/places/vocab#>\nPREFIX ign:<http://inspire.ec.europa.eu/schemas/gn/4.0#>\nPREFIX dbo:<http://dbpedia.org/ontology/>\nPREFIX lgdr:<http://linkedgeodata.org/triplify/>\nPREFIX lgdo:<http://linkedgeodata.org/ontology/>\nPREFIX geo-pos:<http://www.w3.org/2003/01/geo/wgs84_pos#>\nPREFIX geo: <http://www.opengis.net/ont/geosparql#> \nPREFIX bd:<http://www.bigdata.com/rdf#> \nPREFIX wikibase:<http://wikiba.se/ontology#> \nPREFIX wd:<http://www.wikidata.org/entity/> \nPREFIX wdt:<http://www.wikidata.org/prop/direct/> \nPREFIX gn:<http://inspire.ec.europa.eu/schemas/gn/4.0#> \nPREFIX base:<http://inspire.ec.europa.eu/schemas/base/3.3>\nPREFIX cito: <http://purl.org/spar/cito/> \nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \nPREFIX dcterms: <http://purl.org/dc/terms/> \nPREFIX foaf: <http://xmlns.com/foaf/0.1/> \nPREFIX osgeo: <http://data.ordnancesurvey.co.uk/ontology/geometry/> \nPREFIX osspatial: <http://data.ordnancesurvey.co.uk/ontology/spatialrelations/> \nPREFIX owl: <http://www.w3.org/2002/07/owl#> \nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \nPREFIX skos: <http://www.w3.org/2004/02/skos/core#> \nPREFIX spatial: <http://geovocab.org/spatial#> \nPREFIX placetype: <http://pleiades.stoa.org//plone/vocabularies/place-types/>\nPREFIX atlantgis: <http://atlantgis.squirrel.link/ontology#>\n" 
+var prefixMap={
+	"xplan4":"http://www.xplanung.de/xplangml/4/1#",
+	"semgis": "http://www.semgis.de/geodata#",
+	"pleiades":"http://pleiades.stoa.org/places/vocab#",
+	"ign":"http://inspire.ec.europa.eu/schemas/gn/4.0#"
+}
 var prefixRevMap={
+	"http://www.adv-online.de/namespaces/adv/gid/6.0#":"aaa6",
     "http://www.xplanung.de/xplangml/4/1#":"xplan4",
     "http://www.xplanung.de/xplangml/5/0#":"xplan5",
     "http://www.semgis.de/geodata#":"semgis",
@@ -21,6 +28,7 @@ var prefixRevMap={
     "http://www.w3.org/2004/02/skos/core#":"skos",
     "http://purl.org/spar/cito/":"cito",
     "http://viaf.org/viaf/":"viaf",
+	"http://xmlns.com/foaf/0.1/":"foaf",
     "http://www.w3.org/2003/01/geo/wgs84_pos#":"geo-pos",
     "http://www.w3.org/ns/prov#":"prov"
 }
@@ -28,10 +36,14 @@ var epsgdefs={"EPSG:4326":"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs","EP
 var wgs84dest = new proj4.Proj('EPSG:4326'); 
 
 function convertGeoJSON(geojson,from){
+	console.log("ConvertGeoJSON")
+	console.log(geojson)
 	if("features" in geojson){
 		for(feature in geojson["features"]){
-			coords=geojson["features"][feature]["geometry"]["coordinates"]
-			geojson["features"][feature]["geometry"]=exportConvert(coords,from,geojson["features"][feature]["geometry"]["type"],false)
+			if("geometry" in geojson["features"][feature] && "coordinates" in geojson["features"][feature]["geometry"]){
+				coords=geojson["features"][feature]["geometry"]["coordinates"]
+				geojson["features"][feature]["geometry"]=exportConvert(coords,from,geojson["features"][feature]["geometry"]["type"],false)
+			}
 		}
 	}else{
 		coords=geojson["geometry"]["coordinates"]
@@ -85,12 +97,15 @@ function geometryToGeoJSON(geomtype,coordinates){
 			i+=2;
 		}
         res["geometry"]["coordinates"]=res["geometry"]["coordinates"].substring(0,res["geometry"]["coordinates"].length-2)
-        if(geomtype=="linearring" || geomtype=="polygon"){
+    if(geomtype=="linearring" || geomtype=="polygon"){
 		res["geometry"]["coordinates"]+="]]"
+	}else if(geomtype=="linestring"){
+		res["geometry"]["coordinates"]+="]"
 	}else{
 		res["geometry"]["coordinates"]+=""
 	}
     console.log(res)
+	console.log(res["geometry"]["coordinates"])
     res["geometry"]["coordinates"]=JSON.parse(res["geometry"]["coordinates"])
 	return res["geometry"];
 }

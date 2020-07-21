@@ -6,6 +6,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.1.1/jstree.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
 <link rel="stylesheet" href="css/leaflet_legend.css" />
+
 <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3-sparql@2.0.0/build/d3-sparql.min.js"></script>
 <script src="js/Leaflet.geojsoncss.min.js"></script>
@@ -17,6 +18,7 @@
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.1.1/themes/default/style.min.css" />
   <link rel="stylesheet" href="https://cdn.rawgit.com/aratcliffe/Leaflet.print/master/dist/leaflet.print.css"/>
+  <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">-->
   <script src="js/rdfstore_min.js"></script>
    <script src="https://unpkg.com/shpjs@latest/dist/shp.js"></script>
   <script src="js/proj4.js"></script>
@@ -59,6 +61,23 @@ var wgs84dest = new proj4.Proj('EPSG:4326');
 var curQueryResultTTL=""
 var curposmarker=null;
 var endpoints={}
+
+function xhrpost(){
+const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/signup');
+
+    // prepare form data
+    let data = new FormData(form);
+
+    // set headers
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+    // send request
+    xhr.send(data);
+
+}
+
 $( function() {
         epsg=""
         for(val in epsgdefs){
@@ -2089,7 +2108,7 @@ function TTLToGeoJSON(tosave,exportFormat,exportnamespace){
 						}else{
 							wkt.read(persons[pers][rel]);
 						}*/
-						literal=subsplit[2]
+						literal=subsplit[2]+" "
 						if(subsplit.length>2){
 							for(i=3;i<subsplit.length;i++){
 								literal+=subsplit[i]+" "
@@ -3067,7 +3086,8 @@ function originQuery(){
 <style>
 .myScrollableBlock {
   display: block;
-  height: 250px;
+  height: 100%;
+  width:500px;
   overflow: auto;
 }
 .fullscreen-icon { background-image: url(https://raw.githubusercontent.com/brunob/leaflet.fullscreen/master/icon-fullscreen.png); }
@@ -3090,7 +3110,12 @@ function originQuery(){
 <body>
 <dialog id="loadingScreen"></dialog>
 <!--<h3 align="center">XPlanung Mapview based on LinkedData</h3>-->
-<table border=0 height="90%" width="100%" align="top" valign="top"><tr><td width="80%" height="70%" align="top" valign="top" >
+<header id="header"><h1 align="center">Ontology Browser</h1></header>
+<!--
+<div class="sticky row crumbs">
+<div class="container-fluid" role="main"><div class="row">
+<div class="col-sm-12 col-md-10 col-md-offset-1">-->
+<table border=0 height="85%" width="100%" align="top" valign="top"><tr><td width="80%" height="70%" align="top" valign="top" >
 <div id="mapid" style="height:100%" width="80%">
 <script>
 
@@ -3128,7 +3153,7 @@ $(document).ready( function () {
 });
 </script>
 </div></td><td align="top" valign="top" width="20%" height="100%" ><table height="100%"><tr  valign="top" align="top">
-<td>WHAT? </td><td>Search:<input type="text" id="classsearch"/></td><tr><td colspan="2"><div class="myScrollableBlock">
+<td>WHAT? </td><td>Search:<input type="text" id="classsearch"/></td><tr><td colspan="2" valign="top" height="100%"><div class="myScrollableBlock">
 <div id="jstree"></div>
 </div><!--<select id="classeslist" multiple  size=15 ></select>--></td></tr>
 
@@ -3149,6 +3174,7 @@ Export as Format: <select id="queryimportformat">
 <option value="geojson">GeoJSON</option>
 <option value="shp">Shapefile</option>
 <option value="shpzip">Shapefile (zipped)</option>
-</select>
+</select><button id="export">Export</button>
+</div></div></div></div>
 </body>
 </html>
