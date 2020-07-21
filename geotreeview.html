@@ -61,6 +61,23 @@ var wgs84dest = new proj4.Proj('EPSG:4326');
 var curQueryResultTTL=""
 var curposmarker=null;
 var endpoints={}
+
+function xhrpost(){
+const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/signup');
+
+    // prepare form data
+    let data = new FormData(form);
+
+    // set headers
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+    // send request
+    xhr.send(data);
+
+}
+
 $( function() {
         epsg=""
         for(val in epsgdefs){
@@ -2091,7 +2108,7 @@ function TTLToGeoJSON(tosave,exportFormat,exportnamespace){
 						}else{
 							wkt.read(persons[pers][rel]);
 						}*/
-						literal=subsplit[2]
+						literal=subsplit[2]+" "
 						if(subsplit.length>2){
 							for(i=3;i<subsplit.length;i++){
 								literal+=subsplit[i]+" "
@@ -3157,7 +3174,7 @@ Export as Format: <select id="queryimportformat">
 <option value="geojson">GeoJSON</option>
 <option value="shp">Shapefile</option>
 <option value="shpzip">Shapefile (zipped)</option>
-</select>
+</select><button id="export">Export</button>
 </div></div></div></div>
 </body>
 </html>
