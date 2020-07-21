@@ -983,15 +983,15 @@ function handleResults(results,start){
                 persons[results[res]["person"]]["polygonStyle"]=results[res]["polygonstyle"]
 			}
 			if(results[res]["linestyle"]!=null){
-				curQueryResultTTL+="<"+results[res]["person"]+"> semgis:linestringStyle\""+results[res]["linestyle"]+"\"^^semgis:cssLiteral \n ";
+				curQueryResultTTL+="<"+results[res]["person"]+"> semgis:linestringStyle \""+results[res]["linestyle"]+"\"^^semgis:cssLiteral \n ";
                 persons[results[res]["person"]]["linestringStyle"]=results[res]["linestyle"]
 			}
 			if(results[res]["linestringImageStyle"]!=null){
-				curQueryResultTTL+="<"+results[res]["person"]+"> semgis:linestringImageStyle\""+results[res]["linestringImageStyle"]+"\"^^semgis:cssLiteral \n ";
+				curQueryResultTTL+="<"+results[res]["person"]+"> semgis:linestringImageStyle \""+results[res]["linestringImageStyle"]+"\"^^semgis:cssLiteral \n ";
                 persons[results[res]["person"]]["linestringImageStyle"]=results[res]["linestringImageStyle"]
 			}
             if(results[res]["linestringImage"]!=null){
-				curQueryResultTTL+="<"+results[res]["person"]+"> semgis:linestringImage\""+results[res]["linestringImage"]+"\" \n ";
+				curQueryResultTTL+="<"+results[res]["person"]+"> semgis:linestringImage \""+results[res]["linestringImage"]+"\"^^xsd:string \n ";
                 persons[results[res]["person"]]["linestringImage"]=results[res]["linestringImage"]
 			}
 			if(results[res]["wkt"]!=null && !results[res]["wkt"].includes("ENVELOPE")){
@@ -1020,11 +1020,11 @@ function handleResults(results,start){
 			if(results[res]["hatch"]!=null){
 				console.log("HATCH: "+results[res]["hatch"])
                 persons[results[res]["person"]]["hatch"]=results[res]["hatch"]
-				curQueryResultTTL+="<"+results[res]["person"]+"> semgis:hatch\""+results[res]["hatch"]+"\"^^semgis:cssLiteral \n ";
+				curQueryResultTTL+="<"+results[res]["person"]+"> semgis:hatch \""+results[res]["hatch"]+"\"^^semgis:cssLiteral \n ";
 			}
 			if(results[res]["img"]!=null){
                 persons[results[res]["person"]]["img"]=results[res]["img"]
-				curQueryResultTTL+="<"+results[res]["person"]+"> semgis:img\""+results[res]["img"]+"\" \n ";
+				curQueryResultTTL+="<"+results[res]["person"]+"> semgis:img \""+results[res]["img"]+"\"^^xsd:string \n ";
 			}
 		}
 		geojson=TTLToGeoJSON(curQueryResultTTL,"geojson","")
@@ -1061,7 +1061,37 @@ function handleResults(results,start){
 				}
 				return new L.LatLng(0, 0);
 		},	pointToLayer: function(feature, latlng){
-			console.log("StyleGeoJSON: "+JSON.stringify(feature["style"]))
+                    console.log("StyleGeoJSON: "+JSON.stringify(feature["style"]))
+                    if("icon" in feature["style"] && feature["style"]["icon"]["iconUrl"].startsWith("<svg")){
+							//console.log("CREATING MARKER AT "+JSON.stringify(coordinates)+" - "+markerIconPath)
+							markerIconPath=features["style"]["icon"]["iconUrl"]
+                            markerIcon=getIconFromPath(markerIconPath);
+			                var marker = new L.marker(coordinates,{icon:markerIcon}); //opacity may be set to zero
+                            marker.bindPopup(tooltip, {maxWidth : 560});
+                           // marker.addTo(mymap);
+                            markercollection.push(marker)
+							for(geomclass in geomclasses){
+								if(clsToQuery.includes(geomclass) || start){
+									layergroups[geomclass].push(marker)
+								}
+							}
+							return
+							//layergroups[geomclass].push(marker)
+                        } else if("icon" in feature["style"]){
+							//console.log("CREATING MARKER AT "+JSON.stringify(coordinates))
+							markerIconPath=features["style"]["icon"]["iconUrl"]
+                            markerIcon=getIconFromPath(markerIconPath);
+							var marker = new L.marker(coordinates/*,{icon:markerIcon}*/); //opacity may be set to zero
+                            marker.bindPopup(tooltip, {maxWidth : 560});
+                            //marker.addTo(mymap);
+                            markercollection.push(marker)
+							for(geomclass in geomclasses){
+								if(clsToQuery.includes(geomclass) || start){
+									layergroups[geomclass].push(marker)
+								}
+							}
+							return
+                        }
 			/*
 			
 			if(markerIconPath!=null && markerIconPath!="" && $('#loadsvg').is(":checked")){
@@ -1147,16 +1177,17 @@ function handleResults(results,start){
 					stripes = new L.StripePattern(feature.style.hatch); 
 					stripes.addTo(map);
 				 }
+				 var popup=""
 				 if("style" in feature && ("img" in feature["style"] || "linestringImage" in feature["style"]) ){
-						markerIconPath=persons[pers][rel]
+						markerIconPath=feature["style"]["icon"]["iconUrl"]
 						if(markerIconPath.includes("<svg")){
-                            tooltipstart+="<div style=\"height: 25px;width=25px;\">"+markerIconPath+"</div>"
+                            popup+="<div style=\"height: 25px;width=25px;\">"+markerIconPath+"</div>"
 						}else{
-                            tooltipstart+="<img width=\"16\" height=\"16\" src=\""+persons[pers][rel]+"\"/>"
+                            popup+="<img width=\"16\" height=\"16\" src=\""+feature["style"]["icon"]["iconUrl"]+"\"/>"
 						}
 						//tooltip+="<li>hasImage "+markerIconPath+"</li>"
 				 }
-				 var popup="Item: "
+				 popup+="Item: "
 				 if("http://www.w3.org/2000/01/rdf-schema#label" in feature.properties && "id" in feature && (typeof feature.id !== undefined)){
                     popup+="<a href='"+feature.id.replace("<","").replace(">","")+"' target='_blank'>"+feature.properties["http://www.w3.org/2000/01/rdf-schema#label"]
 				 }else if("id" in feature && feature.id.includes('#')){
@@ -1175,18 +1206,26 @@ function handleResults(results,start){
                         for(cls of feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]){
                         //console.log("CLS: "+cls)
                             if(cls.includes("http") && cls.includes("#")){
-						ns=cls.substring(0,cls.indexOf('#'))
+						ns=cls.substring(0,cls.lastIndexOf('#')+1)
 						if(!(ns in colorcodes)){
 							colorcodes[ns]=getRandomColor();
 						}
-						popup+="<a href='"+cls+"' target='_blank' style='color:"+colorcodes[ns]+"'><b>"+cls.substring(cls.lastIndexOf('#')+1)+"</b></a> "
+                        popup+="<a href='"+cls+"' target='_blank' style='color:"+colorcodes[ns]+"'><b>"
+                        if(ns in prefixRevMap){
+                                popup+=prefixRevMap[ns]+":"
+                        }
+						popup+=cls.substring(cls.lastIndexOf('#')+1)+"</b></a> "
 						//popup+="(<a href='"+feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]+"' target='_blank' style='color:#BD1B1B'>"+feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].substring(feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].lastIndexOf('#')+1)+"</a>)"
 					}else if(cls.includes("http")){
-						ns=cls.substring(0,cls.indexOf('/'))
+						ns=cls.substring(0,cls.lastIndexOf('/')+1)
+						popup+="<a href='"+cls+"' target='_blank' style='color:"+colorcodes[ns]+"'><b>"
 						if(!(ns in colorcodes)){
 							colorcodes[ns]=getRandomColor();
 						}
-						popup+="<a href='"+cls+"' target='_blank' style='color:"+colorcodes[ns]+"'><b>"+cls.substring(cls.lastIndexOf('/')+1)+"</b></a> "
+                        if(ns in prefixRevMap){
+                                popup+=prefixRevMap[ns]+":"
+                        }
+						popup+=cls.substring(cls.lastIndexOf('/')+1)+"</b></a> "
 						//popup+="(<a href='"+feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]+"' target='_blank' style='color:#BD1B1B'>"+feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].substring(feature.properties["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].lastIndexOf('/')+1)+"</a>)"
 					}
                         }
@@ -1597,14 +1636,14 @@ function getRandomColor() {
 var colormap={}
 function popupHighlighter(popup,colormap,properties,depth){
    //console.log("PopupHighlighter "+depth)
-   //console.log(properties)
+   console.log(prefixRevMap)
    Object.keys(properties).sort().forEach(function(prop) {
    	if(prop=="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"){
    		return;
    	}
    	//console.log(prop)
  if(prop.includes("http") && prop.includes("#")){
- 		ns=prop.substring(0,prop.indexOf('#'))
+ 		ns=prop.substring(0,prop.lastIndexOf('#')+1)
  		if(!(ns in colorcodes)){
 			colorcodes[ns]=getRandomColor();
 		}
@@ -1612,18 +1651,25 @@ function popupHighlighter(popup,colormap,properties,depth){
 		if(prop in relLabels){
 			popup+=relLabels[prop]+"</a> - "
 		}else{
-			popup+=prop.substring(prop.lastIndexOf('#')+1)+"</a> - "								
+		    if(ns in prefixRevMap){
+                popup+=prefixRevMap[ns]+":"
+		    }
+            popup+=prop.substring(prop.lastIndexOf('#')+1)+"</a> - "								
 		}
 	 	//popup+="<li><a href='"+prop+"' target='_blank' style='color:#BD1B1B'>"+prop.substring(prop.lastIndexOf('#')+1)+"</a> - "
  }else if(prop.includes("http")){
-  		ns=prop.substring(0,prop.indexOf('/'))
+  		ns=prop.substring(0,prop.lastIndexOf('/')+1)
  		if(!(ns in colorcodes)){
 			colorcodes[ns]=getRandomColor();
 		}
+		console.log(ns)
 		popup+="<li><a href='"+prop+"' target='_blank' style='color:"+colorcodes[ns]+"'>"
 		if(prop in relLabels){
 			popup+=relLabels[prop]+"</a> - "
 		}else{
+		    if(ns in prefixRevMap){
+                popup+=prefixRevMap[ns]+":"
+		    }
 			popup+=prop.substring(prop.lastIndexOf('/')+1)+"</a> - "								
 		}
 	 	//popup+="<li><a href='"+prop+"' target='_blank' style='color:#BD1B1B'>"+prop.substring(prop.lastIndexOf('/')+1)+"</a> - "
@@ -1648,21 +1694,33 @@ if(typeof properties[prop] === "object"){
  	 if(!(ns in colorcodes)){
 		colorcodes[ns]=getRandomColor();
 	 }
-     popup+="<a href='"+array[elem]+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+array[elem].substring(0,array[elem].lastIndexOf('^')-1)+"</a><br/>"
+     popup+="<a href='"+array[elem]+"' target='_blank' style='color:"+colorcodes[ns]+"'>"
+     if(ns in prefixRevMap){
+            popup+=prefixRevMap[ns]+":"
+	 }
+	 popup+=array[elem].substring(0,array[elem].lastIndexOf('^')-1)+"</a><br/>"
      //popup+="<a href='"+array[elem]+"' target='_blank' style='color:#BD1B1B'>"+array[elem].substring(0,array[elem].lastIndexOf('^')-1)+"</a><br/>"
     }else if(array[elem].includes("http") && array[elem].includes("#")){
- 	ns=array[elem].substring(0,array[elem].indexOf('#'))
+ 	ns=array[elem].substring(0,array[elem].lastIndexOf('#')+1)
  	 if(!(ns in colorcodes)){
 		colorcodes[ns]=getRandomColor();
 	 }
-	 popup+="<a href='"+array[elem]+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+array[elem].substring(array[elem].lastIndexOf('#')+1)+"</a><br/>"
+     popup+="<a href='"+array[elem]+"' target='_blank' style='color:"+colorcodes[ns]+"'>"
+     if(ns in prefixRevMap){
+                popup+=prefixRevMap[ns]+":"
+	 }
+	 popup+=array[elem].substring(array[elem].lastIndexOf('#')+1)+"</a><br/>"
      //popup+="<a href='"+array[elem]+"' target='_blank' style='color:#BD1B1B'>"+array[elem].substring(array[elem].lastIndexOf('#')+1)+"</a><br/>"
     }else if(array[elem].includes("http") || array[elem].includes("file:/")){
-  	 ns=array[elem].substring(0,array[elem].indexOf('/'))
+  	 ns=array[elem].substring(0,array[elem].lastIndexOf('/')+1)
  	 if(!(ns in colorcodes)){
 		colorcodes[ns]=getRandomColor();
 	 }
-	 popup+="<a href='"+array[elem]+"' target='_blank' style='color:"+colorcodes[ns]+"'>"+array[elem].substring(array[elem].lastIndexOf('/')+1)+"</a><br/>"
+     popup+="<a href='"+array[elem]+"' target='_blank' style='color:"+colorcodes[ns]+"'>"
+     if(ns in prefixRevMap){
+          popup+=prefixRevMap[ns]+":"
+	 }
+	 popup+=array[elem].substring(array[elem].lastIndexOf('/')+1)+"</a><br/>"
      //popup+="<a href='"+array[elem]+"' target='_blank' style='color:#BD1B1B'>"+array[elem].substring(array[elem].lastIndexOf('/')+1)+"</a><br/>"
     }else if(array[elem].startsWith("www.")) {
       popup+="<a href=\""+array[elem]+"\" target=\"_blank\">"+array[elem]+"</a><br/>"
@@ -2088,7 +2146,7 @@ function TTLToGeoJSON(tosave,exportFormat,exportnamespace){
                 }else if(splitt[spl].includes("semgis:")){
 				    console.log("STYLE!!!")
 					console.log("{"+splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1)+"}")
-					if(splitt[spl].includes("semgis:img")){
+					if(splitt[spl].includes("semgis:img") || splitt[spl].includes("semgis:linestringImage")){
 						geojson["style"]["icon"]={}
 						geojson["style"]["icon"]["iconUrl"]=splitt[spl].substring(splitt[spl].indexOf('"')+1,splitt[spl].indexOf("^^")-1)
 					}else{
