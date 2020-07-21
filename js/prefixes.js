@@ -6,6 +6,7 @@ var prefixMap={
 	"ign":"http://inspire.ec.europa.eu/schemas/gn/4.0#"
 }
 var prefixRevMap={
+	"http://www.adv-online.de/namespaces/adv/gid/6.0#":"aaa6",
     "http://www.xplanung.de/xplangml/4/1#":"xplan4",
     "http://www.xplanung.de/xplangml/5/0#":"xplan5",
     "http://www.semgis.de/geodata#":"semgis",
@@ -32,10 +33,14 @@ var epsgdefs={"EPSG:4326":"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs","EP
 var wgs84dest = new proj4.Proj('EPSG:4326'); 
 
 function convertGeoJSON(geojson,from){
+	console.log("ConvertGeoJSON")
+	console.log(geojson)
 	if("features" in geojson){
 		for(feature in geojson["features"]){
-			coords=geojson["features"][feature]["geometry"]["coordinates"]
-			geojson["features"][feature]["geometry"]=exportConvert(coords,from,geojson["features"][feature]["geometry"]["type"],false)
+			if("geometry" in geojson["features"][feature] && "coordinates" in geojson["features"][feature]["geometry"]){
+				coords=geojson["features"][feature]["geometry"]["coordinates"]
+				geojson["features"][feature]["geometry"]=exportConvert(coords,from,geojson["features"][feature]["geometry"]["type"],false)
+			}
 		}
 	}else{
 		coords=geojson["geometry"]["coordinates"]
@@ -89,12 +94,15 @@ function geometryToGeoJSON(geomtype,coordinates){
 			i+=2;
 		}
         res["geometry"]["coordinates"]=res["geometry"]["coordinates"].substring(0,res["geometry"]["coordinates"].length-2)
-        if(geomtype=="linearring" || geomtype=="polygon"){
+    if(geomtype=="linearring" || geomtype=="polygon"){
 		res["geometry"]["coordinates"]+="]]"
+	}else if(geomtype=="linestring"){
+		res["geometry"]["coordinates"]+="]"
 	}else{
 		res["geometry"]["coordinates"]+=""
 	}
     console.log(res)
+	console.log(res["geometry"]["coordinates"])
     res["geometry"]["coordinates"]=JSON.parse(res["geometry"]["coordinates"])
 	return res["geometry"];
 }
