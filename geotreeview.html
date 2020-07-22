@@ -164,7 +164,9 @@ WHERE {
 } ORDER BY ?subject
 `
 console.log(query)
-d3.sparql($('#endpointselect').val(), query).then((results) => {
+const formData = new FormData();
+formData.append('query', query);
+d3.sparql($('#endpointselect').val(), query,{method: 'POST',body:formData}).then((results) => {
        console.log(results)
         ress={}
         var tree={ "plugins": ["search", "types","sort"],"search": {}, "core": { "data" :[]}}
@@ -924,11 +926,14 @@ function uiQuery(start){
                 console.log("REMOTE SPARQL Query: "+queryString)
                 remoteSPARQLQuery($('#sparqlendpointurl').val(),queryString)
 	}else{
+        waitingDialog({title: "Querying...", message: "Querying..."});
 	d3.sparql($('#endpointselect').val(),queryString).then((results) => {
         console.log(queryString)
+
 	//currdfstore.execute(queryString, function(success,results){ 
         //console.log(success,results)
                     handleResults(results,start)
+        closeWaitingDialog();
 	});
 	}
 }
@@ -942,6 +947,7 @@ function handleResults(results,start){
 		relLabels={}
 		classTopers={}
 		persToClass={}
+		waitingDialog({title: "Querying...", message: "Displaying query results..."});
 		for(res in results){
 			//console.log(results[res])
 			if(!(results[res]["person"] in persons)){
