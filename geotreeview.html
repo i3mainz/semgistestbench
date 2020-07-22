@@ -164,9 +164,7 @@ WHERE {
 } ORDER BY ?subject
 `
 console.log(query)
-const formData = new FormData();
-formData.append('query', query);
-d3.sparql($('#endpointselect').val(), query,{method: 'POST',body:formData}).then((results) => {
+d3.sparql($('#endpointselect').val(), query,{method: 'POST'}).then((results) => {
        console.log(results)
         ress={}
         var tree={ "plugins": ["search", "types","sort"],"search": {}, "core": { "data" :[]}}
@@ -927,13 +925,24 @@ function uiQuery(start){
                 remoteSPARQLQuery($('#sparqlendpointurl').val(),queryString)
 	}else{
         waitingDialog({title: "Querying...", message: "Querying..."});
-	d3.sparql($('#endpointselect').val(),queryString).then((results) => {
+	d3.sparql($('#endpointselect').val(),queryString,{method: 'POST'}).then((results) => {
         console.log(queryString)
 
 	//currdfstore.execute(queryString, function(success,results){ 
         //console.log(success,results)
                     handleResults(results,start)
         closeWaitingDialog();
+	}).catch((error) => {
+		d3.sparql($('#endpointselect').val(),queryString).then((results) => {
+        console.log(queryString)
+
+	//currdfstore.execute(queryString, function(success,results){ 
+        //console.log(success,results)
+                    handleResults(results,start)
+        closeWaitingDialog();
+		}).catch((error) => {
+		console.log(error)
+		});
 	});
 	}
 }

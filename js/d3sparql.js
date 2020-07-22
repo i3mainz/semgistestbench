@@ -14,19 +14,28 @@
   function sparql (endpoint, query, options) {
 	if((typeof options !== 'undefined') && "method" in options && options["method"]=="POST"){
 	var url = endpoint
+	    var defaultOptions = {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/sparql-results+json',
+				"Content-Type": "application/x-www-form-urlencoded"
+			},
+			body: "query="+encodeURIComponent(query)
+		};
 	}else{
 	var url = endpoint + '?query=' + encodeURIComponent(query)
-	}
-    
-
-    var defaultOptions = {
+	    var defaultOptions = {
       method: 'GET',
       headers: {
         'Accept': 'application/sparql-results+json'
       }
     };
 
-    Object.assign(defaultOptions, options);
+    //Object.assign(defaultOptions, options);
+	}
+    
+
+
 
     return fetch(url, defaultOptions)
       .then(function (response) {
