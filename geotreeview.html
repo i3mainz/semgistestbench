@@ -161,7 +161,7 @@ WHERE {
         ?subject != owl:ObjectProperty &&
         ?subject != owl:NamedIndividual &&
         ?subject != owl:Ontology) )
-} ORDER BY ?subject
+}
 `
 console.log(query)
 d3.sparql($('#endpointselect').val(), query,{method: 'POST'}).then((results) => {
@@ -241,8 +241,31 @@ d3.sparql($('#endpointselect').val(), query,{method: 'POST'}).then((results) => 
                 }
         }*/
         tree["core"]["types"]={"file" : {"icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif"},"default" : {"icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif","valid_children" : ["default"]}}
-        tree["plugins"]=["checkbox","search","sort","state","types"]
+        tree["plugins"]=["checkbox","search","sort","state","types","contextmenu"]
         tree["checkbox"]={"cascade":"","three_state":false}
+		tree["contextmenu"]={}
+		tree["contextmenu"]["items"]=function ($node) {
+                        var tree = $("#SimpleJSTree").jstree(true);
+                        return {
+                            "addfeaturetype": {
+                                "separator_before": false,
+                                "separator_after": false,
+                                "label": "Add as feature type",
+                                "action": function (obj) {
+                                    console.log("Add Feature Type")                                    
+                                }
+                            },
+							"lookupdefinition": {
+                                "separator_before": false,
+                                "separator_after": false,
+                                "label": "Lookup definition",
+                                "action": function (obj) {
+									var win = window.open(url, '_blank');
+									win.focus();                                 
+                                }
+                            }
+                        };
+		}
 		console.log(JSON.stringify(tree))
        try{
             $('#jstree').jstree("destroy");
@@ -3043,7 +3066,7 @@ WHERE {
         !(REGEX(STR(?subject), "^http://www.w3.org/2002/07/owl#")) && 
         !(REGEX(STR(?subject), "^http://www.w3.org/2000/01/rdf-schema#")) && 
 		!(REGEX(STR(?subject), "^_:"))  ))
-} ORDER BY ?subject`
+} `
 currdfstore.execute(query, function(success,results){ 
         console.log(success,results)
         namespaces={}
