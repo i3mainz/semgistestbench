@@ -244,14 +244,16 @@ d3.sparql($('#endpointselect').val(), query,{method: 'POST'}).then((results) => 
         tree["plugins"]=["checkbox","search","sort","state","types","contextmenu"]
         tree["checkbox"]={"cascade":"","three_state":false}
 		tree["contextmenu"]={}
-		tree["contextmenu"]["items"]=function ($node) {
-                        var tree = $("#SimpleJSTree").jstree(true);
+		tree["contextmenu"]["items"]=function (node) {
                         return {
                             "addfeaturetype": {
                                 "separator_before": false,
                                 "separator_after": false,
                                 "label": "Add as feature type",
                                 "action": function (obj) {
+                                    console.log(node)
+									if (confirm('Add "'+node.id+' as a feature type "?'))
+										console.log("Adding feature type to the SemanticWFS")
                                     console.log("Add Feature Type")                                    
                                 }
                             },
@@ -260,7 +262,7 @@ d3.sparql($('#endpointselect').val(), query,{method: 'POST'}).then((results) => 
                                 "separator_after": false,
                                 "label": "Lookup definition",
                                 "action": function (obj) {
-									var win = window.open(url, '_blank');
+									var win = window.open(node.id, '_blank');
 									win.focus();                                 
                                 }
                             }
