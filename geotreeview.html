@@ -191,7 +191,7 @@ d3.sparql($('#endpointselect').val(), query,{method: 'POST'}).then((results) => 
 			if(cls.includes("_:") || !(cls.startsWith("http"))){
 				continue;
 			}
-            if(Object.keys(classeswithinstances).length==0 || (Object.keys(classeswithinstances).length>0 && cls in classeswithinstances)){
+            //if(Object.keys(classeswithinstances).length==0 || (Object.keys(classeswithinstances).length>0 && cls in classeswithinstances)){
 					prefix=cls.substring(0,cls.lastIndexOf('#')+1);
 					console.log("PREFIX: "+prefix)
 					addpref=""
@@ -233,7 +233,7 @@ d3.sparql($('#endpointselect').val(), query,{method: 'POST'}).then((results) => 
 					"text" : textcut })
 					}
 					
-            }
+            //}
         }
         /*for(cls in superMap){
                 if(!(cls in clsMap)){
