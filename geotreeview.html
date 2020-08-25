@@ -142,7 +142,7 @@ console.log(JSON.stringify(classeswithinstances))
 query= `PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-SELECT DISTINCT ?subject ?label ?supertype 
+SELECT DISTINCT ?subject ?label ?supertype ?individual
 WHERE {
     { ?subject a owl:Class . } UNION { ?individual a ?subject . } .
     OPTIONAL { ?subject rdfs:subClassOf ?supertype } .
@@ -174,9 +174,9 @@ d3.sparql($('#endpointselect').val(), query,{method: 'POST'}).then((results) => 
 			//console.log(res)
             //if("value" in results[res]["subject"])
              //   console.log(results[res]["subject"])
-            if(!(results[res]["subject"].includes("_:")) && results[res]["subject"].startsWith("http")){
+            if(!(results[res]["subject"].includes("_:")) && results[res]["subject"].startsWith("http") && (typeof results[res]["subject"]["individual"] ==='undefined')){
                         ress[results[res]["subject"]]={"super":(("supertype" in results[res] &&  results[res]["supertype"]!=null && !(results[res]["supertype"].includes("_:")) && results[res]["supertype"].startsWith("http"))?results[res]["supertype"]:"http://www.w3.org/2002/07/owl#Thing"),"count":"","label":(results[res]["label"]!=null?results[res]["label"]:"")}//results[res]["indidivualc"]}
-						if(results[res]["supertype"]!=null && !(results[res]["supertype"] in classeswithinstances) && !(results[res]["supertype"].includes("_:")) && results[res]["supertype"].startsWith("http") ){
+			if(results[res]["supertype"]!=null && !(results[res]["supertype"] in classeswithinstances) && !(results[res]["supertype"].includes("_:")) && results[res]["supertype"].startsWith("http") ){
                                 classeswithinstances[results[res]["supertype"]]=true
                         }
            }
@@ -191,7 +191,7 @@ d3.sparql($('#endpointselect').val(), query,{method: 'POST'}).then((results) => 
 			if(cls.includes("_:") || !(cls.startsWith("http"))){
 				continue;
 			}
-            if(Object.keys(classeswithinstances).length==0 || (Object.keys(classeswithinstances).length>0 && cls in classeswithinstances)){
+            //if(Object.keys(classeswithinstances).length==0 || (Object.keys(classeswithinstances).length>0 && cls in classeswithinstances)){
 					prefix=cls.substring(0,cls.lastIndexOf('#')+1);
 					console.log("PREFIX: "+prefix)
 					addpref=""
@@ -233,7 +233,7 @@ d3.sparql($('#endpointselect').val(), query,{method: 'POST'}).then((results) => 
 					"text" : textcut })
 					}
 					
-            }
+            //}
         }
         /*for(cls in superMap){
                 if(!(cls in clsMap)){
