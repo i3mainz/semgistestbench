@@ -13,6 +13,11 @@
 <script src="https://unpkg.com/osmtogeojson@2.2.12/osmtogeojson.js"></script>
   <script src="js/leaflet.polylinedecorator.js"></script>
   <script src="js/wicket.js" type="text/javascript"></script>
+  <script src="testdata/denkmal.js"></script>
+   <script src="testdata/unesco_hb.js"></script>
+   <script src="testdata/unesco_trier.js"></script>
+      <script src="testdata/whcosm.js"></script>
+     <script src="testdata/unesco_hamburg.js"></script>
   <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
      <script src="js/leaflet.fullscreen.js"></script>
 	 <script src="js/leaflet-search.js"></script>
@@ -111,12 +116,14 @@ function buildOverpassApiUrl(map, overpassQuery,overpassQueryVal,areaname) {
 
 function getOSMAttributesForCoordinate(map){
 if(map.getZoom()>=minMapZoom){
-$.get(buildOverpassApiUrl(map,"heritage:operator","whc","Deutschland"), function (osmDataAsJson) {
-          var resultAsGeojson = osmtogeojson(osmDataAsJson);
+//$.get(buildOverpassApiUrl(map,"heritage:operator","whc","Deutschland"), function (osmDataAsJson) {
 		  var adminLayer=null
-          var resultLayer = L.geoJson(resultAsGeojson, {
+		  console.log("OSMWHC")
+		  console.log(osmwhc)
+          var resultLayer = L.geoJson(osmwhc, {
             style: function (feature) {
-              if(feature.properties.tags["wikidata"]!== undefined){
+			  console.log(feature)
+              if("wikidata" in feature.properties && feature.properties["wikidata"]!== undefined){
 				return {color: "#008000"};
 			   }else{
 				return {color: "#ff0000"};
@@ -133,14 +140,14 @@ $.get(buildOverpassApiUrl(map,"heritage:operator","whc","Deutschland"), function
 			  coord="Coordinates: "+feature.geometry.type+"("+feature.geometry.coordinates[0]+" "+feature.geometry.coordinates[1]+")"
 			  popupContent+=trimcoords(coord,90)
               var indid="<http://www.linkedgeodata.org/"+feature.properties.type+feature.properties.id+">";
-              var keys = Object.keys(feature.properties.tags);
+              var keys = Object.keys(feature.properties);
 			  popupContent+="<br/><b>OSM Attributes: </b><a href=\"#\" onclick=\"toggle_visibility('osm_"+feature.properties.id+"')\">["+keys.length+"]</a><br/><ul id=\"osm_"+feature.properties.id+"\">"
               wdkeyset={}
-              console.log("Wikidata: "+feature.properties.tags["wikidata"])
-              if(feature.properties.tags["wikidata"]!="" && feature.properties.tags["wikidata"]!=undefined){
-                    wdkeyset=getAttributesForWikidataID(feature.properties.tags["wikidata"])
+              console.log("Wikidata: "+feature.properties["wikidata"])
+              if(feature.properties["wikidata"]!="" && feature.properties["wikidata"]!=undefined){
+                    wdkeyset=getAttributesForWikidataID(feature.properties["wikidata"])
              }
-              if(feature.properties.tags.length>0){
+              if(feature.properties.length>0){
 					var wicket = new Wkt.Wkt();
 					wicket.read(JSON.stringify(feature["geometry"]));
 					var wkt = wicket.write();
@@ -157,7 +164,7 @@ $.get(buildOverpassApiUrl(map,"heritage:operator","whc","Deutschland"), function
 						ttlExport+="<http://www.linkedgeodata.org/"+feature.properties.type+feature.properties.id+"> <http://www.opengis.net/ont/geosparql#hasGeometry> \""+wkt+"\"^^<http://www.opengis.net/ont/geosparql#wktLiteral> .\n";
 					}
               }
-                            keys.forEach(function (key) {
+                keys.forEach(function (key) {
               var ignorekeys=[]
 			  	listElem="<li>"
 				listElemContent=""
@@ -167,43 +174,43 @@ $.get(buildOverpassApiUrl(map,"heritage:operator","whc","Deutschland"), function
                                     alert(JSON.stringify(Object.keys(Object.values(osmToWikidataMap[key])[0])[0]))*/
 				if(key=="wikidata"){
 					listElem="<li class=\"wdmatch\">"
-					listElemContent = "<a href=\"https://wiki.openstreetmap.org/wiki/Key:wikidata\" target=\"_blank\" style=\"color:#ff0000\">wikidata</a> - <a href=\"https://www.wikidata.org/entity/"+feature.properties.tags[key]+"\"  target=\"_blank\" style=\"color:#ff0000\">" + feature.properties.tags[key] + "</a></li>";
-					ttlExport+=indid+" <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/"+feature.properties.tags[key]+"> . \n"  
+					listElemContent = "<a href=\"https://wiki.openstreetmap.org/wiki/Key:wikidata\" target=\"_blank\" style=\"color:#ff0000\">wikidata</a> - <a href=\"https://www.wikidata.org/entity/"+feature.properties[key]+"\"  target=\"_blank\" style=\"color:#ff0000\">" + feature.properties[key] + "</a></li>";
+					ttlExport+=indid+" <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/"+feature.properties[key]+"> . \n"  
 				}else if(key=="wikipedia"){
-					if(feature.properties.tags[key].includes(":")){
-					   spll=feature.properties.tags[key].split(":")
+					if(feature.properties[key].includes(":")){
+					   spll=feature.properties[key].split(":")
 					   listElem="<li class=\"wdmatch\">"
-					   listElemContent+= "<a href=\"https://wiki.openstreetmap.org/wiki/Key:wikipedia\" target=\"_blank\" style=\"color:#1103D9\">wikipedia</a> - <a href=\"https://"+spll[0]+".wikipedia.org/wiki/"+spll[1]+"\"  target=\"_blank\" style=\"color:#1103D9\">" + feature.properties.tags[key] + "</a></li>";
-					ttlExport+=indid+" <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/"+feature.properties.tags[key]+"> . \n"  
+					   listElemContent+= "<a href=\"https://wiki.openstreetmap.org/wiki/Key:wikipedia\" target=\"_blank\" style=\"color:#1103D9\">wikipedia</a> - <a href=\"https://"+spll[0]+".wikipedia.org/wiki/"+spll[1]+"\"  target=\"_blank\" style=\"color:#1103D9\">" + feature.properties[key] + "</a></li>";
+					ttlExport+=indid+" <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/"+feature.properties[key]+"> . \n"  
 
 					   }else{
 					   listElem="<li class=\"wdmatch\">"
-					  listElemContent += "<a href=\"https://wiki.openstreetmap.org/wiki/Key:wikipedia\" target=\"_blank\" style=\"color:#1103D9\">wikipedia</a> - <a href=\"https://en.wikipedia.org/wiki/"+feature.properties.tags[key]+"\"  target=\"_blank\" style=\"color:#1103D9\">" + feature.properties.tags[key] + "</a></li>";
-					ttlExport+=indid+" <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/"+feature.properties.tags[key]+"> . \n"  
+					  listElemContent += "<a href=\"https://wiki.openstreetmap.org/wiki/Key:wikipedia\" target=\"_blank\" style=\"color:#1103D9\">wikipedia</a> - <a href=\"https://en.wikipedia.org/wiki/"+feature.properties[key]+"\"  target=\"_blank\" style=\"color:#1103D9\">" + feature.properties[key] + "</a></li>";
+					ttlExport+=indid+" <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/"+feature.properties[key]+"> . \n"  
 
 					   }
 
 				}else if(key in osmToWikidataMap && (Object.keys(Object.values(osmToWikidataMap[key])[0])[0] in wdkeyset)){
                         listElemContent+="<a style=\"color:green\" href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\">"+key+"</a>"
 						wdval=Object.values(wdkeyset[Object.keys(Object.values(osmToWikidataMap[key])[0])[0]])[0].split(";")[1]
-						if(feature.properties.tags[key].includes("http")){
-							ttlExport+=indid+(feature.properties.tags[key].includes("http")?"<"+feature.properties.tags[key]+">":"\""+feature.properties.tags[key]+"\"")+" "+(wdval.includes("http")?"<"+wdval+">":"\""+wdval+"\"")+" . \n"  
+						if(feature.properties[key].includes("http")){
+							ttlExport+=indid+(feature.properties[key].includes("http")?"<"+feature.properties[key]+">":"\""+feature.properties[key]+"\"")+" "+(wdval.includes("http")?"<"+wdval+">":"\""+wdval+"\"")+" . \n"  
                         }
-                        if(wdval==feature.properties.tags[key]){
+                        if(wdval==feature.properties[key]){
 								listElem="<li class=\"wdmatch\">"
-								if(feature.properties.tags[key].includes("http")){
-									listElemContent += " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\" style=\"color:green\">" + feature.properties.tags[key] + "</a></li>";
+								if(feature.properties[key].includes("http")){
+									listElemContent += " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\" style=\"color:green\">" + feature.properties[key] + "</a></li>";
 								}else{
-									listElemContent += " - <span style=\"color:green\">" + feature.properties.tags[key] + "</span></li>";
+									listElemContent += " - <span style=\"color:green\">" + feature.properties[key] + "</span></li>";
 								}
                                 
                         }else{
-							if(feature.properties.tags[key].includes("http")){
+							if(feature.properties[key].includes("http")){
 								listElem="<li class=\"wdconflict\">"
-								listElemContent += " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\" style=\"color:orange\">" + feature.properties.tags[key] + "</a>" 
+								listElemContent += " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\" style=\"color:orange\">" + feature.properties[key] + "</a>" 
 							}else{
 								listElem="<li class=\"wdconflict\">"
-								listElemContent += " - <span style=\"color:orange\">" + feature.properties.tags[key] + "</span>";
+								listElemContent += " - <span style=\"color:orange\">" + feature.properties[key] + "</span>";
 							}
 							if(wdval.includes("http")){
 								listElem="<li class=\"equivfound\">"
@@ -213,43 +220,43 @@ $.get(buildOverpassApiUrl(map,"heritage:operator","whc","Deutschland"), function
 								listElemContent +=" | <span style=\"color:orange\">"+wdval+"</span></li>";
 							}
                    }
-                }else if(key in osmToWikidataMap && feature.properties.tags[key] in osmToWikidataMap[key] && "http://www.wikidata.org/entity/P31" in wdkeyset && Object.values(wdkeyset["http://www.wikidata.org/entity/P31"])[0].substring(0,Object.values(wdkeyset["http://www.wikidata.org/entity/P31"])[0].indexOf(";"))==Object.keys(osmToWikidataMap[key][feature.properties.tags[key]])[0]){
+                }else if(key in osmToWikidataMap && feature.properties[key] in osmToWikidataMap[key] && "http://www.wikidata.org/entity/P31" in wdkeyset && Object.values(wdkeyset["http://www.wikidata.org/entity/P31"])[0].substring(0,Object.values(wdkeyset["http://www.wikidata.org/entity/P31"])[0].indexOf(";"))==Object.keys(osmToWikidataMap[key][feature.properties[key]])[0]){
 					listElemContent+="<a style=\"color:green\" href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\">"+key+"</a>"
-					if(feature.properties.tags[key].includes("http")){
+					if(feature.properties[key].includes("http")){
 						listElem="<li class=\"wdmatch\">"
-						listElemContent += " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\" style=\"color:green\">" + feature.properties.tags[key] + "</a></li>";
+						listElemContent += " - <a href=\""+Object.keys(osmToWikidataMap[key])[0]+"\"  target=\"_blank\" style=\"color:green\">" + feature.properties[key] + "</a></li>";
 					}else{
 						listElem="<li class=\"wdmatch\">"	
-						listElemContent += " - <a href=\""+Object.keys(osmToWikidataMap[key][feature.properties.tags[key]])[0]+"\" target=\"_blank\" style=\"color:green\">" + feature.properties.tags[key] + "</a></li>";
+						listElemContent += " - <a href=\""+Object.keys(osmToWikidataMap[key][feature.properties[key]])[0]+"\" target=\"_blank\" style=\"color:green\">" + feature.properties[key] + "</a></li>";
 					}
 				}else if(key in osmToWikidataMap){
 						var color="orange"
 						listElem="<li class=\"conflict\">"
                         listElemContent+="<a style=\"color:"+color+"\" href=\"https://wiki.openstreetmap.org/wiki/Key:"+key+"\" target=\"_blank\">"+key+"</a>"
-                  if(feature.properties.tags[key].includes(".jpg") || feature.properties.tags[key].includes(".JPG") || feature.properties.tags[key].includes(".svg") || feature.properties.tags[key].includes(".SVG")
-						|| feature.properties.tags[key].includes(".png") || feature.properties.tags[key].includes(".PNG") || feature.properties.tags[key].includes(".gif") || feature.properties.tags[key].includes(".GIF")){
-						listElemContent+=" - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\"><img src=\""+feature.properties.tags[key].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"			
-					}else if(feature.properties.tags[key].includes("http")){
-						listElemContent += " - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\">" + feature.properties.tags[key] + "</a></li>";
-					}else if(feature.properties.tags[key].startsWith("www.")){
+                  if(feature.properties[key].includes(".jpg") || feature.properties[key].includes(".JPG") || feature.properties[key].includes(".svg") || feature.properties[key].includes(".SVG")
+						|| feature.properties[key].includes(".png") || feature.properties[key].includes(".PNG") || feature.properties[key].includes(".gif") || feature.properties[key].includes(".GIF")){
+						listElemContent+=" - <a href=\""+feature.properties[key]+"\" target=\"_blank\"><img src=\""+feature.properties[key].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"			
+					}else if(feature.properties[key].includes("http")){
+						listElemContent += " - <a href=\""+feature.properties[key]+"\" target=\"_blank\">" + feature.properties[key] + "</a></li>";
+					}else if(feature.properties[key].startsWith("www.")){
 						console.log(JSON.stringify(osmToWikidataMap))
 						console.log(Object.keys(osmToWikidataMap[key][""])[0])
-						listElemContent+=" - <a href=\"https://"+feature.properties.tags[key]+"\" target=\"_blank\" style=\"color:orange\">"+feature.properties.tags[key]+"</a> | <a href=\"https://"+wdkeyset[Object.keys(osmToWikidataMap[key][""])[0]]+"\" target=\"_blank\" style=\"color:orange\">"+wdkeyset[Object.keys(osmToWikidataMap[key][""])[0]]+"</a></li>"
+						listElemContent+=" - <a href=\"https://"+feature.properties[key]+"\" target=\"_blank\" style=\"color:orange\">"+feature.properties[key]+"</a> | <a href=\"https://"+wdkeyset[Object.keys(osmToWikidataMap[key][""])[0]]+"\" target=\"_blank\" style=\"color:orange\">"+wdkeyset[Object.keys(osmToWikidataMap[key][""])[0]]+"</a></li>"
 					}else{
-						listElemContent += " - " + feature.properties.tags[key] + "</li>";
+						listElemContent += " - " + feature.properties[key] + "</li>";
 					}
                 }else{
 					listElem="<li class=\"nomatch\">"
                     listElemContent+="<a href=\"https://wiki.openstreetmap.org/wiki/Key:"+key+"\" target=\"_blank\"style=\"color:black;text-decoration: none;\">"+key+"</a>"
-			if(feature.properties.tags[key].includes(".jpg") || feature.properties.tags[key].includes(".JPG") || feature.properties.tags[key].includes(".svg") || feature.properties.tags[key].includes(".SVG")
-				|| feature.properties.tags[key].includes(".png") || feature.properties.tags[key].includes(".PNG") || feature.properties.tags[key].includes(".gif") || feature.properties.tags[key].includes(".GIF")){
-			    	listElemContent+=" - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\"><img src=\""+feature.properties.tags[key].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"			
-		    }else if(feature.properties.tags[key].includes("http")){
-					listElemContent += " - <a href=\""+feature.properties.tags[key]+"\" target=\"_blank\">" + feature.properties.tags[key] + "</a></li>";
-		    }else if(feature.properties.tags[key].startsWith("www.")){
-			    	listElemContent+="<a href=\"https://"+feature.properties.tags[key]+"\" target=\"_blank\">"+feature.properties.tags[key]+"</a></li>"
+			if(feature.properties[key].includes(".jpg") || feature.properties[key].includes(".JPG") || feature.properties[key].includes(".svg") || feature.properties[key].includes(".SVG")
+				|| feature.properties[key].includes(".png") || feature.properties[key].includes(".PNG") || feature.properties[key].includes(".gif") || feature.properties[key].includes(".GIF")){
+			    	listElemContent+=" - <a href=\""+feature.properties[key]+"\" target=\"_blank\"><img src=\""+feature.properties[key].replace("http","https")+"\" height=\"30\" width=\"30\"></a></li>"			
+		    }else if(feature.properties[key].includes("http")){
+					listElemContent += " - <a href=\""+feature.properties[key]+"\" target=\"_blank\">" + feature.properties[key] + "</a></li>";
+		    }else if(key in feature.properties && feature.properties[key].toString().startsWith("www.")){
+			    	listElemContent+="<a href=\"https://"+feature.properties[key]+"\" target=\"_blank\">"+feature.properties[key]+"</a></li>"
 			}else{
-					listElemContent += " - " + feature.properties.tags[key] + "</li>";
+					listElemContent += " - " + feature.properties[key] + "</li>";
 		    }
                      
                 }
@@ -257,7 +264,7 @@ $.get(buildOverpassApiUrl(map,"heritage:operator","whc","Deutschland"), function
               });
               popupContent += "</ul>"
 			  //alert(wdkeyset)
-			  if(feature.properties.tags["wikidata"]!== undefined){
+			  if(feature.properties["wikidata"]!== undefined){
 				popupContent+="<b>Wikidata Items:</b> <a href=\"#\" onclick=\"toggle_visibility('wd_"+feature.properties.id+"')\">["+Object.keys(wdkeyset).length+"]</a><br/><ul id=\"wd_"+feature.properties.id+"\">"/*<b>"+Object.values(wdkeyset["rdfs:label"])[0]+"</b>*/+"<ul>"
 			  }
 			  var wdcoords;
@@ -278,7 +285,7 @@ $.get(buildOverpassApiUrl(map,"heritage:operator","whc","Deutschland"), function
 								if(spl[0] in wikidataToOSMMap){
 									tags=Object.keys(wikidataToOSMMap[spl[0]][0])[0].split("=")
 									//alert(JSON.stringify(tags))
-									if(tags[0] in feature.properties.tags && feature.properties.tags[tags[0]]==tags[1]){
+									if(tags[0] in feature.properties && feature.properties[tags[0]]==tags[1]){
 										popupContent+="<li><a href=\""+key+"\" target=\"_blank\" style=\"color:green\">"+Object.keys(wdkeyset[key])[0]+"</a> - "
 										isgreen=true;
 									}
@@ -290,9 +297,9 @@ $.get(buildOverpassApiUrl(map,"heritage:operator","whc","Deutschland"), function
 								var finished=false;
 								for(equiv in Object.values(wikidataToOSMMap[key])[0]){
 								
-									if(feature.properties.tags[equiv]){
+									if(feature.properties[equiv]){
 										popupContent+="<li><a href=\""+key+"\" target=\"_blank\" style=\"color:green\">"+Object.keys(wdkeyset[key])[0]+"</a> - "
-										giventag=feature.properties.tags[equiv]
+										giventag=feature.properties[equiv]
 										finished=true;
 									}
 								}
@@ -344,7 +351,7 @@ $.get(buildOverpassApiUrl(map,"heritage:operator","whc","Deutschland"), function
                         }
               }
               popupContent+="</ul>"
-			  if(feature.properties.tags["wikidata"]!== undefined){
+			  if(feature.properties["wikidata"]!== undefined){
 						var greyIcon = new L.Icon({
                                         iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-grey.png',
                                         shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
@@ -377,7 +384,7 @@ $.get(buildOverpassApiUrl(map,"heritage:operator","whc","Deutschland"), function
             }
           }).addTo(map);
 		  resultLayerCollection.push(resultLayer);
-        });
+        //});
     }
 }
 
@@ -732,8 +739,59 @@ attribution: '&copy; Bundesamt f&uuml;r Kartographie und Geod&auml;sie 2017, <a 
 	position: 'bottomright',
 	imperial: false
 }).addTo(map);
+L.geoJSON(unesco_trier,{style: function (feature) {
+			  console.log(feature)
+			  return "#000000"
+            },
+onEachFeature: function (feature, layer) {
+	 var popup="Official Data<br/><ul>"
+	 for(prop in feature.properties){
+	 	popup+="<li>"+prop+" - "+feature.properties[prop]+"</li>"
+	 }
+	 popup+="</ul>"
+         layer.bindPopup(popup);
+     }}).addTo(map);
+L.geoJSON(unesco_hamburg,{style: function (feature) {
+			  console.log(feature)
+			  return "#000000"
+            },
+onEachFeature: function (feature, layer) {
+	 var popup="Official Data<br/><ul>"
+	 for(prop in feature.properties){
+	 	popup+="<li>"+prop+" - "+feature.properties[prop]+"</li>"
+	 }
+	 popup+="</ul>"
+         layer.bindPopup(popup);
+     }}).addTo(map);
+L.geoJSON(unesco_hb,{
+	style: function (feature) {
+			  console.log(feature)
+			  return "#000000"
+            },
+	onEachFeature: function (feature, layer) {
+	 var popup="Official Data<br/><ul>"
+	 for(prop in feature.properties){
+	 	popup+="<li>"+prop+" - "+feature.properties[prop]+"</li>"
+	 }
+	 popup+="</ul>"
+         layer.bindPopup(popup);
+     }}).addTo(map);
+L.geoJSON(denkmal,{
+		style: function (feature) {
+			  console.log(feature)
+			  return "#000000"
+            },
+		onEachFeature: function (feature, layer) {
+	 var popup="Official Data<br/><ul>"
+	 for(prop in feature.properties){
+	 	popup+="<li>"+prop+" - "+feature.properties[prop]+"</li>"
+	 }
+	 popup+="</ul>"
+         layer.bindPopup(popup);
+     }}).addTo(map);
 var layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(map);
 loaded=true;
+
 </script>
 </div>
     <div class="left col-sm-3" id="contentdesc" style="height:500px;overflow-y: scroll;">
