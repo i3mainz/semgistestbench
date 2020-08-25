@@ -742,7 +742,18 @@ attribution: '&copy; Bundesamt f&uuml;r Kartographie und Geod&auml;sie 2017, <a 
 L.geoJSON(unesco_trier,{style: function (feature) {
 			  console.log(feature)
 			  return "#000000"
-            },
+            },	pointToLayer: function(feature, latlng) {
+	var greenIcon = new L.Icon({
+	iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-black.png',
+	shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+	iconSize: [25, 41],
+	iconAnchor: [12, 41],
+	popupAnchor: [1, -34],
+	shadowSize: [41, 41]
+	});
+
+	return L.marker(latlng, {icon: greenIcon});
+    },
 onEachFeature: function (feature, layer) {
 	 var popup="Official Data<br/><ul>"
 	 for(prop in feature.properties){
@@ -754,7 +765,18 @@ onEachFeature: function (feature, layer) {
 L.geoJSON(unesco_hamburg,{style: function (feature) {
 			  console.log(feature)
 			  return "#000000"
-            },
+            },	pointToLayer: function(feature, latlng) {
+	var greenIcon = new L.Icon({
+	iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-black.png',
+	shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+	iconSize: [25, 41],
+	iconAnchor: [12, 41],
+	popupAnchor: [1, -34],
+	shadowSize: [41, 41]
+	});
+
+	return L.marker(latlng, {icon: greenIcon});
+    },
 onEachFeature: function (feature, layer) {
 	 var popup="Official Data<br/><ul>"
 	 for(prop in feature.properties){
@@ -768,6 +790,18 @@ L.geoJSON(unesco_hb,{
 			  console.log(feature)
 			  return "#000000"
             },
+	pointToLayer: function(feature, latlng) {
+	var greenIcon = new L.Icon({
+	iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-black.png',
+	shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+	iconSize: [25, 41],
+	iconAnchor: [12, 41],
+	popupAnchor: [1, -34],
+	shadowSize: [41, 41]
+	});
+
+	return L.marker(latlng, {icon: greenIcon});
+    },
 	onEachFeature: function (feature, layer) {
 	 var popup="Official Data<br/><ul>"
 	 for(prop in feature.properties){
@@ -780,7 +814,18 @@ L.geoJSON(denkmal,{
 		style: function (feature) {
 			  console.log(feature)
 			  return "#000000"
-            },
+            },	pointToLayer: function(feature, latlng) {
+	var greenIcon = new L.Icon({
+	iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-black.png',
+	shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+	iconSize: [25, 41],
+	iconAnchor: [12, 41],
+	popupAnchor: [1, -34],
+	shadowSize: [41, 41]
+	});
+
+	return L.marker(latlng, {icon: greenIcon});
+    },
 		onEachFeature: function (feature, layer) {
 	 var popup="Official Data<br/><ul>"
 	 for(prop in feature.properties){
