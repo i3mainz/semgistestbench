@@ -156,8 +156,33 @@ d3.sparql($('#endpointselect').val(), query,{method: 'POST',body:formData}).then
             tree["core"]["data"].push({ "id" : results[res]["subject"], "icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif","parent" : "#", "text" : results[res]["subject"].substring(results[res]["subject"].lastIndexOf('/')+1) })            
             }
         }
-        tree["plugins"]=["checkbox","search","sort","state","types"]
+        tree["plugins"]=["checkbox","search","sort","state","types","contextmenu"]
         tree["checkbox"]={"cascade":"","three_state":false}
+		tree["contextmenu"]={}
+		tree["contextmenu"]["items"]=function (node) {
+                        return {
+                            "addfeaturetype": {
+                                "separator_before": false,
+                                "separator_after": false,
+                                "label": "Add as feature type",
+                                "action": function (obj) {
+                                    console.log(node)
+									if (confirm('Add "'+node.id+' as a feature type "?'))
+										console.log("Adding feature type to the SemanticWFS")
+                                    console.log("Add Feature Type")                                    
+                                }
+                            },
+							"lookupdefinition": {
+                                "separator_before": false,
+                                "separator_after": false,
+                                "label": "Lookup definition",
+                                "action": function (obj) {
+									var win = window.open(node.id, '_blank');
+									win.focus();                                 
+                                }
+                            }
+                        };
+		}
 		console.log(JSON.stringify(tree))
        try{
             $('#jstree').jstree("destroy");
