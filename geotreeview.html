@@ -131,8 +131,36 @@ function closeWaitingDialog() {
    document.getElementById("loadingScreen").close()
 }
 
-
-
+function getGeoClasses(){
+    query= "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n"
++"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"
++"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
++"SELECT DISTINCT ?subject ?label \n"
++"WHERE {\n"
++"    ?subject <"+endpoints[$('#endpointselect').val()]["type"]+"> owl:Class . \n"
++"      OPTIONAL {?subject rdfs:label ?label "+"} .\n"
++"      ?subject <"+endpoints[$('#endpointselect').val()]["geo"][0]+"> ?geo . \n"
++"} ORDER BY ?subject"
+console.log(query)
+const formData = new FormData();
+formData.append('query', query);
+d3.sparql($('#endpointselect').val(), query,{method: 'POST',body:formData}).then((results) => {
+     ress={}
+        var tree={ "plugins": ["search", "types","sort"],"search": {}, "core": { "data" :[]}}
+        tree["core"]["data"].push({ "id" : "http://www.w3.org/2002/07/owl#Thing", "icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif","parent" : "#", "text" : "owl:Thing" })
+        for(res in results){
+            tree["core"]["data"].push({ "id" : results[res]["subject"], "icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif","parent" : "#", "text" : results[res]["subject"] })
+        }
+        tree["plugins"]=["checkbox","search","sort","state","types"]
+        tree["checkbox"]={"cascade":"","three_state":false}
+		console.log(JSON.stringify(tree))
+       try{
+            $('#jstree').jstree("destroy");
+        }catch(err){}
+        $('#jstree').jstree(tree);
+		var to = false;
+    });
+}
 
 function getClassHierarchy(classeswithinstances){
 console.log(JSON.stringify(classeswithinstances))
@@ -348,7 +376,7 @@ function importGeoJSON(geojson,crs,switchlatlong){
 	data=JSON.parse(geojson)
 	namespace="http://semgis.de/geodata#"
 	var wkt = new Wkt.Wkt();
-	for(feat in data["features"]){
+	for(feat in data["featu`res"]){
 		indid="<http://semgis.de/geodata#"
 		if("id" in data["features"][feat]){
 			indid+=data["features"][feat]["id"]
@@ -3149,7 +3177,7 @@ layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(mymap);
 $(document).ready( function () {
     
 	$.getJSON("https://www.i3mainz.de/projekte/bkg/semanticwfs/rest/service/getEndpoints", function(result){
-		 	options=""
+        options=""
 		   for(featuretype in result["endpoints"]){
 			   options+="<option value=\""+result["endpoints"][featuretype]["endpoint"]+"\">"+result["endpoints"][featuretype]["name"]+"</option>"
 		   }
@@ -3170,7 +3198,7 @@ $(document).ready( function () {
 <select id="endpointselect">
 
 </select>
-<button id="explore" onclick="getClassHierarchy([])">Explore</button><br/>
+<button id="explore" onclick="getClassHierarchy([])">Explore</button><button id="explore" onclick="getGeoClasses()">GeoExplore</button><br/>
 Instances Limit: <input type="number" min="1" step="1" id="limit" value="100"/>
 <br/>
 Export as Format: <select id="queryimportformat">
