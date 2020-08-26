@@ -138,8 +138,9 @@ function getGeoClasses(){
 +"SELECT DISTINCT ?subject ?label \n"
 +"WHERE {\n"
 +"    ?subject <"+endpoints[$('#endpointselect').val()]["type"]+"> owl:Class . \n"
++"    ?ind <"+endpoints[$('#endpointselect').val()]["type"]+"> ?subject .\n"
 +"      OPTIONAL {?subject rdfs:label ?label "+"} .\n"
-+"      ?subject <"+endpoints[$('#endpointselect').val()]["geo"][0]+"> ?geo . \n"
++"      ?ind <"+endpoints[$('#endpointselect').val()]["geo"][0]+"> ?geo . \n"
 +"} ORDER BY ?subject"
 console.log(query)
 const formData = new FormData();
