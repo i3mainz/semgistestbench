@@ -152,8 +152,7 @@ d3.sparql($('#endpointselect').val(), query,{method: 'POST',body:formData}).then
         tree["core"]["data"].push({ "id" : "http://www.w3.org/2002/07/owl#Thing", "icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif","parent" : "#", "text" : "owl:Thing" })
         for(res in results){
             if("label" in results[res]){
-				if("supertype" in results["res"])
-					tree["core"]["data"].push({ "id" : results[res]["subject"], "icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif","parent" : "#", "text" : results[res]["label"] })
+					tree["core"]["data"].push({ "id" : results[res]["subject"], "icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif","parent" :"#" , "text" : results[res]["label"] })
 			}else{
 				tree["core"]["data"].push({ "id" : results[res]["subject"], "icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif","parent" : "#", "text" : results[res]["subject"].substring(results[res]["subject"].lastIndexOf('/')+1) })            
             }
