@@ -135,11 +135,12 @@ function getGeoClasses(){
     query= "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n"
 +"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"
 +"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
-+"SELECT DISTINCT ?subject ?label \n"
++"SELECT DISTINCT ?subject ?label ?supertype \n"
 +"WHERE {\n"
 +"    ?subject <"+endpoints[$('#endpointselect').val()]["type"]+"> owl:Class . \n"
 +"    ?ind <"+endpoints[$('#endpointselect').val()]["type"]+"> ?subject .\n"
-+"      OPTIONAL {?subject rdfs:label ?label "+"} .\n"
++"   	OPTIONAL { ?subject rdfs:subClassOf ?supertype } .\n"
++"      OPTIONAL { ?subject rdfs:label ?label "+"} .\n"
 +"      ?ind <"+endpoints[$('#endpointselect').val()]["geo"][0]+"> ?geo . \n"
 +"} ORDER BY ?subject"
 console.log(query)
@@ -151,9 +152,10 @@ d3.sparql($('#endpointselect').val(), query,{method: 'POST',body:formData}).then
         tree["core"]["data"].push({ "id" : "http://www.w3.org/2002/07/owl#Thing", "icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif","parent" : "#", "text" : "owl:Thing" })
         for(res in results){
             if("label" in results[res]){
-            tree["core"]["data"].push({ "id" : results[res]["subject"], "icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif","parent" : "#", "text" : results[res]["label"] })
-            }else{
-            tree["core"]["data"].push({ "id" : results[res]["subject"], "icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif","parent" : "#", "text" : results[res]["subject"].substring(results[res]["subject"].lastIndexOf('/')+1) })            
+				if("supertype" in results["res"])
+					tree["core"]["data"].push({ "id" : results[res]["subject"], "icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif","parent" : "#", "text" : results[res]["label"] })
+			}else{
+				tree["core"]["data"].push({ "id" : results[res]["subject"], "icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif","parent" : "#", "text" : results[res]["subject"].substring(results[res]["subject"].lastIndexOf('/')+1) })            
             }
         }
         tree["plugins"]=["checkbox","search","sort","state","types","contextmenu"]
@@ -197,30 +199,29 @@ console.log(JSON.stringify(classeswithinstances))
 // ?subject a owl:Class . NOT{ ?subject rdfs:subClassOf <http://www.xplanung.de/xplangml/5/0#> } .
 //?subject a owl:Class . } UNION 
 // (COUNT(?individual) AS ?individualc )
-query= `PREFIX owl: <http://www.w3.org/2002/07/owl#>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-SELECT DISTINCT ?subject ?label ?supertype
-WHERE {
-    { ?subject a owl:Class . } UNION { ?individual a ?subject . } .
-    OPTIONAL { ?subject rdfs:subClassOf ?supertype } .
-    OPTIONAL { ?subject rdfs:label ?label }.
-    FILTER (
-        (
-        ?subject != owl:Class &&
-        ?subject != rdf:List &&
-        ?subject != rdf:Property &&
-        ?subject != rdfs:Class &&
-        ?subject != rdfs:Datatype &&
-        ?subject != rdfs:ContainerMembershipProperty &&
-        ?subject != owl:DatatypeProperty &&
-        ?subject != owl:AnnotationProperty &&
-        ?subject != owl:Restriction &&
-        ?subject != owl:ObjectProperty &&
-        ?subject != owl:NamedIndividual &&
-        ?subject != owl:Ontology) )
-}
-`
+query= "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n"
++"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"
++"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
++"SELECT DISTINCT ?subject ?label ?supertype\n"
++"WHERE {\n"
++"   { ?subject <"+endpoints[$('#endpointselect').val()]["type"]+"> owl:Class . } UNION { ?individual <"+endpoints[$('#endpointselect').val()]["type"]+"> ?subject . } .\n"
++"   OPTIONAL { ?subject rdfs:subClassOf ?supertype } .\n"
++"   OPTIONAL { ?subject <"+endpoints[$('#endpointselect').val()]["label"]+"> ?label }.\n"
++"    FILTER (\n"
++"        (\n"
++"        ?subject != owl:Class &&\n"
++"        ?subject != rdf:List &&\n"
++"        ?subject != rdf:Property &&\n"
++"        ?subject != rdfs:Class &&\n"
++"        ?subject != rdfs:Datatype &&\n"
++"        ?subject != rdfs:ContainerMembershipProperty &&\n"
++"        ?subject != owl:DatatypeProperty &&\n"
++"        ?subject != owl:AnnotationProperty &&\n"
++"        ?subject != owl:Restriction &&\n"
++"        ?subject != owl:ObjectProperty &&\n"
++"        ?subject != owl:NamedIndividual &&\n"
++"        ?subject != owl:Ontology) )\n"
++"}\n"
 console.log(query)
 d3.sparql($('#endpointselect').val(), query,{method: 'POST'}).then((results) => {
        console.log(results)
@@ -3263,7 +3264,7 @@ $(document).ready( function () {
 
 </select>
 <button id="explore" onclick="getClassHierarchy([])">Explore</button><button id="explore" onclick="getGeoClasses()">GeoExplore</button><br/>
-Instances Limit: <input type="number" min="1" step="1" id="limit" value="100"/>
+Instances Limit: <input type="number" min="1" step="1" id="limit" value="100"/>Maximum Depth: <input type="depth" min="1" step="1" id="maxdepth" value="2"/>
 <br/>
 Export as Format: <select id="queryimportformat">
 <option value="ttl" selected="selected">TTL</option>
