@@ -140,7 +140,7 @@ function getGeoClasses(){
 +"    ?subject <"+endpoints[$('#endpointselect').val()]["type"]+"> owl:Class . \n"
 +"    ?ind <"+endpoints[$('#endpointselect').val()]["type"]+"> ?subject .\n"
 +"   	OPTIONAL { ?subject rdfs:subClassOf ?supertype } .\n"
-+"      OPTIONAL { ?subject rdfs:label ?label "+"} .\n"
++"      OPTIONAL { ?subject <"+endpoints[$('#endpointselect').val()]["label"]+"> ?label "+"} .\n"
 +"      ?ind <"+endpoints[$('#endpointselect').val()]["geo"][0]+"> ?geo . \n"
 +"} ORDER BY ?subject"
 console.log(query)
@@ -150,12 +150,16 @@ d3.sparql($('#endpointselect').val(), query,{method: 'POST',body:formData}).then
      ress={}
         var tree={ "plugins": ["search", "types","sort"],"search": {}, "core": { "data" :[]}}
         tree["core"]["data"].push({ "id" : "http://www.w3.org/2002/07/owl#Thing", "icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif","parent" : "#", "text" : "owl:Thing" })
-        for(res in results){
-            if("label" in results[res]){
+        var seen={}
+		for(res in results){
+			if(!(results[res]["subject"] in seen){
+				if("label" in results[res]){
 					tree["core"]["data"].push({ "id" : results[res]["subject"], "icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif","parent" :"#" , "text" : results[res]["label"] })
-			}else{
-				tree["core"]["data"].push({ "id" : results[res]["subject"], "icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif","parent" : "#", "text" : results[res]["subject"].substring(results[res]["subject"].lastIndexOf('/')+1) })            
-            }
+				}else{
+					tree["core"]["data"].push({ "id" : results[res]["subject"], "icon" : "https://raw.githubusercontent.com/protegeproject/protege/master/protege-editor-owl/src/main/resources/Classes.gif","parent" : "#", "text" : results[res]["subject"].substring(results[res]["subject"].lastIndexOf('/')+1) })            
+				}
+			}
+			seen[results[res]["subject"]]=true
         }
         tree["plugins"]=["checkbox","search","sort","state","types","contextmenu"]
         tree["checkbox"]={"cascade":"","three_state":false}
