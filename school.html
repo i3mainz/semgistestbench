@@ -27,7 +27,8 @@
 	  <script src="testdata/brbschool_mapping.js"></script>
 	 <script src="testdata/schulendeutschland_mapping.js"></script>
    <script src="js/leaflet_legend.js"></script>
-      <script src="js/leaflet_easyprint.js"></script>
+   <script src="js/leaflet_easyprint.js"></script>
+   <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   
 <script>
@@ -986,7 +987,7 @@ function createStatsTable(){
 		}
 		resultTable+="</table></small>"
 		$('#stats'+counter++).html(resultTable)
-		$("#stattable"+(counter-1)).tablesorter(); 
+		$("#stattable"+(counter-1)).DataTable();
 	}
 
 }
