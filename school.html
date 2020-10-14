@@ -972,7 +972,7 @@ function createStatsTable(){
 	var res=""
 	counter=1;
 	for(item in itemCount){
-		var resultTable="<h5>"+item+"</h5><small><table border=1 class=\"tablesorter\" id=\"stattable"+counter+"\"><tr><th>Item</th><th>Amount</th><th>Match</th><th>Conflict</th><th>No Match</th></tr>"
+		var resultTable="<h5>"+item+"</h5><small><table border=1 class=\"tablesorter\" id=\"stattable"+counter+"\"><thead><tr><th>Item</th><th>Amount</th><th>Match</th><th>Conflict</th><th>No Match</th></tr></thead><tbody>"
 		console.log(Object.keys(itemCount[item]))
 		var keys = Object.keys(itemCount[item]).sort();
 		for(att in keys){
@@ -985,7 +985,7 @@ function createStatsTable(){
 				}
 				resultTable+="<td>"+itemCount[item][keys[att]]["count"]+"</td><td>"+itemCount[item][keys[att]]["match"]+"("+((itemCount[item][keys[att]]["match"]/itemCount[item][keys[att]]["count"])*100).toFixed(0)+"%)</td><td>"+itemCount[item][keys[att]]["conflict"]+"("+((itemCount[item][keys[att]]["conflict"]/itemCount[item][keys[att]]["count"])*100).toFixed(0)+"%)</td><td>"+itemCount[item][keys[att]]["nomatch"]+"("+((itemCount[item][keys[att]]["nomatch"]/itemCount[item][keys[att]]["count"])*100).toFixed(0)+"%)</td></tr>"
 		}
-		resultTable+="</table></small>"
+		resultTable+="</tbody></table></small>"
 		$('#stats'+counter++).html(resultTable)
 		$("#stattable"+(counter-1)).DataTable();
 	}
